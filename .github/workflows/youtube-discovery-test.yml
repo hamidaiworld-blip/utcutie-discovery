@@ -1,10 +1,10 @@
-name: YouTube Discovery Test
+name: YouTube Discovery Validation Test
 
 on:
   workflow_dispatch:
 
 jobs:
-  discover:
+  validate:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,13 +22,20 @@ jobs:
         run: |
           python -m yt_dlp --version
 
-      - name: Test YouTube discovery
+      - name: Search and validate YouTube candidates
         run: |
           python - <<'PY'
           import json
+          import math
+          import re
           import subprocess
+          from datetime import datetime, timezone
 
-          queries = [
+          MIN_DURATION = 15
+          MAX_DURATION = 180
+          MAX_SELECTED = 20
+
+          QUERIES = [
               "funny dog",
               "funny cat",
               "cute puppy",
@@ -39,17 +46,229 @@ jobs:
               "animals being funny",
           ]
 
-          all_results = []
+          STRONG_TERMS = {
+              "dog": 15,
+              "dogs": 15,
+              "puppy": 18,
+              "puppies": 18,
+              "cat": 15,
+              "cats": 15,
+              "kitten": 18,
+              "kittens": 18,
+              "pet": 10,
+              "pets": 10,
+              "animal": 8,
+              "animals": 8,
+              "cute": 7,
+              "adorable": 7,
+              "funny": 7,
+              "hilarious": 7,
+              "wholesome": 8,
+              "heartwarming": 10,
+              "friendship": 8,
+          }
+
+          LOW_VALUE_TERMS = {
+              "music": -20,
+              "relaxing": -20,
+              "ambient": -20,
+              "sleep": -20,
+              "preschool": -30,
+              "educational": -20,
+              "lesson": -20,
+              "game": -20,
+              "gaming": -20,
+              "episode": -8,
+              "hour": -10,
+              "hours": -10,
+              "minutes": -5,
+              "compilation": -5,
+              "full episode": -10,
+          }
+
+          def normalize_text(value):
+              if not value:
+                  return ""
+
+              value = str(value).lower()
+
+              value = re.sub(
+                  r"[^\w\s]",
+                  " ",
+                  value,
+                  flags=re.UNICODE
+              )
+
+              value = re.sub(
+                  r"\s+",
+                  " ",
+                  value
+              ).strip()
+
+              return value
+
+          def tokenize(value):
+              return set(
+                  normalize_text(value).split()
+              )
+
+          def relevance_score(info):
+              fields = [
+                  info.get("title") or "",
+                  info.get("description") or "",
+                  info.get("uploader") or "",
+                  info.get("channel") or "",
+              ]
+
+              combined = " ".join(fields)
+
+              tokens = tokenize(combined)
+
+              score = 0
+              matches = []
+              strong_matches = []
+
+              for term, weight in STRONG_TERMS.items():
+
+                  if term in tokens:
+                      score += weight
+                      matches.append(term)
+
+                      if weight >= 15:
+                          strong_matches.append(term)
+
+              normalized = normalize_text(combined)
+
+              for term, penalty in LOW_VALUE_TERMS.items():
+
+                  if term in normalized:
+                      score += penalty
+
+              # Query/title language should have extra importance.
+              title_tokens = tokenize(
+                  info.get("title") or ""
+              )
+
+              for term, weight in STRONG_TERMS.items():
+
+                  if term in title_tokens:
+                      score += round(weight * 0.5)
+
+              return max(score, 0), matches, strong_matches
+
+          def engagement_score(info):
+
+              views = info.get("view_count") or 0
+              likes = info.get("like_count") or 0
+              comments = info.get("comment_count") or 0
+
+              return (
+                  math.log10(views + 1) * 10
+                  + math.log10(likes + 1) * 8
+                  + math.log10(comments + 1) * 5
+              )
+
+          def recency_score(info):
+
+              upload_date = (
+                  info.get("upload_date")
+              )
+
+              if not upload_date:
+                  return 0
+
+              try:
+                  date = datetime.strptime(
+                      upload_date,
+                      "%Y%m%d"
+                  ).replace(
+                      tzinfo=timezone.utc
+                  )
+
+                  age_days = (
+                      datetime.now(
+                          timezone.utc
+                      ) - date
+                  ).days
+
+                  if age_days <= 7:
+                      return 10
+
+                  if age_days <= 30:
+                      return 8
+
+                  if age_days <= 90:
+                      return 6
+
+                  if age_days <= 180:
+                      return 4
+
+                  if age_days <= 365:
+                      return 2
+
+                  return 0
+
+              except Exception:
+                  return 0
+
+          def quality_score(info):
+
+              formats = (
+                  info.get("formats")
+                  or []
+              )
+
+              best_width = 0
+              best_height = 0
+
+              for fmt in formats:
+
+                  width = fmt.get("width") or 0
+                  height = fmt.get("height") or 0
+
+                  if width * height > (
+                      best_width * best_height
+                  ):
+                      best_width = width
+                      best_height = height
+
+              pixels = best_width * best_height
+
+              if pixels >= 1920 * 1080:
+                  return 10
+
+              if pixels >= 1280 * 720:
+                  return 8
+
+              if pixels >= 854 * 480:
+                  return 6
+
+              if pixels >= 640 * 360:
+                  return 3
+
+              return 1
 
           print("=" * 70)
-          print("UTCUTIE YOUTUBE DISCOVERY TEST")
+          print("UTCUTIE YOUTUBE DISCOVERY + VALIDATION")
           print("=" * 70)
+          print(
+              f"Duration: {MIN_DURATION}–{MAX_DURATION} seconds"
+          )
+          print(
+              f"Maximum selected: {MAX_SELECTED}"
+          )
 
-          for query in queries:
+          # ------------------------------------------------------------
+          # STEP 1: SEARCH
+          # ------------------------------------------------------------
+
+          discovered = {}
+
+          for query in QUERIES:
 
               print()
               print("-" * 70)
-              print("QUERY:", query)
+              print("SEARCH:", query)
               print("-" * 70)
 
               command = [
@@ -59,7 +278,107 @@ jobs:
                   "--flat-playlist",
                   "--dump-single-json",
                   "--no-warnings",
-                  f"ytsearch10:{query}",
+                  f"ytsearch15:{query}",
+              ]
+
+              try:
+
+                  result = subprocess.run(
+                      command,
+                      capture_output=True,
+                      text=True,
+                      timeout=120,
+                  )
+
+                  if result.returncode != 0:
+
+                      print("SEARCH FAILED")
+                      print(
+                          result.stderr[-1500:]
+                      )
+                      continue
+
+                  data = json.loads(
+                      result.stdout
+                  )
+
+                  entries = (
+                      data.get("entries")
+                      or []
+                  )
+
+                  print(
+                      "Search results:",
+                      len(entries)
+                  )
+
+                  for entry in entries:
+
+                      if not entry:
+                          continue
+
+                      video_id = entry.get("id")
+
+                      if not video_id:
+                          continue
+
+                      url = (
+                          entry.get("webpage_url")
+                          or
+                          f"https://www.youtube.com/watch?v={video_id}"
+                      )
+
+                      discovered[video_id] = {
+                          "id": video_id,
+                          "url": url,
+                          "query": query,
+                      }
+
+              except Exception as e:
+
+                  print(
+                      "SEARCH ERROR:",
+                      repr(e)
+                  )
+
+          print()
+          print("=" * 70)
+          print("DISCOVERY SUMMARY")
+          print("=" * 70)
+          print(
+              "Unique discovered videos:",
+              len(discovered)
+          )
+
+          # ------------------------------------------------------------
+          # STEP 2: FULL METADATA VALIDATION
+          # ------------------------------------------------------------
+
+          validated = []
+
+          for number, candidate in enumerate(
+              discovered.values(),
+              start=1
+          ):
+
+              url = candidate["url"]
+
+              print()
+              print("=" * 70)
+              print(
+                  f"VALIDATING {number}/{len(discovered)}"
+              )
+              print("=" * 70)
+              print(url)
+
+              command = [
+                  "python",
+                  "-m",
+                  "yt_dlp",
+                  "--no-playlist",
+                  "--dump-single-json",
+                  "--no-warnings",
+                  url,
               ]
 
               try:
@@ -73,189 +392,307 @@ jobs:
 
                   if result.returncode != 0:
 
-                      print(
-                          "SEARCH FAILED"
-                      )
-
-                      print(
-                          result.stderr[-2000:]
-                      )
-
+                      print("REJECTED: metadata unavailable")
                       continue
 
-                  data = json.loads(
+                  info = json.loads(
                       result.stdout
                   )
 
-                  entries = (
-                      data.get("entries")
-                      or []
+                  duration = (
+                      info.get("duration")
                   )
+
+                  if duration is None:
+
+                      print(
+                          "REJECTED: duration unavailable"
+                      )
+                      continue
+
+                  if not (
+                      MIN_DURATION
+                      <= duration
+                      <= MAX_DURATION
+                  ):
+
+                      print(
+                          f"REJECTED: duration {duration:.1f}s"
+                      )
+                      continue
+
+                  video_formats = [
+                      fmt
+                      for fmt in (
+                          info.get("formats")
+                          or []
+                      )
+                      if fmt.get("vcodec")
+                      and fmt.get("vcodec")
+                      != "none"
+                  ]
+
+                  if not video_formats:
+
+                      print(
+                          "REJECTED: no video format"
+                      )
+                      continue
+
+                  relevance, matches, strong_matches = (
+                      relevance_score(info)
+                  )
+
+                  if not strong_matches:
+
+                      print(
+                          "REJECTED: weak animal relevance"
+                      )
+                      continue
+
+                  engagement = engagement_score(
+                      info
+                  )
+
+                  recency = recency_score(
+                      info
+                  )
+
+                  quality = quality_score(
+                      info
+                  )
+
+                  total = (
+                      relevance * 2
+                      + engagement
+                      + quality
+                      + recency
+                  )
+
+                  item = {
+                      "id": info.get("id"),
+                      "url": info.get(
+                          "webpage_url"
+                      ) or url,
+                      "title": info.get(
+                          "title"
+                      ),
+                      "description": (
+                          info.get(
+                              "description"
+                          )
+                          or ""
+                      ),
+                      "uploader": info.get(
+                          "uploader"
+                      ),
+                      "channel": info.get(
+                          "channel"
+                      ),
+                      "duration": duration,
+                      "upload_date": info.get(
+                          "upload_date"
+                      ),
+                      "view_count": info.get(
+                          "view_count"
+                      ),
+                      "like_count": info.get(
+                          "like_count"
+                      ),
+                      "comment_count": info.get(
+                          "comment_count"
+                      ),
+                      "relevance_score": relevance,
+                      "engagement_score": round(
+                          engagement,
+                          3
+                      ),
+                      "quality_score": quality,
+                      "recency_score": recency,
+                      "total_score": round(
+                          total,
+                          3
+                      ),
+                      "matches": matches,
+                      "strong_matches": (
+                          strong_matches
+                      ),
+                      "source_query": candidate[
+                          "query"
+                      ],
+                  }
+
+                  validated.append(item)
 
                   print(
-                      "Results:",
-                      len(entries)
+                      "ACCEPTED"
                   )
-
-                  for entry in entries:
-
-                      if not entry:
-                          continue
-
-                      video_id = entry.get(
-                          "id"
-                      )
-
-                      title = entry.get(
-                          "title"
-                      )
-
-                      uploader = entry.get(
-                          "uploader"
-                      )
-
-                      duration = entry.get(
-                          "duration"
-                      )
-
-                      url = entry.get(
-                          "webpage_url"
-                      )
-
-                      if not url and video_id:
-                          url = (
-                              "https://www.youtube.com/watch?v="
-                              + video_id
-                          )
-
-                      item = {
-                          "query": query,
-                          "id": video_id,
-                          "title": title,
-                          "uploader": uploader,
-                          "duration": duration,
-                          "url": url,
-                      }
-
-                      all_results.append(
-                          item
-                      )
-
-                      print()
-                      print(
-                          "TITLE:",
-                          title
-                      )
-                      print(
-                          "UPLOADER:",
-                          uploader
-                      )
-                      print(
-                          "DURATION:",
-                          duration
-                      )
-                      print(
-                          "URL:",
-                          url
-                      )
+                  print(
+                      "Title:",
+                      item["title"]
+                  )
+                  print(
+                      "Uploader:",
+                      item["uploader"]
+                  )
+                  print(
+                      "Duration:",
+                      f"{duration:.1f}s"
+                  )
+                  print(
+                      "Views:",
+                      item["view_count"]
+                  )
+                  print(
+                      "Likes:",
+                      item["like_count"]
+                  )
+                  print(
+                      "Comments:",
+                      item["comment_count"]
+                  )
+                  print(
+                      "Relevance:",
+                      relevance
+                  )
+                  print(
+                      "Total score:",
+                      round(total, 3)
+                  )
 
               except subprocess.TimeoutExpired:
 
                   print(
-                      "SEARCH TIMED OUT"
+                      "REJECTED: metadata timeout"
                   )
 
               except Exception as e:
 
                   print(
-                      "ERROR:",
+                      "REJECTED:",
                       repr(e)
                   )
 
-          # Deduplicate by video ID.
-          unique = {}
+          # ------------------------------------------------------------
+          # STEP 3: DEDUP + RANK
+          # ------------------------------------------------------------
 
-          for item in all_results:
+          unique_validated = {}
+
+          for item in validated:
 
               video_id = item.get("id")
 
               if video_id:
-                  unique[video_id] = item
+                  unique_validated[
+                      video_id
+                  ] = item
 
-          print()
-          print("=" * 70)
-          print("FINAL DISCOVERY RESULT")
-          print("=" * 70)
-
-          print(
-              "Raw results:",
-              len(all_results)
+          ranked = sorted(
+              unique_validated.values(),
+              key=lambda x: x.get(
+                  "total_score",
+                  0
+              ),
+              reverse=True
           )
 
-          print(
-              "Unique videos:",
-              len(unique)
-          )
+          selected = ranked[:MAX_SELECTED]
+
+          # ------------------------------------------------------------
+          # OUTPUT
+          # ------------------------------------------------------------
 
           with open(
-              "youtube_candidates.json",
+              "youtube_validated_candidates.json",
               "w",
               encoding="utf-8"
           ) as f:
 
               json.dump(
-                  list(unique.values()),
+                  ranked,
                   f,
                   ensure_ascii=False,
                   indent=2
               )
 
           with open(
-              "youtube_candidates.txt",
+              "youtube_selected_candidates.json",
               "w",
               encoding="utf-8"
           ) as f:
 
-              for item in unique.values():
-
-                  url = item.get("url")
-
-                  if url:
-                      f.write(
-                          url + "\n"
-                      )
+              json.dump(
+                  selected,
+                  f,
+                  ensure_ascii=False,
+                  indent=2
+              )
 
           print()
+          print("=" * 70)
+          print("FINAL RESULTS")
+          print("=" * 70)
           print(
-              "Saved: youtube_candidates.json"
+              "Discovered:",
+              len(discovered)
+          )
+          print(
+              "Validated:",
+              len(ranked)
+          )
+          print(
+              "Selected:",
+              len(selected)
           )
 
-          print(
-              "Saved: youtube_candidates.txt"
-          )
+          print()
+          print("=" * 70)
+          print("TOP SELECTED VIDEOS")
+          print("=" * 70)
 
-          if unique:
+          for index, item in enumerate(
+              selected,
+              start=1
+          ):
 
               print()
               print(
-                  "YOUTUBE DISCOVERY: YES"
+                  f"{index}. {item['title']}"
               )
-
-          else:
-
-              print()
               print(
-                  "YOUTUBE DISCOVERY: NO"
+                  "   Channel:",
+                  item["uploader"]
+              )
+              print(
+                  "   Duration:",
+                  f"{item['duration']:.1f}s"
+              )
+              print(
+                  "   Views:",
+                  item["view_count"]
+              )
+              print(
+                  "   Score:",
+                  item["total_score"]
+              )
+              print(
+                  "   URL:",
+                  item["url"]
               )
 
+          print()
+          print("=" * 70)
+          print("VALIDATION TEST COMPLETE")
+          print("=" * 70)
           PY
 
-      - name: Upload discovery results
+      - name: Upload validation results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: youtube-discovery-test
+          name: youtube-validation-results
           path: |
-            youtube_candidates.json
-            youtube_candidates.txt
+            youtube_validated_candidates.json
+            youtube_selected_candidates.json
           if-no-files-found: ignore
