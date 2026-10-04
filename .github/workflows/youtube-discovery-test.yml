@@ -1,10 +1,10 @@
-name: YouTube Discovery Diagnostic
+name: UTCutie Multi-Platform Source Test
 
 on:
   workflow_dispatch:
 
 jobs:
-  diagnose:
+  test-sources:
     runs-on: ubuntu-latest
 
     steps:
@@ -34,139 +34,66 @@ jobs:
           echo "Deno:"
           deno --version
 
-      - name: Discover YouTube candidates
+      - name: Test video sources
         run: |
           python - <<'PY'
           import json
+          import math
           import subprocess
+          from datetime import datetime, timezone
 
-          QUERIES = [
-              "funny dog",
-              "funny cat",
-              "cute puppy",
-              "cute kitten",
-              "funny pets",
-              "wholesome animals",
-              "animal friendship",
-              "animals being funny",
-          ]
 
-          discovered = {}
+          MIN_DURATION = 15
+          MAX_DURATION = 180
+          MAX_FILE_SIZE_MB = 48
 
-          for query in QUERIES:
-              print()
-              print("=" * 70)
-              print("SEARCH:", query)
-              print("=" * 70)
 
-              command = [
-                  "python",
-                  "-m",
-                  "yt_dlp",
-                  "--flat-playlist",
-                  "--dump-single-json",
-                  "--no-warnings",
-                  f"ytsearch15:{query}",
-              ]
+          # These are deliberately public, known video URLs.
+          # The purpose of this run is SOURCE COMPATIBILITY,
+          # not discovery or Telegram posting.
+          TEST_URLS = {
+              "youtube": [
+                  "https://www.youtube.com/watch?v=IT-tRPGUdUw",
+              ],
 
-              try:
-                  result = subprocess.run(
-                      command,
-                      capture_output=True,
-                      text=True,
-                      timeout=120,
-                  )
+              "x": [
+                  "https://x.com/garibansipsi/status/2054157848670605453",
+              ],
 
-                  if result.returncode != 0:
-                      print("SEARCH FAILED")
-                      print(result.stderr[-3000:])
-                      continue
+              # Public examples to test extractor/access behavior.
+              # If a URL changes or becomes unavailable, the report
+              # will simply record that fact.
+              "vimeo": [
+                  "https://vimeo.com/76979871",
+              ],
 
-                  data = json.loads(result.stdout)
+              "9gag": [
+                  "https://9gag.com/gag/aekR2jB",
+              ],
 
-                  entries = data.get("entries") or []
+              "tiktok": [
+                  "https://www.tiktok.com/@tiktok/video/6718335390845095173",
+              ],
 
-                  print("Results:", len(entries))
+              "instagram": [
+                  "https://www.instagram.com/p/CpX4fJ9vXxD/",
+              ],
 
-                  for entry in entries:
-                      if not entry:
-                          continue
+              "facebook": [
+                  "https://www.facebook.com/watch/?v=10153231379946729",
+              ],
+          }
 
-                      video_id = entry.get("id")
 
-                      if not video_id:
-                          continue
-
-                      url = (
-                          entry.get("webpage_url")
-                          or
-                          f"https://www.youtube.com/watch?v={video_id}"
-                      )
-
-                      discovered[video_id] = {
-                          "id": video_id,
-                          "url": url,
-                          "query": query,
-                      }
-
-              except Exception as e:
-                  print("SEARCH ERROR:", repr(e))
-
-          print()
-          print("=" * 70)
-          print("DISCOVERY SUMMARY")
-          print("=" * 70)
-          print("Unique discovered videos:", len(discovered))
-
-          with open(
-              "youtube_discovered_candidates.json",
-              "w",
-              encoding="utf-8"
-          ) as f:
-              json.dump(
-                  list(discovered.values()),
-                  f,
-                  ensure_ascii=False,
-                  indent=2
-              )
-
-          # Only diagnose the first 5 candidates.
-          test_candidates = list(discovered.values())[:5]
-
-          print()
-          print("=" * 70)
-          print("DIAGNOSTIC EXTRACTION")
-          print("=" * 70)
-          print("Testing:", len(test_candidates), "videos")
-
-          successful = 0
-
-          for index, candidate in enumerate(
-              test_candidates,
-              start=1
-          ):
-              url = candidate["url"]
-
-              print()
-              print("-" * 70)
-              print(
-                  f"TEST {index}/{len(test_candidates)}"
-              )
-              print("-" * 70)
-              print("URL:", url)
-
+          def run_ytdlp(url):
               command = [
                   "python",
                   "-m",
                   "yt_dlp",
 
                   "--no-playlist",
-
                   "--dump-single-json",
-
                   "--no-warnings",
-
-                  "--verbose",
 
                   "--js-runtimes",
                   "deno",
@@ -182,64 +109,586 @@ jobs:
                       timeout=120,
                   )
 
-                  print()
-                  print("RETURN CODE:", result.returncode)
+                  return {
+                      "returncode": result.returncode,
+                      "stdout": result.stdout,
+                      "stderr": result.stderr,
+                      "timeout": False,
+                  }
 
-                  print()
-                  print("----- STDOUT -----")
-                  print(result.stdout[-5000:])
+              except subprocess.TimeoutExpired as e:
 
-                  print()
-                  print("----- STDERR -----")
-                  print(result.stderr[-10000:])
+                  return {
+                      "returncode": None,
+                      "stdout": e.stdout or "",
+                      "stderr": e.stderr or "",
+                      "timeout": True,
+                  }
 
-                  if result.returncode == 0:
-                      successful += 1
-                      print()
-                      print("RESULT: SUCCESS")
-                  else:
-                      print()
-                      print("RESULT: FAILURE")
 
-              except subprocess.TimeoutExpired:
-                  print()
-                  print("RESULT: TIMEOUT")
+          def get_video_formats(info):
 
-              except Exception as e:
-                  print()
-                  print(
-                      "RESULT: EXCEPTION",
-                      repr(e)
+              formats = info.get("formats") or []
+
+              return [
+                  fmt
+                  for fmt in formats
+                  if fmt.get("vcodec")
+                  and fmt.get("vcodec") != "none"
+              ]
+
+
+          def best_format_info(info):
+
+              formats = get_video_formats(info)
+
+              if not formats:
+                  return None
+
+              def score(fmt):
+
+                  width = fmt.get("width") or 0
+                  height = fmt.get("height") or 0
+
+                  filesize = (
+                      fmt.get("filesize")
+                      or fmt.get("filesize_approx")
+                      or 0
                   )
 
-          print()
+                  return (
+                      width * height,
+                      filesize,
+                  )
+
+              best = max(
+                  formats,
+                  key=score
+              )
+
+              width = best.get("width") or 0
+              height = best.get("height") or 0
+
+              filesize = (
+                  best.get("filesize")
+                  or best.get("filesize_approx")
+                  or 0
+              )
+
+              return {
+                  "format_id": best.get("format_id"),
+                  "ext": best.get("ext"),
+                  "protocol": best.get("protocol"),
+                  "width": width,
+                  "height": height,
+                  "filesize": filesize,
+                  "filesize_mb": (
+                      round(
+                          filesize / 1024 / 1024,
+                          2
+                      )
+                      if filesize
+                      else None
+                  ),
+              }
+
+
+          def extract_error(stderr):
+
+              if not stderr:
+                  return "Unknown extraction error."
+
+              lines = [
+                  line.strip()
+                  for line in stderr.splitlines()
+                  if line.strip()
+              ]
+
+              interesting = []
+
+              for line in lines:
+
+                  if (
+                      "ERROR:" in line
+                      or
+                      "WARNING:" in line
+                      or
+                      "LOGIN_REQUIRED" in line
+                      or
+                      "Sign in" in line
+                      or
+                      "Unsupported" in line
+                      or
+                      "403" in line
+                      or
+                      "404" in line
+                      or
+                      "Forbidden" in line
+                  ):
+                      interesting.append(line)
+
+              if interesting:
+                  return " | ".join(
+                      interesting[-5:]
+                  )
+
+              return lines[-1][-1000:]
+
+
+          def classify(info):
+
+              duration = info.get("duration")
+
+              if duration is None:
+                  duration_status = "UNKNOWN"
+              elif MIN_DURATION <= duration <= MAX_DURATION:
+                  duration_status = "PASS"
+              else:
+                  duration_status = "FAIL"
+
+              formats = get_video_formats(info)
+
+              video_status = (
+                  "PASS"
+                  if formats
+                  else
+                  "FAIL"
+              )
+
+              best = best_format_info(info)
+
+              filesize_status = "UNKNOWN"
+
+              if best:
+                  filesize_mb = best.get(
+                      "filesize_mb"
+                  )
+
+                  if filesize_mb is not None:
+
+                      filesize_status = (
+                          "PASS"
+                          if filesize_mb
+                          <= MAX_FILE_SIZE_MB
+                          else
+                          "FAIL"
+                      )
+
+              usable = (
+                  duration_status == "PASS"
+                  and
+                  video_status == "PASS"
+                  and
+                  filesize_status != "FAIL"
+              )
+
+              return {
+                  "duration_status": duration_status,
+                  "video_status": video_status,
+                  "filesize_status": filesize_status,
+                  "usable": usable,
+                  "best_format": best,
+              }
+
+
+          results = []
+
+
           print("=" * 70)
-          print("DIAGNOSTIC SUMMARY")
+          print("UTCUTIE MULTI-PLATFORM SOURCE TEST")
           print("=" * 70)
+
           print(
-              "Candidates discovered:",
-              len(discovered)
+              "Duration requirement:",
+              f"{MIN_DURATION}-{MAX_DURATION}s"
           )
+
           print(
-              "Candidates tested:",
-              len(test_candidates)
+              "Target maximum file size:",
+              f"{MAX_FILE_SIZE_MB} MB"
           )
-          print(
-              "Successful extractions:",
-              successful
-          )
+
+
+          for platform, urls in TEST_URLS.items():
+
+              print()
+              print("#" * 70)
+              print(
+                  "PLATFORM:",
+                  platform.upper()
+              )
+              print("#" * 70)
+
+              for url in urls:
+
+                  print()
+                  print("-" * 70)
+                  print("URL:", url)
+                  print("-" * 70)
+
+                  raw = run_ytdlp(url)
+
+                  result_item = {
+                      "platform": platform,
+                      "url": url,
+                      "success": False,
+                      "usable": False,
+                      "title": None,
+                      "description": None,
+                      "uploader": None,
+                      "duration": None,
+                      "upload_date": None,
+                      "view_count": None,
+                      "like_count": None,
+                      "comment_count": None,
+                      "extractor": None,
+                      "formats_count": 0,
+                      "duration_status": "UNKNOWN",
+                      "video_status": "UNKNOWN",
+                      "filesize_status": "UNKNOWN",
+                      "best_format": None,
+                      "error": None,
+                  }
+
+
+                  if raw["timeout"]:
+
+                      result_item["error"] = (
+                          "Extraction timed out."
+                      )
+
+                      print(
+                          "RESULT: TIMEOUT"
+                      )
+
+                      results.append(
+                          result_item
+                      )
+
+                      continue
+
+
+                  if raw["returncode"] != 0:
+
+                      error = extract_error(
+                          raw["stderr"]
+                      )
+
+                      result_item["error"] = error
+
+                      print(
+                          "RESULT: EXTRACTION FAILED"
+                      )
+
+                      print(
+                          "ERROR:",
+                          error
+                      )
+
+                      results.append(
+                          result_item
+                      )
+
+                      continue
+
+
+                  try:
+
+                      info = json.loads(
+                          raw["stdout"]
+                      )
+
+                  except Exception as e:
+
+                      result_item["error"] = (
+                          "Invalid JSON from yt-dlp: "
+                          + repr(e)
+                      )
+
+                      print(
+                          "RESULT: INVALID JSON"
+                      )
+
+                      results.append(
+                          result_item
+                      )
+
+                      continue
+
+
+                  classification = classify(
+                      info
+                  )
+
+
+                  result_item.update({
+                      "success": True,
+                      "usable": classification[
+                          "usable"
+                      ],
+                      "title": info.get(
+                          "title"
+                      ),
+                      "description": (
+                          info.get(
+                              "description"
+                          )
+                          or ""
+                      ),
+                      "uploader": (
+                          info.get(
+                              "uploader"
+                          )
+                          or
+                          info.get(
+                              "channel"
+                          )
+                      ),
+                      "duration": info.get(
+                          "duration"
+                      ),
+                      "upload_date": info.get(
+                          "upload_date"
+                      ),
+                      "view_count": info.get(
+                          "view_count"
+                      ),
+                      "like_count": info.get(
+                          "like_count"
+                      ),
+                      "comment_count": info.get(
+                          "comment_count"
+                      ),
+                      "extractor": info.get(
+                          "extractor"
+                      ),
+                      "formats_count": len(
+                          get_video_formats(info)
+                      ),
+                      "duration_status": (
+                          classification[
+                              "duration_status"
+                          ]
+                      ),
+                      "video_status": (
+                          classification[
+                              "video_status"
+                          ]
+                      ),
+                      "filesize_status": (
+                          classification[
+                              "filesize_status"
+                          ]
+                      ),
+                      "best_format": (
+                          classification[
+                              "best_format"
+                          ]
+                      ),
+                  })
+
+
+                  print(
+                      "RESULT: EXTRACTION SUCCESS"
+                  )
+
+                  print(
+                      "Title:",
+                      result_item["title"]
+                  )
+
+                  print(
+                      "Uploader:",
+                      result_item["uploader"]
+                  )
+
+                  print(
+                      "Duration:",
+                      result_item["duration"]
+                  )
+
+                  print(
+                      "Views:",
+                      result_item["view_count"]
+                  )
+
+                  print(
+                      "Likes:",
+                      result_item["like_count"]
+                  )
+
+                  print(
+                      "Comments:",
+                      result_item["comment_count"]
+                  )
+
+                  print(
+                      "Video formats:",
+                      result_item[
+                          "formats_count"
+                      ]
+                  )
+
+                  print(
+                      "Duration:",
+                      result_item[
+                          "duration_status"
+                      ]
+                  )
+
+                  print(
+                      "Video access:",
+                      result_item[
+                          "video_status"
+                      ]
+                  )
+
+                  print(
+                      "File size:",
+                      result_item[
+                          "filesize_status"
+                      ]
+                  )
+
+                  print(
+                      "USABLE:",
+                      result_item[
+                          "usable"
+                      ]
+                  )
+
+
+                  results.append(
+                      result_item
+                  )
+
+
+          with open(
+              "source_test_results.json",
+              "w",
+              encoding="utf-8"
+          ) as f:
+
+              json.dump(
+                  results,
+                  f,
+                  ensure_ascii=False,
+                  indent=2
+              )
+
 
           print()
           print("=" * 70)
-          print("DIAGNOSTIC COMPLETE")
+          print("FINAL SOURCE REPORT")
           print("=" * 70)
+
+
+          platforms = sorted(
+              set(
+                  item["platform"]
+                  for item in results
+              )
+          )
+
+
+          for platform in platforms:
+
+              platform_results = [
+                  item
+                  for item in results
+                  if item["platform"]
+                  == platform
+              ]
+
+              successful = sum(
+                  1
+                  for item in platform_results
+                  if item["success"]
+              )
+
+              usable = sum(
+                  1
+                  for item in platform_results
+                  if item["usable"]
+              )
+
+              print()
+              print(
+                  f"{platform.upper():12}"
+                  f" extraction={successful}/"
+                  f"{len(platform_results)}"
+                  f" usable={usable}/"
+                  f"{len(platform_results)}"
+              )
+
+
+          print()
+          print("=" * 70)
+          print("DETAILED RESULTS")
+          print("=" * 70)
+
+
+          for item in results:
+
+              print()
+              print(
+                  f"[{item['platform'].upper()}]"
+              )
+
+              print(
+                  "URL:",
+                  item["url"]
+              )
+
+              print(
+                  "Extraction:",
+                  item["success"]
+              )
+
+              print(
+                  "Usable:",
+                  item["usable"]
+              )
+
+              if item["error"]:
+                  print(
+                      "Error:",
+                      item["error"]
+                  )
+
+              else:
+                  print(
+                      "Title:",
+                      item["title"]
+                  )
+
+                  print(
+                      "Duration:",
+                      item["duration"]
+                  )
+
+                  print(
+                      "Formats:",
+                      item["formats_count"]
+                  )
+
+                  print(
+                      "Best format:",
+                      item["best_format"]
+                  )
+
+
+          print()
+          print("=" * 70)
+          print("SOURCE TEST COMPLETE")
+          print("=" * 70)
+
           PY
 
-      - name: Upload discovered candidates
+      - name: Upload source test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: youtube-diagnostic-results
-          path: |
-            youtube_discovered_candidates.json
+          name: utcutie-source-test-results
+          path: source_test_results.json
           if-no-files-found: ignore
