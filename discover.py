@@ -1,7 +1,8 @@
+import html
 import re
 import time
 from pathlib import Path
-from urllib.parse import quote_plus
+from urllib.parse import parse_qs, unquote, urlparse
 
 import requests
 
@@ -13,21 +14,21 @@ import requests
 MAX_RESULTS_PER_QUERY = 20
 
 SEARCH_QUERIES = [
-    'site:x.com "funny dog" "status"',
-    'site:x.com "cute dog" "status"',
-    'site:x.com "funny cat" "status"',
-    'site:x.com "cute cat" "status"',
-    'site:x.com "funny puppy" "status"',
-    'site:x.com "cute puppy" "status"',
-    'site:x.com "funny kitten" "status"',
-    'site:x.com "cute kitten" "status"',
-    'site:x.com "funny pet" "status"',
-    'site:x.com "cute pet" "status"',
-    'site:x.com "funny animal" "status"',
-    'site:x.com "cute animal" "status"',
-    'site:x.com "wholesome animal" "status"',
-    'site:x.com "heartwarming animal" "status"',
-    'site:x.com "animal friendship" "status"',
+    'site:x.com "funny dog"',
+    'site:x.com "cute dog"',
+    'site:x.com "funny cat"',
+    'site:x.com "cute cat"',
+    'site:x.com "funny puppy"',
+    'site:x.com "cute puppy"',
+    'site:x.com "funny kitten"',
+    'site:x.com "cute kitten"',
+    'site:x.com "funny pet"',
+    'site:x.com "cute pet"',
+    'site:x.com "funny animal"',
+    'site:x.com "cute animal"',
+    'site:x.com "wholesome animal"',
+    'site:x.com "heartwarming animal"',
+    'site:x.com "animal friendship"',
 ]
 
 
@@ -60,34 +61,183 @@ session.headers.update(
 
 
 # ------------------------------------------------------------
-# X URL EXTRACTION
+# X URL REGEX
 # ------------------------------------------------------------
 
 X_URL_PATTERN = re.compile(
     r"https?://(?:www\.)?x\.com/"
-    r"[A-Za-z0-9_]+/status/\d+"
+    r"[A-Za-z0-9_]+/status/\d+",
+    re.IGNORECASE
 )
 
 
-def extract_x_urls(text):
+# ------------------------------------------------------------
+# TEXT CLEANING
+# ------------------------------------------------------------
+
+def decode_text(text):
     """
-    Extract unique X status URLs from arbitrary HTML/text.
+    Repeatedly decode common HTML and URL encodings.
     """
 
     if not text:
+        return ""
+
+    result = text
+
+    for _ in range(3):
+        result = html.unescape(result)
+        result = unquote(result)
+
+    return result
+
+
+# ------------------------------------------------------------
+# URL NORMALIZATION
+# ------------------------------------------------------------
+
+def normalize_x_url(url):
+    """
+    Convert different representations of an X status URL
+    into one canonical URL.
+    """
+
+    if not url:
+        return None
+
+    value = decode_text(url)
+
+    match = X_URL_PATTERN.search(value)
+
+    if not match:
+        return None
+
+    matched = match.group(0)
+
+    parsed = urlparse(matched)
+
+    if not parsed.netloc:
+        return None
+
+    path_parts = parsed.path.strip("/").split("/")
+
+    if len(path_parts) < 3:
+        return None
+
+    username = path_parts[0]
+    status_word = path_parts[1]
+    status_id = path_parts[2]
+
+    if status_word.lower() != "status":
+        return None
+
+    if not status_id.isdigit():
+        return None
+
+    return (
+        f"https://x.com/"
+        f"{username}/status/{status_id}"
+    )
+
+
+# ------------------------------------------------------------
+# EXTRACT FROM HTML
+# ------------------------------------------------------------
+
+def extract_x_urls(html_text):
+    """
+    Extract X status URLs from:
+
+    1. raw HTML
+    2. href attributes
+    3. encoded/escaped URLs
+    4. search-engine redirect URLs
+    """
+
+    if not html_text:
         return []
 
-    matches = X_URL_PATTERN.findall(text)
+    candidates = []
 
-    urls = []
+    def add_candidate(value):
+        if not value:
+            return
 
-    for url in matches:
-        clean_url = url.rstrip(".,);]}>\"'")
+        decoded = decode_text(value)
 
-        if clean_url not in urls:
-            urls.append(clean_url)
+        # Direct X URL
+        direct = normalize_x_url(decoded)
 
-    return urls
+        if direct:
+            if direct not in candidates:
+                candidates.append(direct)
+
+        # Look inside the decoded string
+        matches = X_URL_PATTERN.findall(decoded)
+
+        for match in matches:
+            normalized = normalize_x_url(match)
+
+            if normalized and normalized not in candidates:
+                candidates.append(normalized)
+
+        # Try query parameters such as:
+        # ?url=https%3A%2F%2Fx.com%2F...
+        try:
+            parsed = urlparse(decoded)
+
+            query = parse_qs(parsed.query)
+
+            for values in query.values():
+                for value in values:
+                    normalized = normalize_x_url(value)
+
+                    if (
+                        normalized
+                        and normalized not in candidates
+                    ):
+                        candidates.append(normalized)
+
+        except Exception:
+            pass
+
+    # --------------------------------------------------------
+    # Entire HTML
+    # --------------------------------------------------------
+
+    add_candidate(html_text)
+
+    # --------------------------------------------------------
+    # href attributes
+    # --------------------------------------------------------
+
+    href_pattern = re.compile(
+        r'''href\s*=\s*["']([^"']+)["']''',
+        re.IGNORECASE
+    )
+
+    for match in href_pattern.finditer(html_text):
+        add_candidate(match.group(1))
+
+    # --------------------------------------------------------
+    # Quoted strings
+    # --------------------------------------------------------
+
+    quoted_pattern = re.compile(
+        r'''["']([^"']{0,2000})["']'''
+    )
+
+    for match in quoted_pattern.finditer(html_text):
+        value = match.group(1)
+
+        if (
+            "x.com" in value.lower()
+            or "twitter.com" in value.lower()
+            or "status" in value.lower()
+        ):
+            add_candidate(value)
+
+    return candidates
 
 
 # ------------------------------------------------------------
@@ -95,14 +245,6 @@ def extract_x_urls(text):
 # ------------------------------------------------------------
 
 def search_bing(query):
-    """
-    Search Bing's public HTML results.
-
-    This is NOT the Bing API.
-    It uses the public search page and therefore remains
-    best-effort.
-    """
-
     print("\n" + "=" * 70)
     print("BING SEARCH")
     print("=" * 70)
@@ -110,7 +252,7 @@ def search_bing(query):
 
     url = (
         "https://www.bing.com/search?q="
-        + quote_plus(query)
+        + requests.utils.quote(query)
         + "&count="
         + str(MAX_RESULTS_PER_QUERY)
     )
@@ -132,7 +274,9 @@ def search_bing(query):
 
     urls = extract_x_urls(response.text)
 
-    print(f"Found {len(urls)} X URLs")
+    print(
+        f"Bing extracted {len(urls)} X URLs"
+    )
 
     return urls
 
@@ -142,13 +286,6 @@ def search_bing(query):
 # ------------------------------------------------------------
 
 def search_google(query):
-    """
-    Search Google's public HTML endpoint.
-
-    This is also best-effort and may return fewer results
-    depending on Google's anti-automation behavior.
-    """
-
     print("\n" + "=" * 70)
     print("GOOGLE SEARCH")
     print("=" * 70)
@@ -156,7 +293,7 @@ def search_google(query):
 
     url = (
         "https://www.google.com/search?q="
-        + quote_plus(query)
+        + requests.utils.quote(query)
         + "&num="
         + str(MAX_RESULTS_PER_QUERY)
     )
@@ -178,34 +315,11 @@ def search_google(query):
 
     urls = extract_x_urls(response.text)
 
-    print(f"Found {len(urls)} X URLs")
-
-    return urls
-
-
-# ------------------------------------------------------------
-# URL NORMALIZATION
-# ------------------------------------------------------------
-
-def normalize_x_url(url):
-    """
-    Normalize an X status URL so the same post is not
-    counted multiple times.
-    """
-
-    match = re.search(
-        r"https?://(?:www\.)?x\.com/"
-        r"([A-Za-z0-9_]+)/status/(\d+)",
-        url
+    print(
+        f"Google extracted {len(urls)} X URLs"
     )
 
-    if not match:
-        return None
-
-    username = match.group(1)
-    status_id = match.group(2)
-
-    return f"https://x.com/{username}/status/{status_id}"
+    return urls
 
 
 # ------------------------------------------------------------
@@ -213,10 +327,6 @@ def normalize_x_url(url):
 # ------------------------------------------------------------
 
 def collect_candidates():
-    """
-    Run all discovery queries against both search engines.
-    """
-
     candidates = []
 
     for index, query in enumerate(
@@ -231,33 +341,29 @@ def collect_candidates():
         )
         print("#" * 70)
 
-        # ----------------------------
+        # ----------------------------------------------------
         # Bing
-        # ----------------------------
+        # ----------------------------------------------------
 
         bing_urls = search_bing(query)
 
         for url in bing_urls:
 
-            normalized = normalize_x_url(url)
-
-            if normalized and normalized not in candidates:
-                candidates.append(normalized)
+            if url not in candidates:
+                candidates.append(url)
 
         time.sleep(2)
 
-        # ----------------------------
+        # ----------------------------------------------------
         # Google
-        # ----------------------------
+        # ----------------------------------------------------
 
         google_urls = search_google(query)
 
         for url in google_urls:
 
-            normalized = normalize_x_url(url)
-
-            if normalized and normalized not in candidates:
-                candidates.append(normalized)
+            if url not in candidates:
+                candidates.append(url)
 
         time.sleep(2)
 
@@ -265,13 +371,10 @@ def collect_candidates():
 
 
 # ------------------------------------------------------------
-# SAVE RESULTS
+# SAVE
 # ------------------------------------------------------------
 
 def save_candidates(urls):
-    """
-    Save candidate URLs for the next pipeline stage.
-    """
 
     OUTPUT_FILE.write_text(
         "\n".join(urls),
