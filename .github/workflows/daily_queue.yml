@@ -1,0 +1,257 @@
+name: UTCutie Daily Queue Preparation
+
+on:
+  workflow_dispatch:
+
+  # GitHub cron is UTC.
+  # We run at both 08:00 and 09:00 UTC and let the script
+  # continue only when it is actually 10:00 in Europe/Paris.
+  #
+  # This handles both daylight-saving and winter time:
+  # Summer: 10:00 CEST = 08:00 UTC
+  # Winter: 10:00 CET  = 09:00 UTC
+  schedule:
+    - cron: "0 8 * * *"
+    - cron: "0 9 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  prepare-daily-queue:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Check local time
+        id: time_check
+        run: |
+          python - <<'PY'
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+
+          now = datetime.now(ZoneInfo("Europe/Paris"))
+
+          print("Current UTC time:")
+          print(datetime.now(ZoneInfo("UTC")).isoformat())
+
+          print("Europe/Paris time:")
+          print(now.isoformat())
+
+          if now.hour == 10:
+              print("LOCAL_10AM=true")
+          else:
+              print("LOCAL_10AM=false")
+          PY
+
+          LOCAL_HOUR=$(TZ=Europe/Paris date +%H)
+
+          if [ "$LOCAL_HOUR" = "10" ]; then
+            echo "run_now=true" >> "$GITHUB_OUTPUT"
+            echo "It is 10:00 in Europe/Paris. Continuing."
+          else
+            echo "run_now=false" >> "$GITHUB_OUTPUT"
+            echo "This is the alternate UTC trigger. It is not 10:00 in Europe/Paris."
+            echo "The workflow will stop without changing anything."
+          fi
+
+      - name: Stop if this is not the 10 AM trigger
+        if: steps.time_check.outputs.run_now != 'true'
+        run: |
+          echo "No queue preparation needed at this trigger."
+          exit 0
+
+      - name: Run video discovery
+        if: steps.time_check.outputs.run_now == 'true'
+        run: |
+          python mastodon_test.py
+
+      - name: Build daily queue
+        if: steps.time_check.outputs.run_now == 'true'
+        run: |
+          python - <<'PY'
+          import json
+          from datetime import datetime, timedelta
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          SOURCE = Path("selected_candidates.json")
+          OUTPUT = Path("daily_queue.json")
+
+          timezone = ZoneInfo("Europe/Paris")
+          now = datetime.now(timezone)
+          today = now.date()
+
+          if not SOURCE.exists():
+              raise SystemExit("ERROR: selected_candidates.json was not created.")
+
+          with SOURCE.open("r", encoding="utf-8") as f:
+              candidates = json.load(f)
+
+          if not isinstance(candidates, list):
+              raise SystemExit("ERROR: selected_candidates.json is not a list.")
+
+          # Hard safety limit.
+          candidates = candidates[:20]
+
+          queue = []
+
+          count = len(candidates)
+
+          if count == 0:
+              print("No suitable videos were selected.")
+          else:
+              start_time = datetime(
+                  today.year,
+                  today.month,
+                  today.day,
+                  11,
+                  0,
+                  0,
+                  tzinfo=timezone,
+              )
+
+              end_time = datetime(
+                  today.year,
+                  today.month,
+                  today.day,
+                  23,
+                  0,
+                  0,
+                  tzinfo=timezone,
+              )
+
+              if count == 1:
+                  scheduled_times = [start_time]
+              else:
+                  total_seconds = (
+                      end_time - start_time
+                  ).total_seconds()
+
+                  interval = total_seconds / (count - 1)
+
+                  scheduled_times = [
+                      start_time + timedelta(seconds=interval * i)
+                      for i in range(count)
+                  ]
+
+              for index, candidate in enumerate(candidates, start=1):
+                  media_url = candidate.get("media_url")
+
+                  if not media_url:
+                      print(
+                          f"WARNING: Candidate {index} has no media_url. "
+                          "Skipping."
+                      )
+                      continue
+
+                  source_caption = (
+                      candidate.get("caption")
+                      or candidate.get("clean_caption")
+                      or ""
+                  ).strip()
+
+                  # The discovery script already removes hashtags and
+                  # cleans the caption. We only add the channel handle here.
+                  if source_caption:
+                      final_caption = f"{source_caption}\n\n@utcutie"
+                  else:
+                      final_caption = "@utcutie"
+
+                  # Telegram captions have a 1024-character limit.
+                  final_caption = final_caption[:1024]
+
+                  scheduled_at = scheduled_times[index - 1]
+
+                  item = {
+                      "queue_id": index,
+                      "scheduled_at": scheduled_at.isoformat(),
+                      "status": "pending",
+                      "media_url": media_url,
+                      "caption": final_caption,
+                      "source_url": candidate.get("status_url", ""),
+                      "duration": candidate.get("duration"),
+                      "file_size": candidate.get("file_size"),
+                      "score": candidate.get("score"),
+                      "instance": candidate.get("instance"),
+                      "account": candidate.get("account"),
+                  }
+
+                  queue.append(item)
+
+          payload = {
+              "created_at": now.isoformat(),
+              "timezone": "Europe/Paris",
+              "target_channel": "@utcutie",
+              "test_chat_id": "333331538",
+              "max_items": 20,
+              "selected_count": len(queue),
+              "publishing_window": {
+                  "start": "11:00",
+                  "end": "23:00",
+              },
+              "queue": queue,
+          }
+
+          with OUTPUT.open("w", encoding="utf-8") as f:
+              json.dump(payload, f, ensure_ascii=False, indent=2)
+
+          print()
+          print("=" * 70)
+          print("DAILY QUEUE CREATED")
+          print("=" * 70)
+          print(f"Date: {today.isoformat()}")
+          print(f"Timezone: Europe/Paris")
+          print(f"Selected videos: {len(queue)}")
+          print()
+
+          for item in queue:
+              print(
+                  f"{item['queue_id']:02d} | "
+                  f"{item['scheduled_at']} | "
+                  f"{item['duration']} sec | "
+                  f"score={item['score']}"
+              )
+
+          print()
+          print(f"Saved to: {OUTPUT}")
+          PY
+
+      - name: Show daily queue
+        if: steps.time_check.outputs.run_now == 'true'
+        run: |
+          echo "================ DAILY QUEUE ================"
+          cat daily_queue.json
+          echo "============================================="
+
+      - name: Commit daily queue
+        if: steps.time_check.outputs.run_now == 'true'
+        run: |
+          git config user.name "UTCutie Bot"
+          git config user.email "actions@users.noreply.github.com"
+
+          git add daily_queue.json
+
+          if git diff --cached --quiet; then
+            echo "No queue changes to commit."
+          else
+            git commit -m "Update daily UTCutie queue"
+            git push
+          fi
