@@ -1,7 +1,7 @@
 import json
 import re
 import requests
-from datetime import datetime, timezone
+
 
 INSTANCES = [
     "mastodon.social",
@@ -26,6 +26,7 @@ HASHTAGS = [
 MAX_PER_HASHTAG = 40
 
 session = requests.Session()
+
 session.headers.update({
     "User-Agent": "UTCutie/1.0 public video discovery"
 })
@@ -42,22 +43,40 @@ def clean_html(text):
     return text.strip()
 
 
+def safe_dict(value):
+    if isinstance(value, dict):
+        return value
+
+    return {}
+
+
 def is_video_attachment(attachment):
+    attachment = safe_dict(attachment)
+
     media_type = attachment.get("type", "")
 
     if media_type == "video":
         return True
 
-    mime = (
-        attachment.get("meta", {})
-        .get("original", {})
-        .get("mime", "")
+    meta = safe_dict(
+        attachment.get("meta")
     )
 
-    return mime.startswith("video/")
+    original = safe_dict(
+        meta.get("original")
+    )
+
+    mime = original.get("mime", "")
+
+    if isinstance(mime, str) and mime.startswith("video/"):
+        return True
+
+    return False
 
 
 def extract_video_url(attachment):
+    attachment = safe_dict(attachment)
+
     url = attachment.get("url")
 
     if url:
@@ -72,8 +91,15 @@ def extract_video_url(attachment):
 
 
 def duration_from_attachment(attachment):
-    meta = attachment.get("meta", {})
-    original = meta.get("original", {})
+    attachment = safe_dict(attachment)
+
+    meta = safe_dict(
+        attachment.get("meta")
+    )
+
+    original = safe_dict(
+        meta.get("original")
+    )
 
     duration = original.get("duration")
 
@@ -127,40 +153,148 @@ def get_statuses(instance, hashtag):
         return []
 
 
+def build_candidate(
+    instance,
+    status,
+    attachment
+):
+    status = safe_dict(status)
+    attachment = safe_dict(attachment)
+
+    account = safe_dict(
+        status.get("account")
+    )
+
+    return {
+        "source": "mastodon",
+        "instance": instance,
+        "status_id": status.get("id"),
+        "status_url": (
+            status.get("url")
+            or status.get("uri")
+        ),
+        "author": (
+            account.get("display_name")
+            or account.get("username")
+            or ""
+        ),
+        "created_at": status.get(
+            "created_at"
+        ),
+        "caption": clean_html(
+            status.get("content", "")
+        ),
+        "reblogs": status.get(
+            "reblogs_count",
+            0
+        ),
+        "favourites": status.get(
+            "favourites_count",
+            0
+        ),
+        "replies": status.get(
+            "replies_count",
+            0
+        ),
+        "video_url": extract_video_url(
+            attachment
+        ),
+        "duration": duration_from_attachment(
+            attachment
+        ),
+        "mime": (
+            safe_dict(
+                safe_dict(
+                    attachment.get("meta")
+                ).get("original")
+            ).get("mime")
+        ),
+    }
+
+
+def engagement_score(candidate):
+    try:
+        favourites = int(
+            candidate.get(
+                "favourites",
+                0
+            ) or 0
+        )
+    except (TypeError, ValueError):
+        favourites = 0
+
+    try:
+        reblogs = int(
+            candidate.get(
+                "reblogs",
+                0
+            ) or 0
+        )
+    except (TypeError, ValueError):
+        reblogs = 0
+
+    try:
+        replies = int(
+            candidate.get(
+                "replies",
+                0
+            ) or 0
+        )
+    except (TypeError, ValueError):
+        replies = 0
+
+    return (
+        favourites
+        + reblogs * 2
+        + replies
+    )
+
+
 def main():
     candidates = []
     seen = set()
 
+    total_statuses = 0
+    total_attachments = 0
+    total_video_attachments = 0
+
     for instance in INSTANCES:
+
         for hashtag in HASHTAGS:
+
             statuses = get_statuses(
                 instance,
                 hashtag
             )
 
+            total_statuses += len(statuses)
+
             for status in statuses:
-                status_id = status.get("id")
-
-                if not status_id:
-                    continue
-
-                status_url = (
-                    status.get("url")
-                    or status.get("uri")
-                )
 
                 attachments = status.get(
                     "media_attachments",
                     []
                 )
 
-                video_attachments = [
-                    a
-                    for a in attachments
-                    if is_video_attachment(a)
-                ]
+                if not isinstance(
+                    attachments,
+                    list
+                ):
+                    continue
 
-                for attachment in video_attachments:
+                total_attachments += len(
+                    attachments
+                )
+
+                for attachment in attachments:
+
+                    if not is_video_attachment(
+                        attachment
+                    ):
+                        continue
+
+                    total_video_attachments += 1
+
                     video_url = extract_video_url(
                         attachment
                     )
@@ -173,52 +307,41 @@ def main():
 
                     seen.add(video_url)
 
-                    account = status.get(
-                        "account",
-                        {}
+                    candidate = build_candidate(
+                        instance,
+                        status,
+                        attachment
                     )
 
-                    candidate = {
-                        "source": "mastodon",
-                        "instance": instance,
-                        "status_id": status_id,
-                        "status_url": status_url,
-                        "author": (
-                            account.get("display_name")
-                            or account.get("username")
-                            or ""
-                        ),
-                        "created_at": status.get(
-                            "created_at"
-                        ),
-                        "caption": clean_html(
-                            status.get("content", "")
-                        ),
-                        "reblogs": status.get(
-                            "reblogs_count",
-                            0
-                        ),
-                        "favourites": status.get(
-                            "favourites_count",
-                            0
-                        ),
-                        "replies": status.get(
-                            "replies_count",
-                            0
-                        ),
-                        "video_url": video_url,
-                        "duration": duration_from_attachment(
-                            attachment
-                        ),
-                        "mime": (
-                            attachment
-                            .get("meta", {})
-                            .get("original", {})
-                            .get("mime")
-                        ),
-                    }
+                    candidates.append(
+                        candidate
+                    )
 
-                    candidates.append(candidate)
+    valid_duration = []
+
+    for candidate in candidates:
+
+        duration = candidate.get(
+            "duration"
+        )
+
+        if duration is None:
+            continue
+
+        if 15 <= duration <= 180:
+            valid_duration.append(
+                candidate
+            )
+
+    candidates.sort(
+        key=engagement_score,
+        reverse=True
+    )
+
+    valid_duration.sort(
+        key=engagement_score,
+        reverse=True
+    )
 
     print()
     print("=" * 60)
@@ -226,37 +349,32 @@ def main():
     print("=" * 60)
 
     print(
+        f"Statuses retrieved: "
+        f"{total_statuses}"
+    )
+
+    print(
+        f"Media attachments: "
+        f"{total_attachments}"
+    )
+
+    print(
+        f"Video attachments: "
+        f"{total_video_attachments}"
+    )
+
+    print(
         f"Unique video candidates: "
         f"{len(candidates)}"
     )
-
-    valid_duration = []
-
-    for candidate in candidates:
-        duration = candidate.get("duration")
-
-        if duration is None:
-            continue
-
-        if 15 <= duration <= 180:
-            valid_duration.append(candidate)
 
     print(
         f"15–180 second candidates: "
         f"{len(valid_duration)}"
     )
 
-    candidates.sort(
-        key=lambda x: (
-            x.get("favourites", 0)
-            + x.get("reblogs", 0) * 2
-            + x.get("replies", 0)
-        ),
-        reverse=True
-    )
-
     print()
-    print("TOP CANDIDATES")
+    print("TOP VIDEO CANDIDATES")
     print("-" * 60)
 
     for index, candidate in enumerate(
@@ -269,6 +387,31 @@ def main():
             f"❤️ {candidate.get('favourites', 0)} | "
             f"🔁 {candidate.get('reblogs', 0)} | "
             f"💬 {candidate.get('replies', 0)}"
+        )
+
+        print(
+            f"   {candidate.get('video_url')}"
+        )
+
+        print(
+            f"   {candidate.get('caption', '')[:160]}"
+        )
+
+        print()
+
+    print()
+    print("VALID 15–180 SECOND VIDEOS")
+    print("-" * 60)
+
+    for index, candidate in enumerate(
+        valid_duration[:20],
+        start=1
+    ):
+        print(
+            f"{index}. "
+            f"{candidate.get('duration')} sec | "
+            f"❤️ {candidate.get('favourites', 0)} | "
+            f"🔁 {candidate.get('reblogs', 0)}"
         )
 
         print(
