@@ -1,4 +1,4 @@
-name: UTCutie Targeted Lemmy Animal Harvest
+name: UTCutie Lemmy Animal Harvest
 
 on:
   workflow_dispatch:
@@ -6,246 +6,90 @@ on:
 jobs:
   harvest:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
 
     steps:
-      - name: Install dependencies
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install yt-dlp
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -U yt-dlp
+          python -m pip install yt-dlp
 
+      - name: Clone socialfetch
+        run: |
           git clone --depth 1 https://github.com/EdgeAIG/socialfetch.git
-
           cd socialfetch
           chmod +x socialfetch
 
-      - name: Harvest animal communities
+      - name: Harvest recent Lemmy animal communities
+        shell: bash
         run: |
-          cd socialfetch
+          set -e
 
           echo "============================================================"
-          echo "UTCUTIE TARGETED ANIMAL COMMUNITY HARVEST"
+          echo "UTCUTIE LEMMY DIRECT POST HARVEST"
           echo "============================================================"
 
-          communities=(
-            "aww@lemmy.ml"
-            "aww@lemmy.world"
-            "cat@lemmy.world"
-            "cats@midwest.social"
-            "dogs@lemmy.world"
-            "lemmybewholesome@lemmy.world"
-          )
-
-          for community in "${communities[@]}"; do
-            echo ""
-            echo "============================================================"
-            echo "COMMUNITY: $community"
-            echo "============================================================"
-
-            ./socialfetch lemmy community "$community" \
-              --limit 30 \
-              --json || true
-
-            sleep 2
-          done
-
-      - name: Extract candidate media URLs
-        run: |
-          cd socialfetch
-
-          python - <<'PY'
+          python <<'PY'
           import json
           import re
           import subprocess
+          import sys
+          import urllib.parse
+          import urllib.request
           from pathlib import Path
 
-          communities = [
-              "aww@lemmy.ml",
-              "aww@lemmy.world",
-              "cat@lemmy.world",
-              "cats@midwest.social",
-              "dogs@lemmy.world",
-              "lemmybewholesome@lemmy.world",
+          COMMUNITIES = [
+              ("aww", "lemmy.ml"),
+              ("aww", "lemmy.world"),
+              ("cat", "lemmy.world"),
+              ("cats", "midwest.social"),
+              ("dogs", "lemmy.world"),
+              ("lemmybewholesome", "lemmy.world"),
           ]
 
-          all_posts = []
+          POSTS_PER_COMMUNITY = 50
+          MAX_DOWNLOAD_TESTS = 30
 
-          def run_fetch(community):
-              try:
-                  result = subprocess.run(
-                      [
-                          "./socialfetch",
-                          "lemmy",
-                          "community",
-                          community,
-                          "--limit",
-                          "30",
-                          "--json",
-                      ],
-                      capture_output=True,
-                      text=True,
-                      timeout=45,
-                  )
-
-                  if result.returncode != 0:
-                      print(
-                          f"FETCH FAILED: {community}"
-                      )
-                      print(
-                          result.stderr[-500:]
-                      )
-                      return []
-
-                  data = json.loads(result.stdout)
-                  payload = data.get("data")
-
-                  if isinstance(payload, dict):
-                      posts = (
-                          payload.get("posts")
-                          or payload.get("items")
-                          or []
-                      )
-                  elif isinstance(payload, list):
-                      posts = payload
-                  else:
-                      posts = []
-
-                  return posts
-
-              except Exception as e:
-                  print(
-                      f"ERROR fetching {community}: {e}"
-                  )
-                  return []
-
-          for community in communities:
-              posts = run_fetch(community)
-
-              print(
-                  f"{community}: "
-                  f"{len(posts)} posts"
-              )
-
-              for post in posts:
-                  if isinstance(post, dict):
-                      post["_source_community"] = community
-                      all_posts.append(post)
-
-          print()
-          print(
-              "TOTAL RAW POSTS:",
-              len(all_posts)
-          )
-
-          # ----------------------------------------------------------
-          # Deduplicate posts
-          # ----------------------------------------------------------
-
-          unique = {}
-          url_pattern = re.compile(
-              r'https?://[^\s"\'<>]+'
-          )
-
-          def collect_urls(value):
-              urls = set()
-
-              if isinstance(value, str):
-                  for match in url_pattern.findall(value):
-                      urls.add(
-                          match.rstrip(
-                              ".,;:!?)]}"
-                          )
-                      )
-
-              elif isinstance(value, dict):
-                  for value2 in value.values():
-                      urls.update(
-                          collect_urls(value2)
-                      )
-
-              elif isinstance(value, list):
-                  for value2 in value:
-                      urls.update(
-                          collect_urls(value2)
-                      )
-
-              return urls
-
-          for post in all_posts:
-              post_id = (
-                  str(post.get("id"))
-                  if post.get("id") is not None
-                  else None
-              )
-
-              post_url = (
-                  post.get("ap_id")
-                  or post.get("url")
-                  or post.get("post_url")
-              )
-
-              key = post_id or post_url
-
-              if key:
-                  unique[key] = post
-
-          posts = list(unique.values())
-
-          print(
-              "UNIQUE POSTS:",
-              len(posts)
-          )
-
-          # ----------------------------------------------------------
-          # Animal relevance
-          # ----------------------------------------------------------
-
-          animal_terms = [
-              "dog",
-              "dogs",
-              "puppy",
-              "puppies",
-              "cat",
-              "cats",
-              "kitten",
-              "kittens",
-              "pet",
-              "pets",
-              "animal",
-              "animals",
-              "puppo",
-              "doggo",
-              "kitty",
-              "kitties",
-              "سگ",
-              "گربه",
-              "توله",
-              "حیوان",
-              "حیوانات",
+          ANIMAL_WORDS = [
+              "cat", "cats", "kitten", "kittens",
+              "dog", "dogs", "puppy", "puppies",
+              "pet", "pets",
+              "animal", "animals",
+              "puppy", "pup",
+              "rabbit", "bunny", "bunnies",
+              "hamster", "guinea pig",
+              "bird", "birds",
+              "parrot", "parrots",
+              "duck", "ducks",
+              "goose", "geese",
+              "chicken", "chickens",
+              "horse", "horses",
+              "foal",
+              "cow", "cows",
+              "calf",
+              "goat", "goats",
+              "sheep",
+              "pig", "pigs",
+              "fox", "foxes",
+              "otter", "otters",
+              "seal", "seals",
+              "penguin", "penguins",
+              "panda", "pandas",
+              "koala", "koalas",
+              "monkey", "monkeys",
+              "squirrel", "squirrels",
+              "hedgehog", "hedgehogs",
+              "ferret", "ferrets",
+              "turtle", "turtles",
+              "tortoise",
+              "frog", "frogs",
+              "lizard", "lizards",
+              "snake", "snakes",
           ]
 
-          def get_text(post):
-              parts = []
-
-              for key in (
-                  "name",
-                  "title",
-                  "body",
-                  "content",
-                  "description",
-              ):
-                  value = post.get(key)
-
-                  if isinstance(value, str):
-                      parts.append(value)
-
-              return " ".join(parts)
-
-          # ----------------------------------------------------------
-          # Classify URLs
-          # ----------------------------------------------------------
-
-          direct_video_extensions = (
+          VIDEO_EXTENSIONS = (
               ".mp4",
               ".webm",
               ".mov",
@@ -254,7 +98,7 @@ jobs:
               ".ogv",
           )
 
-          image_extensions = (
+          IMAGE_EXTENSIONS = (
               ".jpg",
               ".jpeg",
               ".png",
@@ -262,414 +106,462 @@ jobs:
               ".gif",
           )
 
-          video_hosts = (
-              "v.redd.it",
-              "video.twimg.com",
-              ".mp4",
-              ".webm",
-              ".mov",
-          )
-
-          candidates = []
-
-          for post in posts:
-
-              text = get_text(post)
-              lower_text = text.lower()
-
-              animal_matches = [
-                  term
-                  for term in animal_terms
-                  if term.lower() in lower_text
-              ]
-
-              urls = collect_urls(post)
-
-              direct_videos = []
-              images = []
-              external_video_pages = []
-
-              for url in urls:
-                  lower = url.lower()
-
-                  if any(
-                      lower.split("?")[0].endswith(ext)
-                      for ext in direct_video_extensions
-                  ):
-                      direct_videos.append(url)
-
-                  elif any(
-                      lower.split("?")[0].endswith(ext)
-                      for ext in image_extensions
-                  ):
-                      images.append(url)
-
-                  elif any(
-                      host in lower
-                      for host in (
-                          "youtube.com",
-                          "youtu.be",
-                          "vimeo.com",
-                          "tiktok.com",
-                          "x.com",
-                          "twitter.com",
-                          "reddit.com",
-                          "instagram.com",
-                      )
-                  ):
-                      external_video_pages.append(url)
-
-              # Search for media objects explicitly present in
-              # the Lemmy response.
-              media_candidates = []
-
-              def scan_media(value):
-                  if isinstance(value, dict):
-                      for key, val in value.items():
-                          key_lower = str(key).lower()
-
-                          if (
-                              "video" in key_lower
-                              or "media" in key_lower
-                              or "thumbnail" in key_lower
-                          ):
-                              if isinstance(val, str):
-                                  media_candidates.append(val)
-
-                          scan_media(val)
-
-                  elif isinstance(value, list):
-                      for item in value:
-                          scan_media(item)
-
-              scan_media(post)
-
-              for media in media_candidates:
-                  if (
-                      isinstance(media, str)
-                      and media.startswith("http")
-                  ):
-                      if media not in direct_videos:
-                          direct_videos.append(media)
-
-              if not animal_matches:
-                  continue
-
-              candidates.append(
-                  {
-                      "community": post.get(
-                          "_source_community"
-                      ),
-                      "id": post.get("id"),
-                      "title": (
-                          post.get("name")
-                          or post.get("title")
-                          or ""
-                      ),
-                      "body": (
-                          post.get("body")
-                          or post.get("content")
-                          or ""
-                      ),
-                      "post_url": (
-                          post.get("ap_id")
-                          or post.get("url")
-                          or ""
-                      ),
-                      "animal_matches": animal_matches,
-                      "direct_videos": list(
-                          dict.fromkeys(
-                              direct_videos
-                          )
-                      ),
-                      "images": list(
-                          dict.fromkeys(
-                              images
-                          )
-                      ),
-                      "external_video_pages": list(
-                          dict.fromkeys(
-                              external_video_pages
-                          )
-                      ),
+          def fetch_json(url):
+              request = urllib.request.Request(
+                  url,
+                  headers={
+                      "User-Agent": "UTCutieBot/1.0"
                   }
               )
 
-          # ----------------------------------------------------------
-          # Report
-          # ----------------------------------------------------------
+              with urllib.request.urlopen(
+                  request,
+                  timeout=30
+              ) as response:
+                  return json.loads(
+                      response.read().decode("utf-8")
+                  )
 
-          print()
-          print(
-              "============================================================"
-          )
-          print(
-              "ANIMAL CANDIDATES"
-          )
-          print(
-              "============================================================"
-          )
+          def clean_url(url):
+              if not url:
+                  return None
 
-          print(
-              "Animal candidates:",
-              len(candidates)
-          )
+              url = url.strip()
 
-          direct_video_count = 0
-          external_video_count = 0
+              if not url.startswith(("http://", "https://")):
+                  return None
 
-          for index, item in enumerate(
-              candidates,
-              1
-          ):
-              direct_video_count += len(
-                  item["direct_videos"]
+              return url
+
+          def is_video_extension(url):
+              path = urllib.parse.urlparse(url).path.lower()
+              return path.endswith(VIDEO_EXTENSIONS)
+
+          def is_image_extension(url):
+              path = urllib.parse.urlparse(url).path.lower()
+              return path.endswith(IMAGE_EXTENSIONS)
+
+          def is_external_video_page(url):
+              if not url:
+                  return False
+
+              hosts = (
+                  "youtube.com",
+                  "youtu.be",
+                  "vimeo.com",
+                  "tiktok.com",
+                  "x.com",
+                  "twitter.com",
+                  "instagram.com",
+                  "facebook.com",
+                  "fb.watch",
               )
 
-              external_video_count += len(
-                  item["external_video_pages"]
+              host = urllib.parse.urlparse(url).netloc.lower()
+
+              if host.startswith("www."):
+                  host = host[4:]
+
+              return any(
+                  host == h or host.endswith("." + h)
+                  for h in hosts
               )
+
+          def animal_relevance(title, body):
+              text = f"{title or ''} {body or ''}".lower()
+
+              score = 0
+
+              for word in ANIMAL_WORDS:
+                  pattern = r"(?<![a-z])" + re.escape(word) + r"(?![a-z])"
+
+                  if re.search(pattern, text):
+                      score += 1
+
+              return score
+
+          all_posts = []
+          seen_posts = set()
+
+          for community_name, instance in COMMUNITIES:
 
               print()
-              print(
-                  f"{index:03d}. "
-                  f"{item['title'][:150]}"
-              )
+              print("============================================================")
+              print(f"COMMUNITY: {community_name}@{instance}")
+              print("============================================================")
 
-              print(
-                  "Community:",
-                  item["community"]
-              )
-
-              print(
-                  "Animals:",
-                  item["animal_matches"]
-              )
-
-              print(
-                  "Post:",
-                  item["post_url"]
-              )
-
-              print(
-                  "Direct video:",
-                  len(item["direct_videos"])
-              )
-
-              for url in item["direct_videos"]:
-                  print(
-                      "  VIDEO:",
-                      url
+              try:
+                  community_url = (
+                      f"https://{instance}/api/v3/community"
+                      f"?name={urllib.parse.quote(community_name)}"
                   )
 
-              print(
-                  "External video pages:",
-                  len(
-                      item[
-                          "external_video_pages"
-                      ]
+                  community_data = fetch_json(
+                      community_url
                   )
-              )
 
-              for url in item[
-                  "external_video_pages"
-              ][:5]:
+                  community_view = community_data.get(
+                      "community_view"
+                  )
+
+                  if not community_view:
+                      print("COMMUNITY LOOKUP FAILED")
+                      continue
+
+                  community = community_view.get(
+                      "community",
+                      {}
+                  )
+
+                  community_id = community.get("id")
+
                   print(
-                      "  EXTERNAL:",
-                      url
+                      f"Community ID: {community_id}"
+                  )
+
+                  if not community_id:
+                      print("NO COMMUNITY ID")
+                      continue
+
+                  posts_url = (
+                      f"https://{instance}/api/v3/post/list"
+                      f"?community_id={community_id}"
+                      f"&type_=All"
+                      f"&sort=New"
+                      f"&limit={POSTS_PER_COMMUNITY}"
+                  )
+
+                  data = fetch_json(posts_url)
+
+                  posts = data.get("posts") or []
+
+                  print(
+                      f"RECENT POSTS: {len(posts)}"
+                  )
+
+                  for item in posts:
+
+                      post = item.get("post") or {}
+                      counts = item.get("counts") or {}
+
+                      post_id = post.get("id")
+
+                      if post_id is None:
+                          continue
+
+                      if post_id in seen_posts:
+                          continue
+
+                      seen_posts.add(post_id)
+
+                      title = post.get("name") or ""
+                      body = post.get("body") or ""
+                      url = clean_url(post.get("url"))
+
+                      relevance = animal_relevance(
+                          title,
+                          body
+                      )
+
+                      if relevance <= 0:
+                          continue
+
+                      record = {
+                          "post_id": post_id,
+                          "community": f"{community_name}@{instance}",
+                          "title": title,
+                          "body": body,
+                          "url": url,
+                          "published": post.get("published"),
+                          "score": counts.get("score"),
+                          "comments": counts.get("comments"),
+                          "upvotes": counts.get("upvotes"),
+                          "downvotes": counts.get("downvotes"),
+                          "animal_relevance": relevance,
+                      }
+
+                      all_posts.append(record)
+
+              except Exception as exc:
+                  print(
+                      f"ERROR: {type(exc).__name__}: {exc}"
                   )
 
           print()
+          print("============================================================")
+          print("HARVEST SUMMARY")
+          print("============================================================")
+
           print(
-              "DIRECT VIDEO URLS:",
-              direct_video_count
+              f"UNIQUE POSTS: {len(seen_posts)}"
           )
 
           print(
-              "EXTERNAL VIDEO PAGES:",
-              external_video_count
+              f"ANIMAL POSTS: {len(all_posts)}"
           )
 
-          # ----------------------------------------------------------
-          # Test direct videos with yt-dlp
-          # ----------------------------------------------------------
+          all_posts.sort(
+              key=lambda x: (
+                  x.get("animal_relevance", 0),
+                  x.get("score") or 0,
+                  x.get("comments") or 0,
+              ),
+              reverse=True
+          )
 
-          direct_urls = []
+          Path(
+              "lemmy_animal_posts.json"
+          ).write_text(
+              json.dumps(
+                  all_posts,
+                  ensure_ascii=False,
+                  indent=2
+              ),
+              encoding="utf-8"
+          )
 
-          for item in candidates:
-              for url in item["direct_videos"]:
-                  if url not in direct_urls:
-                      direct_urls.append(url)
+          direct_videos = []
+          external_pages = []
+
+          seen_urls = set()
+
+          for post in all_posts:
+
+              url = post.get("url")
+
+              if not url:
+                  continue
+
+              if url in seen_urls:
+                  continue
+
+              seen_urls.add(url)
+
+              if is_video_extension(url):
+                  direct_videos.append(post)
+
+              elif is_image_extension(url):
+                  continue
+
+              elif is_external_video_page(url):
+                  external_pages.append(post)
+
+          print(
+              f"DIRECT VIDEO URLS: {len(direct_videos)}"
+          )
+
+          print(
+              f"EXTERNAL VIDEO PAGES: {len(external_pages)}"
+          )
+
+          Path(
+              "lemmy_direct_videos.json"
+          ).write_text(
+              json.dumps(
+                  direct_videos,
+                  ensure_ascii=False,
+                  indent=2
+              ),
+              encoding="utf-8"
+          )
+
+          Path(
+              "lemmy_external_video_pages.json"
+          ).write_text(
+              json.dumps(
+                  external_pages,
+                  ensure_ascii=False,
+                  indent=2
+              ),
+              encoding="utf-8"
+          )
 
           print()
-          print(
-              "============================================================"
-          )
-          print(
-              "DIRECT VIDEO DOWNLOAD TEST"
-          )
-          print(
-              "============================================================"
-          )
+          print("============================================================")
+          print("DIRECT VIDEO DOWNLOAD TEST")
+          print("============================================================")
 
           successful = []
 
-          for index, url in enumerate(
-              direct_urls[:15],
-              1
+          candidates = (
+              direct_videos +
+              external_pages
+          )
+
+          for index, post in enumerate(
+              candidates[:MAX_DOWNLOAD_TESTS],
+              start=1
           ):
+
+              url = post.get("url")
+
               print()
               print(
-                  f"TEST {index}/{min(15, len(direct_urls))}"
+                  f"[{index}/{min(len(candidates), MAX_DOWNLOAD_TESTS)}]"
               )
 
               print(
-                  url
+                  f"URL: {url}"
               )
+
+              output_dir = Path(
+                  "lemmy_video_test"
+              )
+
+              output_dir.mkdir(
+                  exist_ok=True
+              )
+
+              output_template = str(
+                  output_dir / "%(id)s.%(ext)s"
+              )
+
+              command = [
+                  "yt-dlp",
+                  "--no-playlist",
+                  "--no-warnings",
+                  "--max-filesize",
+                  "48M",
+                  "--match-filter",
+                  "duration >= 15 & duration <= 180",
+                  "-f",
+                  "best[ext=mp4]/best",
+                  "--merge-output-format",
+                  "mp4",
+                  "-o",
+                  output_template,
+                  url,
+              ]
 
               try:
                   result = subprocess.run(
-                      [
-                          "yt-dlp",
-                          "--dump-single-json",
-                          "--skip-download",
-                          "--no-warnings",
-                          url,
-                      ],
+                      command,
                       capture_output=True,
                       text=True,
-                      timeout=45,
+                      timeout=90
                   )
 
-                  if result.returncode == 0:
-                      try:
-                          info = json.loads(
-                              result.stdout
-                          )
+                  if result.returncode != 0:
+                      print("YT-DLP: FAIL")
 
+                      stderr = (
+                          result.stderr or ""
+                      ).strip()
+
+                      if stderr:
                           print(
-                              "RESULT: SUCCESS"
+                              stderr[-1000:]
                           )
 
-                          print(
-                              "TITLE:",
-                              info.get(
-                                  "title"
-                              )
-                          )
+                      continue
 
-                          print(
-                              "DURATION:",
-                              info.get(
-                                  "duration"
-                              )
-                          )
+                  files = list(
+                      output_dir.glob("*")
+                  )
 
-                          successful.append(
-                              {
-                                  "url": url,
-                                  "title": info.get(
-                                      "title"
-                                  ),
-                                  "duration": info.get(
-                                      "duration"
-                                  ),
-                              }
-                          )
-
-                      except Exception:
-                          print(
-                              "RESULT: JSON ERROR"
-                          )
-
-                  else:
+                  if not files:
                       print(
-                          "RESULT: FAIL"
+                          "YT-DLP: NO FILE"
                       )
+                      continue
 
-                      print(
-                          (
-                              result.stderr
-                              or result.stdout
-                          )[-1000:]
-                      )
+                  video = files[0]
+
+                  size_mb = (
+                      video.stat().st_size
+                      / 1024
+                      / 1024
+                  )
+
+                  print(
+                      f"YT-DLP: SUCCESS "
+                      f"{size_mb:.2f} MB"
+                  )
+
+                  successful.append({
+                      **post,
+                      "downloaded_file": str(video),
+                      "size_mb": round(
+                          size_mb,
+                          2
+                      ),
+                  })
+
+                  video.unlink(
+                      missing_ok=True
+                  )
 
               except subprocess.TimeoutExpired:
                   print(
-                      "RESULT: TIMEOUT"
+                      "YT-DLP: TIMEOUT"
                   )
 
-          # ----------------------------------------------------------
-          # Save results
-          # ----------------------------------------------------------
-
-          with open(
-              "../lemmy_animal_candidates.json",
-              "w",
-              encoding="utf-8"
-          ) as f:
-              json.dump(
-                  candidates,
-                  f,
-                  ensure_ascii=False,
-                  indent=2
-              )
-
-          with open(
-              "../lemmy_successful_videos.json",
-              "w",
-              encoding="utf-8"
-          ) as f:
-              json.dump(
+          Path(
+              "lemmy_successful_videos.json"
+          ).write_text(
+              json.dumps(
                   successful,
-                  f,
                   ensure_ascii=False,
                   indent=2
-              )
+              ),
+              encoding="utf-8"
+          )
+
+          print()
+          print("============================================================")
+          print("FINAL")
+          print("============================================================")
+
+          print(
+              f"RAW/UNIQUE POSTS: {len(seen_posts)}"
+          )
+
+          print(
+              f"ANIMAL CANDIDATES: {len(all_posts)}"
+          )
+
+          print(
+              f"DIRECT VIDEO URLS: {len(direct_videos)}"
+          )
+
+          print(
+              f"EXTERNAL VIDEO PAGES: {len(external_pages)}"
+          )
+
+          print(
+              f"YT-DLP SUCCESS: {len(successful)}"
+          )
 
           print()
           print(
-              "============================================================"
-          )
-          print(
-              "FINAL"
-          )
-          print(
-              "============================================================"
+              "Files generated:"
           )
 
           print(
-              "RAW POSTS:",
-              len(all_posts)
+              "  lemmy_animal_posts.json"
           )
 
           print(
-              "UNIQUE POSTS:",
-              len(posts)
+              "  lemmy_direct_videos.json"
           )
 
           print(
-              "ANIMAL CANDIDATES:",
-              len(candidates)
+              "  lemmy_external_video_pages.json"
           )
 
           print(
-              "DIRECT VIDEO URLS:",
-              len(direct_urls)
+              "  lemmy_successful_videos.json"
           )
 
-          print(
-              "YT-DLP SUCCESS:",
-              len(successful)
-          )
           PY
 
-      - name: Upload results
-        if: always()
+      - name: Upload harvest results
         uses: actions/upload-artifact@v4
         with:
-          name: lemmy-animal-harvest-results
+          name: lemmy-animal-harvest
           path: |
-            lemmy_animal_candidates.json
+            lemmy_animal_posts.json
+            lemmy_direct_videos.json
+            lemmy_external_video_pages.json
             lemmy_successful_videos.json
-          if-no-files-found: ignore
+          if-no-files-found: warn
