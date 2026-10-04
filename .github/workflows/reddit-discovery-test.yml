@@ -1,0 +1,206 @@
+name: Reddit Discovery Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests beautifulsoup4
+
+      - name: Discover Reddit animal posts
+        run: |
+          python - <<'PY'
+          import requests
+          from bs4 import BeautifulSoup
+          from urllib.parse import urljoin
+          import re
+
+          SUBREDDITS = [
+              "AnimalsBeingDerps",
+              "cats",
+              "dogs",
+              "aww",
+              "WhatsWrongWithYourDog",
+          ]
+
+          headers = {
+              "User-Agent": (
+                  "Mozilla/5.0 (X11; Linux x86_64) "
+                  "AppleWebKit/537.36 "
+                  "(KHTML, like Gecko) "
+                  "Chrome/140.0 Safari/537.36"
+              ),
+              "Accept": (
+                  "text/html,application/xhtml+xml,"
+                  "application/xml;q=0.9,*/*;q=0.8"
+              ),
+              "Accept-Language": "en-US,en;q=0.9",
+          }
+
+          all_posts = []
+
+          print("=" * 70)
+          print("UTCUTIE REDDIT DISCOVERY TEST")
+          print("=" * 70)
+
+          for subreddit in SUBREDDITS:
+
+              url = f"https://www.reddit.com/r/{subreddit}/"
+
+              print()
+              print("-" * 70)
+              print("SUBREDDIT:", subreddit)
+              print("URL:", url)
+              print("-" * 70)
+
+              try:
+                  response = requests.get(
+                      url,
+                      headers=headers,
+                      timeout=30,
+                  )
+
+                  print(
+                      "HTTP status:",
+                      response.status_code
+                  )
+
+                  print(
+                      "Response size:",
+                      len(response.content),
+                      "bytes"
+                  )
+
+                  if response.status_code != 200:
+                      print("FAILED")
+                      continue
+
+                  soup = BeautifulSoup(
+                      response.text,
+                      "html.parser"
+                  )
+
+                  found = set()
+
+                  # Look for Reddit post URLs.
+                  for tag in soup.find_all(
+                      href=True
+                  ):
+                      href = tag.get("href")
+
+                      if not href:
+                          continue
+
+                      full_url = urljoin(
+                          "https://www.reddit.com",
+                          href
+                      )
+
+                      match = re.search(
+                          r"https?://www\.reddit\.com/r/[^/]+/comments/[a-z0-9]+/[^/?#]*",
+                          full_url,
+                          re.I
+                      )
+
+                      if match:
+                          found.add(
+                              match.group(0)
+                          )
+
+                  print(
+                      "Post URLs found:",
+                      len(found)
+                  )
+
+                  for post_url in sorted(found)[:20]:
+
+                      title = ""
+
+                      link = soup.find(
+                          "a",
+                          href=lambda x:
+                          x and post_url in x
+                      )
+
+                      if link:
+                          title = link.get_text(
+                              " ",
+                              strip=True
+                          )
+
+                      print(
+                          "POST:",
+                          post_url
+                      )
+
+                      all_posts.append({
+                          "subreddit": subreddit,
+                          "url": post_url,
+                          "title": title,
+                      })
+
+              except Exception as e:
+
+                  print(
+                      "ERROR:",
+                      repr(e)
+                  )
+
+          # Deduplicate.
+          unique = {}
+
+          for post in all_posts:
+              unique[post["url"]] = post
+
+          print()
+          print("=" * 70)
+          print("FINAL DISCOVERY RESULT")
+          print("=" * 70)
+          print(
+              "Unique Reddit posts:",
+              len(unique)
+          )
+
+          with open(
+              "reddit_candidates.txt",
+              "w",
+              encoding="utf-8"
+          ) as f:
+
+              for post in unique.values():
+                  f.write(
+                      post["url"] + "\n"
+                  )
+
+          print()
+          print(
+              "Saved: reddit_candidates.txt"
+          )
+
+          if unique:
+              print()
+              print("DISCOVERY ACCESS: YES")
+          else:
+              print()
+              print("DISCOVERY ACCESS: NO")
+
+          PY
+
+      - name: Upload discovery results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reddit-discovery-test
+          path: reddit_candidates.txt
+          if-no-files-found: ignore
