@@ -1,0 +1,165 @@
+name: UTCutie Free Social Source Discovery
+
+on:
+  workflow_dispatch:
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Install socialfetch
+        run: |
+          git clone --depth 1 https://github.com/EdgeAIG/socialfetch.git
+          cd socialfetch
+          chmod +x socialfetch
+
+      - name: Check provider availability
+        run: |
+          cd socialfetch
+
+          echo "=============================================="
+          echo "SOCIALFETCH PROVIDER STATUS"
+          echo "=============================================="
+
+          ./socialfetch status || true
+
+      - name: Test Reddit discovery
+        run: |
+          cd socialfetch
+
+          echo ""
+          echo "=============================================="
+          echo "REDDIT DISCOVERY"
+          echo "=============================================="
+
+          for query in \
+            "funny dogs" \
+            "funny cats" \
+            "cute dogs" \
+            "cute cats" \
+            "funny pets" \
+            "wholesome animals"
+          do
+            echo ""
+            echo "QUERY: $query"
+            ./socialfetch reddit search "$query" --limit 10 --json || true
+          done
+
+      - name: Test Bluesky discovery
+        run: |
+          cd socialfetch
+
+          echo ""
+          echo "=============================================="
+          echo "BLUESKY DISCOVERY"
+          echo "=============================================="
+
+          for query in \
+            "funny dogs" \
+            "funny cats" \
+            "cute dogs" \
+            "cute cats" \
+            "funny pets" \
+            "wholesome animals"
+          do
+            echo ""
+            echo "QUERY: $query"
+            ./socialfetch bsky search "$query" --limit 10 --json || true
+          done
+
+      - name: Test Lemmy discovery
+        run: |
+          cd socialfetch
+
+          echo ""
+          echo "=============================================="
+          echo "LEMMY DISCOVERY"
+          echo "=============================================="
+
+          for query in \
+            "funny dogs" \
+            "funny cats" \
+            "cute pets" \
+            "animals"
+          do
+            echo ""
+            echo "QUERY: $query"
+            ./socialfetch lemmy search "$query" --limit 10 --json || true
+          done
+
+      - name: Test Mastodon discovery
+        run: |
+          cd socialfetch
+
+          echo ""
+          echo "=============================================="
+          echo "MASTODON DISCOVERY"
+          echo "=============================================="
+
+          ./socialfetch masto search "funny dogs" --limit 10 --json || true
+          ./socialfetch masto search "funny cats" --limit 10 --json || true
+          ./socialfetch masto search "cute pets" --limit 10 --json || true
+
+      - name: Test Telegram public discovery
+        run: |
+          cd socialfetch
+
+          echo ""
+          echo "=============================================="
+          echo "TELEGRAM PUBLIC DISCOVERY"
+          echo "=============================================="
+
+          ./socialfetch tg search telegram "funny dogs" --limit 10 --json || true
+          ./socialfetch tg search telegram "funny cats" --limit 10 --json || true
+          ./socialfetch tg search telegram "cute pets" --limit 10 --json || true
+          ./socialfetch tg search telegram "animals" --limit 10 --json || true
+
+      - name: Test Instagram public discovery
+        run: |
+          cd socialfetch
+
+          echo ""
+          echo "=============================================="
+          echo "INSTAGRAM PUBLIC TEST"
+          echo "=============================================="
+
+          ./socialfetch ig user nasa --limit 5 --json || true
+
+      - name: Test TikTok public metadata
+        run: |
+          cd socialfetch
+
+          echo ""
+          echo "=============================================="
+          echo "TIKTOK PUBLIC TEST"
+          echo "=============================================="
+
+          ./socialfetch tiktok \
+            "https://www.tiktok.com/@tiktok/video/7106594312292453675" \
+            --json || true
+
+      - name: Test Vimeo public metadata
+        run: |
+          cd socialfetch
+
+          echo ""
+          echo "=============================================="
+          echo "VIMEO PUBLIC TEST"
+          echo "=============================================="
+
+          ./socialfetch vimeo \
+            "https://vimeo.com/22439234" \
+            --json || true
+
+      - name: Save tool information
+        run: |
+          cd socialfetch
+
+          echo ""
+          echo "=============================================="
+          echo "SOCIALFETCH MANIFEST"
+          echo "=============================================="
+
+          ./socialfetch manifest --json || true
