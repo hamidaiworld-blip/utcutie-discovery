@@ -1,272 +1,332 @@
-import json
 import re
-import subprocess
-import sys
+import time
 from pathlib import Path
+from urllib.parse import quote_plus
 
+import requests
+
+
+# ------------------------------------------------------------
+# SETTINGS
+# ------------------------------------------------------------
+
+MAX_RESULTS_PER_QUERY = 20
 
 SEARCH_QUERIES = [
-    "funny dog video",
-    "cute dog video",
-    "funny cat video",
-    "cute cat video",
-    "funny pet video",
-    "cute pet video",
-    "funny animal video",
-    "wholesome animal",
-    "heartwarming animal",
-    "animal friendship",
+    'site:x.com "funny dog" "status"',
+    'site:x.com "cute dog" "status"',
+    'site:x.com "funny cat" "status"',
+    'site:x.com "cute cat" "status"',
+    'site:x.com "funny puppy" "status"',
+    'site:x.com "cute puppy" "status"',
+    'site:x.com "funny kitten" "status"',
+    'site:x.com "cute kitten" "status"',
+    'site:x.com "funny pet" "status"',
+    'site:x.com "cute pet" "status"',
+    'site:x.com "funny animal" "status"',
+    'site:x.com "cute animal" "status"',
+    'site:x.com "wholesome animal" "status"',
+    'site:x.com "heartwarming animal" "status"',
+    'site:x.com "animal friendship" "status"',
 ]
 
 
-REPO_URL = (
-    "https://github.com/ythx-101/x-tweet-fetcher.git"
+OUTPUT_FILE = Path("candidate_urls.txt")
+
+USER_AGENT = (
+    "Mozilla/5.0 (X11; Linux x86_64) "
+    "AppleWebKit/537.36 "
+    "(KHTML, like Gecko) "
+    "Chrome/140.0 Safari/537.36"
 )
 
-FETCHER_DIR = Path("/tmp/x-tweet-fetcher")
+
+# ------------------------------------------------------------
+# HTTP SESSION
+# ------------------------------------------------------------
+
+session = requests.Session()
+
+session.headers.update(
+    {
+        "User-Agent": USER_AGENT,
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept": (
+            "text/html,application/xhtml+xml,"
+            "application/xml;q=0.9,*/*;q=0.8"
+        ),
+    }
+)
 
 
-def run_command(command, timeout=300):
-    print("\nRunning:")
-    print(" ".join(command))
+# ------------------------------------------------------------
+# X URL EXTRACTION
+# ------------------------------------------------------------
 
-    result = subprocess.run(
-        command,
-        capture_output=True,
-        text=True,
-        timeout=timeout
-    )
-
-    if result.stdout:
-        print(result.stdout)
-
-    if result.stderr:
-        print(result.stderr)
-
-    return result
+X_URL_PATTERN = re.compile(
+    r"https?://(?:www\.)?x\.com/"
+    r"[A-Za-z0-9_]+/status/\d+"
+)
 
 
-def install_fetcher():
-    print("Cloning x-tweet-fetcher...")
+def extract_x_urls(text):
+    """
+    Extract unique X status URLs from arbitrary HTML/text.
+    """
 
-    if FETCHER_DIR.exists():
-        subprocess.run(
-            ["rm", "-rf", str(FETCHER_DIR)],
-            check=False
-        )
+    if not text:
+        return []
 
-    result = run_command(
-        [
-            "git",
-            "clone",
-            "--depth",
-            "1",
-            REPO_URL,
-            str(FETCHER_DIR)
-        ],
-        timeout=180
-    )
+    matches = X_URL_PATTERN.findall(text)
 
-    if result.returncode != 0:
-        raise RuntimeError(
-            "Could not clone x-tweet-fetcher."
-        )
-
-    print("Installing x-tweet-fetcher from source...")
-
-    result = run_command(
-        [
-            sys.executable,
-            "-m",
-            "pip",
-            "install",
-            "."
-        ],
-        timeout=300
-    )
-
-    if result.returncode != 0:
-        raise RuntimeError(
-            "Could not install x-tweet-fetcher from source."
-        )
-
-
-def install_browser():
-    print("Installing Playwright...")
-
-    result = run_command(
-        [
-            sys.executable,
-            "-m",
-            "pip",
-            "install",
-            "playwright"
-        ],
-        timeout=300
-    )
-
-    if result.returncode != 0:
-        raise RuntimeError(
-            "Could not install Playwright."
-        )
-
-    print("Installing Chromium...")
-
-    result = run_command(
-        [
-            sys.executable,
-            "-m",
-            "playwright",
-            "install",
-            "--with-deps",
-            "chromium"
-        ],
-        timeout=600
-    )
-
-    if result.returncode != 0:
-        raise RuntimeError(
-            "Could not install Chromium."
-        )
-
-
-def extract_urls(data):
     urls = []
 
-    def walk(value):
-        if isinstance(value, dict):
-            for key, item in value.items():
+    for url in matches:
+        clean_url = url.rstrip(".,);]}>\"'")
 
-                if isinstance(item, str):
-                    if (
-                        "x.com/" in item
-                        and "/status/" in item
-                    ):
-                        match = re.search(
-                            r"https?://(?:www\.)?x\.com/[^/\s]+/status/\d+",
-                            item
-                        )
-
-                        if match:
-                            url = match.group(0)
-
-                            if url not in urls:
-                                urls.append(url)
-
-                walk(item)
-
-        elif isinstance(value, list):
-            for item in value:
-                walk(item)
-
-    walk(data)
+        if clean_url not in urls:
+            urls.append(clean_url)
 
     return urls
 
 
-def search_x(query):
-    print("\n" + "-" * 60)
-    print(f"Searching X for: {query}")
-    print("-" * 60)
+# ------------------------------------------------------------
+# BING SEARCH
+# ------------------------------------------------------------
 
-    script = str(
-        FETCHER_DIR / "scripts" / "fetch_tweet.py"
+def search_bing(query):
+    """
+    Search Bing's public HTML results.
+
+    This is NOT the Bing API.
+    It uses the public search page and therefore remains
+    best-effort.
+    """
+
+    print("\n" + "=" * 70)
+    print("BING SEARCH")
+    print("=" * 70)
+    print(query)
+
+    url = (
+        "https://www.bing.com/search?q="
+        + quote_plus(query)
+        + "&count="
+        + str(MAX_RESULTS_PER_QUERY)
     )
-
-    result = run_command(
-        [
-            sys.executable,
-            script,
-            "--search",
-            query,
-            "--limit",
-            "10",
-            "--backend",
-            "browser"
-        ],
-        timeout=300
-    )
-
-    if result.returncode != 0:
-        print(
-            f"Search returned exit code "
-            f"{result.returncode}"
-        )
-
-        return []
-
-    output = result.stdout.strip()
-
-    if not output:
-        return []
 
     try:
-        data = json.loads(output)
-    except json.JSONDecodeError:
-        print(
-            "Output was not JSON. "
-            "Showing it above for diagnosis."
+        response = session.get(
+            url,
+            timeout=30
         )
 
+    except requests.RequestException as error:
+        print(f"Bing request failed: {error}")
         return []
 
-    return extract_urls(data)
+    print(f"HTTP status: {response.status_code}")
+
+    if response.status_code != 200:
+        return []
+
+    urls = extract_x_urls(response.text)
+
+    print(f"Found {len(urls)} X URLs")
+
+    return urls
 
 
-def main():
-    install_fetcher()
+# ------------------------------------------------------------
+# GOOGLE SEARCH
+# ------------------------------------------------------------
 
-    install_browser()
+def search_google(query):
+    """
+    Search Google's public HTML endpoint.
 
-    all_urls = []
+    This is also best-effort and may return fewer results
+    depending on Google's anti-automation behavior.
+    """
 
-    for query in SEARCH_QUERIES:
+    print("\n" + "=" * 70)
+    print("GOOGLE SEARCH")
+    print("=" * 70)
+    print(query)
 
-        try:
-            urls = search_x(query)
-
-            print(
-                f"Extracted {len(urls)} X URLs"
-            )
-
-            for url in urls:
-                if url not in all_urls:
-                    all_urls.append(url)
-
-        except subprocess.TimeoutExpired:
-            print("Search timed out.")
-
-        except Exception as error:
-            print(
-                f"Search error: {error}"
-            )
-
-    print("\n" + "=" * 60)
-    print(
-        f"TOTAL UNIQUE X POSTS: "
-        f"{len(all_urls)}"
+    url = (
+        "https://www.google.com/search?q="
+        + quote_plus(query)
+        + "&num="
+        + str(MAX_RESULTS_PER_QUERY)
     )
-    print("=" * 60)
+
+    try:
+        response = session.get(
+            url,
+            timeout=30
+        )
+
+    except requests.RequestException as error:
+        print(f"Google request failed: {error}")
+        return []
+
+    print(f"HTTP status: {response.status_code}")
+
+    if response.status_code != 200:
+        return []
+
+    urls = extract_x_urls(response.text)
+
+    print(f"Found {len(urls)} X URLs")
+
+    return urls
+
+
+# ------------------------------------------------------------
+# URL NORMALIZATION
+# ------------------------------------------------------------
+
+def normalize_x_url(url):
+    """
+    Normalize an X status URL so the same post is not
+    counted multiple times.
+    """
+
+    match = re.search(
+        r"https?://(?:www\.)?x\.com/"
+        r"([A-Za-z0-9_]+)/status/(\d+)",
+        url
+    )
+
+    if not match:
+        return None
+
+    username = match.group(1)
+    status_id = match.group(2)
+
+    return f"https://x.com/{username}/status/{status_id}"
+
+
+# ------------------------------------------------------------
+# COLLECT CANDIDATES
+# ------------------------------------------------------------
+
+def collect_candidates():
+    """
+    Run all discovery queries against both search engines.
+    """
+
+    candidates = []
+
+    for index, query in enumerate(
+        SEARCH_QUERIES,
+        start=1
+    ):
+
+        print("\n")
+        print("#" * 70)
+        print(
+            f"QUERY {index}/{len(SEARCH_QUERIES)}"
+        )
+        print("#" * 70)
+
+        # ----------------------------
+        # Bing
+        # ----------------------------
+
+        bing_urls = search_bing(query)
+
+        for url in bing_urls:
+
+            normalized = normalize_x_url(url)
+
+            if normalized and normalized not in candidates:
+                candidates.append(normalized)
+
+        time.sleep(2)
+
+        # ----------------------------
+        # Google
+        # ----------------------------
+
+        google_urls = search_google(query)
+
+        for url in google_urls:
+
+            normalized = normalize_x_url(url)
+
+            if normalized and normalized not in candidates:
+                candidates.append(normalized)
+
+        time.sleep(2)
+
+    return candidates
+
+
+# ------------------------------------------------------------
+# SAVE RESULTS
+# ------------------------------------------------------------
+
+def save_candidates(urls):
+    """
+    Save candidate URLs for the next pipeline stage.
+    """
+
+    OUTPUT_FILE.write_text(
+        "\n".join(urls),
+        encoding="utf-8"
+    )
+
+    print("\n")
+    print("=" * 70)
+    print("DISCOVERY COMPLETE")
+    print("=" * 70)
+
+    print(
+        f"TOTAL UNIQUE X POSTS: {len(urls)}"
+    )
+
+    print(
+        f"Saved to: {OUTPUT_FILE}"
+    )
+
+    print("\nCandidates:")
 
     for index, url in enumerate(
-        all_urls,
+        urls,
         start=1
     ):
         print(
             f"{index}. {url}"
         )
 
-    Path(
-        "candidate_urls.txt"
-    ).write_text(
-        "\n".join(all_urls),
-        encoding="utf-8"
+
+# ------------------------------------------------------------
+# MAIN
+# ------------------------------------------------------------
+
+def main():
+
+    print("=" * 70)
+    print("UTCUTIE X DISCOVERY")
+    print("=" * 70)
+
+    print(
+        "Mode: Best-effort public web discovery"
     )
 
     print(
-        "\nSaved candidates to "
-        "candidate_urls.txt"
+        "Authentication: NONE"
     )
+
+    print(
+        f"Queries: {len(SEARCH_QUERIES)}"
+    )
+
+    candidates = collect_candidates()
+
+    save_candidates(candidates)
 
 
 if __name__ == "__main__":
