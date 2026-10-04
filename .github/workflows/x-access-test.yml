@@ -1,0 +1,81 @@
+name: X Direct Access Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-x-access:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install yt-dlp
+        run: |
+          python -m pip install --upgrade pip
+          pip install -U yt-dlp
+
+      - name: Check yt-dlp version
+        run: |
+          yt-dlp --version
+
+      - name: Test X post access
+        run: |
+          yt-dlp \
+            --no-playlist \
+            --dump-single-json \
+            --no-warnings \
+            "https://x.com/garibansipsi/status/2054157848670605453" \
+            > x_result.json
+
+      - name: Show X result
+        if: always()
+        run: |
+          echo "========================================"
+          echo "X ACCESS TEST RESULT"
+          echo "========================================"
+
+          if [ -f x_result.json ]; then
+            python - <<'PY'
+          import json
+
+          with open("x_result.json", "r", encoding="utf-8") as f:
+              data = json.load(f)
+
+          print("Extractor:", data.get("extractor"))
+          print("Extractor key:", data.get("extractor_key"))
+          print("ID:", data.get("id"))
+          print("Uploader:", data.get("uploader"))
+          print("Title:", data.get("title"))
+          print("Duration:", data.get("duration"))
+          print("View count:", data.get("view_count"))
+          print("Like count:", data.get("like_count"))
+          print("Comment count:", data.get("comment_count"))
+
+          formats = data.get("formats") or []
+
+          print("Formats found:", len(formats))
+
+          video_formats = [
+              f
+              for f in formats
+              if f.get("vcodec")
+              and f.get("vcodec") != "none"
+          ]
+
+          print(
+              "Video formats:",
+              len(video_formats)
+          )
+
+          if video_formats:
+              print("VIDEO ACCESS: YES")
+          else:
+              print("VIDEO ACCESS: NO")
+          PY
+          else
+            echo "x_result.json was not created."
+          fi
