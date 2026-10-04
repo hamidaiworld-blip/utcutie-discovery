@@ -7,20 +7,12 @@ permissions:
   contents: write
 
 jobs:
-  discover-and-send:
+  discover-and-test:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Backup publication history
-        run: |
-          cp history.json history_before_test.json
-
-      - name: Reset temporary discovery history
-        run: |
-          echo "[]" > history.json
 
       - name: Install FFmpeg
         run: |
@@ -35,11 +27,7 @@ jobs:
       - name: Run Mastodon discovery
         run: python mastodon_test.py
 
-      - name: Restore publication history
-        run: |
-          cp history_before_test.json history.json
-
-      - name: Send ONE test video to Render
+      - name: Send first selected video to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
@@ -70,7 +58,9 @@ jobs:
           )
 
           if not candidates:
-              print("No candidates found.")
+              print(
+                  "No selected candidates."
+              )
               sys.exit(1)
 
           candidate = candidates[0]
@@ -99,24 +89,46 @@ jobs:
           else:
               final_caption = "@utcutie"
 
+          # Final safety check.
+          if len(final_caption) > 1024:
+              final_caption = (
+                  final_caption[:1018].rstrip()
+                  + "\n\n"
+                  + "@utcutie"
+              )
+
           print("")
           print("=" * 70)
           print("AUTOMATED END-TO-END TEST")
           print("=" * 70)
+
           print(
               f"Media URL: {media_url}"
           )
+
           print(
-              f"Duration: {candidate.get('duration')}"
+              f"Duration: "
+              f"{candidate.get('duration')}"
           )
+
           print(
-              f"File size: {candidate.get('file_size')}"
+              f"File size: "
+              f"{candidate.get('file_size')}"
           )
+
           print(
-              f"Caption: {final_caption}"
+              f"Caption length: "
+              f"{len(final_caption)}"
           )
+
+          print(
+              f"Caption:\n{final_caption}"
+          )
+
           print("")
-          print("Sending to Render...")
+          print(
+              "Sending to Render..."
+          )
 
           try:
 
@@ -137,36 +149,47 @@ jobs:
               print(
                   f"Request failed: {exc}"
               )
+
               sys.exit(1)
 
           print(
-              f"HTTP status: {response.status_code}"
+              f"HTTP status: "
+              f"{response.status_code}"
           )
 
           print(
-              f"Render response: {response.text}"
+              f"Render response: "
+              f"{response.text}"
           )
 
           if not response.ok:
+
               print(
                   "END-TO-END TEST FAILED."
               )
+
               sys.exit(1)
 
           try:
+
               result = response.json()
+
           except Exception:
+
               print(
                   "Render returned invalid JSON."
               )
+
               sys.exit(1)
 
           if not result.get(
               "telegram_sent"
           ):
+
               print(
                   "Telegram upload was not confirmed."
               )
+
               sys.exit(1)
 
           message_id = result.get(
@@ -175,28 +198,51 @@ jobs:
 
           print("")
           print("=" * 70)
-          print("END-TO-END TEST SUCCESS")
+          print(
+              "END-TO-END TEST SUCCESS"
+          )
           print("=" * 70)
+
           print(
-              f"Telegram message ID: {message_id}"
+              f"Telegram message ID: "
+              f"{message_id}"
           )
+
           print(
-              f"Duration: {result.get('duration')}"
+              f"Duration: "
+              f"{result.get('duration')}"
           )
+
           print(
-              f"File size: {result.get('file_size')}"
+              f"File size: "
+              f"{result.get('file_size')}"
           )
+
+          # --------------------------------------------------
+          # Record publication ONLY after Telegram success.
+          # --------------------------------------------------
 
           history_path = "history.json"
 
-          with open(
-              history_path,
-              "r",
-              encoding="utf-8"
-          ) as f:
-              history = json.load(f)
+          try:
 
-          if not isinstance(history, list):
+              with open(
+                  history_path,
+                  "r",
+                  encoding="utf-8"
+              ) as f:
+
+                  history = json.load(f)
+
+          except Exception:
+
+              history = []
+
+          if not isinstance(
+              history,
+              list
+          ):
+
               history = []
 
           history.append({
@@ -229,6 +275,7 @@ jobs:
               "w",
               encoding="utf-8"
           ) as f:
+
               json.dump(
                   history,
                   f,
@@ -238,16 +285,14 @@ jobs:
 
           print("")
           print(
-              "Successful publication recorded "
-              "in history.json."
+              "SUCCESSFUL PUBLICATION "
+              "RECORDED IN history.json"
           )
 
           PY
 
       - name: Save test results
         run: |
-          rm -f history_before_test.json
-
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
@@ -256,6 +301,6 @@ jobs:
                   validated_candidates.json \
                   selected_candidates.json
 
-          git diff --cached --quiet || git commit -m "Record UTCutie end-to-end test publication"
+          git diff --cached --quiet || git commit -m "Record UTCutie test publication"
 
           git push
