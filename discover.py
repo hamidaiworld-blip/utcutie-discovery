@@ -7,32 +7,39 @@ import requests
 
 
 SEARCH_QUERIES = [
-    '"funny dog" site:x.com/*/status/',
-    '"cute dog" site:x.com/*/status/',
-    '"funny cat" site:x.com/*/status/',
-    '"cute cat" site:x.com/*/status/',
-    '"funny pets" site:x.com/*/status/',
-    '"cute pets" site:x.com/*/status/',
-    '"funny animal" site:x.com/*/status/',
-    '"wholesome animal" site:x.com/*/status/',
-    '"heartwarming animal" site:x.com/*/status/',
-    '"animal friendship" site:x.com/*/status/',
+    'funny dog x.com',
+    'cute dog x.com',
+    'funny cat x.com',
+    'cute cat x.com',
+    'funny pet video x.com',
+    'cute pet video x.com',
+    'funny animal video x.com',
+    'wholesome animal x.com',
+    'heartwarming animal x.com',
+    'animal friendship x.com',
+    'funny puppy video x.com',
+    'funny kitten video x.com',
 ]
 
 
 X_STATUS_PATTERN = re.compile(
-    r'https?://(?:www\.)?x\.com/[^"\s<>]+/status/\d+',
+    r'https?://(?:www\.)?x\.com/[^"\s<>?&]+/status/\d+',
+    re.IGNORECASE
+)
+
+X_STATUS_PATTERN_ENCODED = re.compile(
+    r'https?%3A%2F%2F(?:www\.)?x\.com%2F[^&"\s<>?]+%2Fstatus%2F\d+',
     re.IGNORECASE
 )
 
 
 HEADERS = {
     "User-Agent": (
-        "Mozilla/5.0 (Linux; Android 10) "
-        "AppleWebKit/537.36 "
-        "(KHTML, like Gecko) "
-        "Chrome/140.0 Mobile Safari/537.36"
-    )
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/140.0.0.0 Safari/537.36"
+    ),
+    "Accept-Language": "en-US,en;q=0.9",
 }
 
 
@@ -56,28 +63,26 @@ def search_duckduckgo(query):
 def extract_x_urls(page):
     page = html.unescape(page)
 
-    encoded_matches = re.findall(
-        r'https?%3A%2F%2F(?:www\.)?x\.com%2F[^&"\s]+%2Fstatus%2F\d+',
-        page,
-        re.IGNORECASE
-    )
-
-    normal_matches = X_STATUS_PATTERN.findall(page)
-
     urls = []
 
-    for url in encoded_matches + normal_matches:
+    encoded_matches = X_STATUS_PATTERN_ENCODED.findall(page)
+
+    for url in encoded_matches:
         url = unquote(url)
 
         match = X_STATUS_PATTERN.search(url)
 
-        if not match:
-            continue
+        if match:
+            clean_url = match.group(0)
 
-        clean_url = match.group(0)
+            if clean_url not in urls:
+                urls.append(clean_url)
 
-        if clean_url not in urls:
-            urls.append(clean_url)
+    normal_matches = X_STATUS_PATTERN.findall(page)
+
+    for url in normal_matches:
+        if url not in urls:
+            urls.append(url)
 
     return urls
 
