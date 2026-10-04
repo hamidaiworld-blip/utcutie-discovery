@@ -14,9 +14,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Save existing history
+      - name: Backup publication history
         run: |
-          cp history.json history_before_run.json
+          cp history.json history_before_test.json
 
       - name: Reset temporary discovery history
         run: |
@@ -35,11 +35,11 @@ jobs:
       - name: Run Mastodon discovery
         run: python mastodon_test.py
 
-      - name: Restore real publication history
+      - name: Restore publication history
         run: |
-          cp history_before_run.json history.json
+          cp history_before_test.json history.json
 
-      - name: Send selected videos to Render
+      - name: Send ONE test video to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
@@ -47,7 +47,6 @@ jobs:
           import json
           import os
           import sys
-          import time
           from datetime import datetime, timezone
 
           import requests
@@ -66,8 +65,132 @@ jobs:
           ) as f:
               candidates = json.load(f)
 
+          print(
+              f"Selected candidates: {len(candidates)}"
+          )
+
+          if not candidates:
+              print("No candidates found.")
+              sys.exit(1)
+
+          candidate = candidates[0]
+
+          media_url = candidate.get(
+              "media_url"
+          )
+
+          caption = candidate.get(
+              "caption",
+              ""
+          ).strip()
+
+          if not media_url:
+              print(
+                  "First candidate has no media_url."
+              )
+              sys.exit(1)
+
+          if caption:
+              final_caption = (
+                  caption
+                  + "\n\n"
+                  + "@utcutie"
+              )
+          else:
+              final_caption = "@utcutie"
+
+          print("")
+          print("=" * 70)
+          print("AUTOMATED END-TO-END TEST")
+          print("=" * 70)
+          print(
+              f"Media URL: {media_url}"
+          )
+          print(
+              f"Duration: {candidate.get('duration')}"
+          )
+          print(
+              f"File size: {candidate.get('file_size')}"
+          )
+          print(
+              f"Caption: {final_caption}"
+          )
+          print("")
+          print("Sending to Render...")
+
+          try:
+
+              response = requests.get(
+                  RENDER_URL,
+                  params={
+                      "media_url": media_url,
+                      "caption": final_caption
+                  },
+                  headers={
+                      "x-api-key": API_KEY
+                  },
+                  timeout=360
+              )
+
+          except Exception as exc:
+
+              print(
+                  f"Request failed: {exc}"
+              )
+              sys.exit(1)
+
+          print(
+              f"HTTP status: {response.status_code}"
+          )
+
+          print(
+              f"Render response: {response.text}"
+          )
+
+          if not response.ok:
+              print(
+                  "END-TO-END TEST FAILED."
+              )
+              sys.exit(1)
+
+          try:
+              result = response.json()
+          except Exception:
+              print(
+                  "Render returned invalid JSON."
+              )
+              sys.exit(1)
+
+          if not result.get(
+              "telegram_sent"
+          ):
+              print(
+                  "Telegram upload was not confirmed."
+              )
+              sys.exit(1)
+
+          message_id = result.get(
+              "telegram_message_id"
+          )
+
+          print("")
+          print("=" * 70)
+          print("END-TO-END TEST SUCCESS")
+          print("=" * 70)
+          print(
+              f"Telegram message ID: {message_id}"
+          )
+          print(
+              f"Duration: {result.get('duration')}"
+          )
+          print(
+              f"File size: {result.get('file_size')}"
+          )
+
+          history_path = "history.json"
+
           with open(
-              "history.json",
+              history_path,
               "r",
               encoding="utf-8"
           ) as f:
@@ -76,261 +199,55 @@ jobs:
           if not isinstance(history, list):
               history = []
 
-          print(
-              f"Selected candidates: {len(candidates)}"
-          )
-
-          sent = 0
-          failed = 0
-
-          existing_keys = set()
-
-          for item in history:
-              if not isinstance(item, dict):
-                  continue
-
-              for field in (
-                  "sha256",
-                  "media_url",
-                  "status_url"
-              ):
-                  value = item.get(field)
-
-                  if value:
-                      existing_keys.add(
-                          f"{field}:{value}"
-                      )
-
-          for index, candidate in enumerate(
-              candidates,
-              start=1
-          ):
-
-              media_url = candidate.get(
-                  "media_url"
-              )
-
-              caption = candidate.get(
-                  "caption",
-                  ""
-              ).strip()
-
-              sha256 = candidate.get(
+          history.append({
+              "published_at": (
+                  datetime.now(
+                      timezone.utc
+                  ).isoformat()
+              ),
+              "telegram_message_id": message_id,
+              "sha256": candidate.get(
                   "sha256"
-              )
-
-              status_url = candidate.get(
+              ),
+              "media_url": media_url,
+              "status_url": candidate.get(
                   "status_url"
+              ),
+              "duration": candidate.get(
+                  "duration"
+              ),
+              "file_size": candidate.get(
+                  "file_size"
+              ),
+              "total_score": candidate.get(
+                  "total_score"
               )
+          })
 
-              print("")
-              print("=" * 70)
-              print(
-                  f"VIDEO {index}/{len(candidates)}"
+          with open(
+              history_path,
+              "w",
+              encoding="utf-8"
+          ) as f:
+              json.dump(
+                  history,
+                  f,
+                  ensure_ascii=False,
+                  indent=2
               )
-              print("=" * 70)
-
-              if not media_url:
-                  print(
-                      "SKIP: missing media_url"
-                  )
-                  failed += 1
-                  continue
-
-              duplicate = False
-
-              for field, value in (
-                  ("sha256", sha256),
-                  ("media_url", media_url),
-                  ("status_url", status_url)
-              ):
-                  if (
-                      value
-                      and f"{field}:{value}"
-                      in existing_keys
-                  ):
-                      duplicate = True
-                      break
-
-              if duplicate:
-                  print(
-                      "SKIP: already published"
-                  )
-                  continue
-
-              if caption:
-                  final_caption = (
-                      caption
-                      + "\n\n"
-                      + "@utcutie"
-                  )
-              else:
-                  final_caption = "@utcutie"
-
-              print(
-                  "Sending to Render..."
-              )
-
-              print(
-                  f"Media URL: {media_url}"
-              )
-
-              try:
-
-                  response = requests.get(
-                      RENDER_URL,
-                      params={
-                          "media_url": media_url,
-                          "caption": final_caption
-                      },
-                      headers={
-                          "x-api-key": API_KEY
-                      },
-                      timeout=360
-                  )
-
-                  print(
-                      f"HTTP {response.status_code}"
-                  )
-
-                  print(
-                      response.text
-                  )
-
-                  if not response.ok:
-                      failed += 1
-                      print(
-                          "FAILED: Render rejected video"
-                      )
-                      continue
-
-                  data = response.json()
-
-                  if not data.get(
-                      "telegram_sent"
-                  ):
-                      failed += 1
-                      print(
-                          "FAILED: Telegram not confirmed"
-                      )
-                      continue
-
-                  message_id = data.get(
-                      "telegram_message_id"
-                  )
-
-                  print(
-                      "SUCCESS"
-                  )
-
-                  print(
-                      f"Telegram message: "
-                      f"{message_id}"
-                  )
-
-                  sent += 1
-
-                  history_entry = {
-                      "published_at": (
-                          datetime.now(
-                              timezone.utc
-                          ).isoformat()
-                      ),
-                      "telegram_message_id": (
-                          message_id
-                      ),
-                      "sha256": sha256,
-                      "media_url": media_url,
-                      "status_url": status_url,
-                      "duration": candidate.get(
-                          "duration"
-                      ),
-                      "file_size": candidate.get(
-                          "file_size"
-                      ),
-                      "total_score": candidate.get(
-                          "total_score"
-                      )
-                  }
-
-                  history.append(
-                      history_entry
-                  )
-
-                  for field, value in (
-                      ("sha256", sha256),
-                      ("media_url", media_url),
-                      ("status_url", status_url)
-                  ):
-                      if value:
-                          existing_keys.add(
-                              f"{field}:{value}"
-                          )
-
-                  with open(
-                      "history.json",
-                      "w",
-                      encoding="utf-8"
-                  ) as history_file:
-
-                      json.dump(
-                          history,
-                          history_file,
-                          ensure_ascii=False,
-                          indent=2
-                      )
-
-              except Exception as exc:
-
-                  failed += 1
-
-                  print(
-                      "EXCEPTION:",
-                      type(exc).__name__,
-                      exc
-                  )
-
-              if index < len(candidates):
-
-                  print(
-                      "Waiting 5 seconds..."
-                  )
-
-                  time.sleep(5)
 
           print("")
-          print("=" * 70)
-          print("FINAL SEND SUMMARY")
-          print("=" * 70)
-
           print(
-              f"Selected: {len(candidates)}"
+              "Successful publication recorded "
+              "in history.json."
           )
-
-          print(
-              f"Sent successfully: {sent}"
-          )
-
-          print(
-              f"Failed: {failed}"
-          )
-
-          if sent == 0:
-
-              print(
-                  "No videos were successfully sent."
-              )
-
-              sys.exit(1)
 
           PY
 
-      - name: Remove temporary history backup
+      - name: Save test results
         run: |
-          rm -f history_before_run.json
+          rm -f history_before_test.json
 
-      - name: Save publication history and discovery results
-        run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
@@ -339,6 +256,6 @@ jobs:
                   validated_candidates.json \
                   selected_candidates.json
 
-          git diff --cached --quiet || git commit -m "Publish UTCutie discovery batch"
+          git diff --cached --quiet || git commit -m "Record UTCutie end-to-end test publication"
 
           git push
