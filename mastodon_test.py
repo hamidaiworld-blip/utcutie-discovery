@@ -45,13 +45,21 @@ MAX_SELECTED = 20
 REQUEST_TIMEOUT = 30
 
 # Telegram video captions have a 1024-character limit.
-# We keep a safety margin for the final @utcutie line.
+# Leave room for the final @utcutie line.
 MAX_CAPTION_LENGTH = 900
 
 HISTORY_FILE = Path("history.json")
 CANDIDATES_FILE = Path("mastodon_candidates.json")
 VALIDATED_FILE = Path("validated_candidates.json")
 SELECTED_FILE = Path("selected_candidates.json")
+
+# Diversity controls.
+#
+# These are NOT hard quotas.
+# They only prevent the ranking from filling the entire
+# daily selection with videos from one account/source.
+MAX_VIDEOS_PER_ACCOUNT = 2
+MAX_VIDEOS_PER_INSTANCE = 8
 
 
 # ============================================================
@@ -93,6 +101,7 @@ ANIMAL_KEYWORDS = {
     "bunnies": 5,
 
     "guinea": 4,
+
     "pig": 3,
     "pigs": 3,
 
@@ -142,17 +151,32 @@ def now_iso():
     ).isoformat()
 
 
+# ============================================================
+# CAPTION CLEANING
+# ============================================================
+
 def clean_caption(raw_caption):
     """
     Convert Mastodon HTML into clean plain text.
 
+    Rules:
+
+    1. Remove script/style blocks.
+    2. Preserve paragraph/line boundaries.
+    3. Remove remaining HTML.
+    4. Decode HTML entities.
+    5. Remove URLs.
+    6. Remove hashtags.
+    7. Preserve meaningful line breaks.
+    8. Remove empty hashtag-only lines.
+    9. Collapse excessive blank lines.
+
     Example:
-        <p><a href="...">#Dog</a></p>
+
+        <p><a href="...">#Dog</a> #Pets</p>
         <p>Sunday afternoon</p>
 
     becomes:
-
-        #Dog
 
         Sunday afternoon
     """
@@ -162,7 +186,10 @@ def clean_caption(raw_caption):
 
     text = str(raw_caption)
 
-    # Remove script/style blocks completely.
+    # --------------------------------------------------------
+    # Remove script/style blocks.
+    # --------------------------------------------------------
+
     text = re.sub(
         r"<(script|style)\b[^>]*>.*?</\1>",
         " ",
@@ -170,7 +197,10 @@ def clean_caption(raw_caption):
         flags=re.IGNORECASE | re.DOTALL
     )
 
+    # --------------------------------------------------------
     # Convert common block-level HTML into line breaks.
+    # --------------------------------------------------------
+
     text = re.sub(
         r"</?(p|div|br|li|blockquote|h[1-6])\b[^>]*>",
         "\n",
@@ -178,17 +208,26 @@ def clean_caption(raw_caption):
         flags=re.IGNORECASE
     )
 
+    # --------------------------------------------------------
     # Remove remaining HTML tags.
+    # --------------------------------------------------------
+
     text = re.sub(
         r"<[^>]+>",
         " ",
         text
     )
 
+    # --------------------------------------------------------
     # Decode HTML entities.
+    # --------------------------------------------------------
+
     text = html.unescape(text)
 
+    # --------------------------------------------------------
     # Remove URLs.
+    # --------------------------------------------------------
+
     text = re.sub(
         r"https?://\S+",
         "",
@@ -196,7 +235,31 @@ def clean_caption(raw_caption):
         flags=re.IGNORECASE
     )
 
-    # Normalize whitespace while preserving paragraphs.
+    # --------------------------------------------------------
+    # Remove hashtags.
+    #
+    # Supports normal Unicode word characters too.
+    # Examples:
+    #
+    # #Dog
+    # #DogsOfMastodon
+    # #گربه
+    # --------------------------------------------------------
+
+    text = re.sub(
+        r"(?<!\w)#[\w]+",
+        "",
+        text,
+        flags=re.UNICODE
+    )
+
+    # --------------------------------------------------------
+    # Clean each line individually.
+    #
+    # This deliberately preserves line boundaries instead of
+    # flattening the entire caption into one paragraph.
+    # --------------------------------------------------------
+
     lines = []
 
     for line in text.splitlines():
@@ -207,12 +270,23 @@ def clean_caption(raw_caption):
             line
         ).strip()
 
-        if line:
-            lines.append(line)
+        # Remove lines that contain nothing after hashtag/URL
+        # cleaning.
+        if not line:
+            continue
+
+        lines.append(line)
+
+    # --------------------------------------------------------
+    # Rebuild caption.
+    # --------------------------------------------------------
 
     text = "\n".join(lines)
 
+    # --------------------------------------------------------
     # Collapse excessive blank lines.
+    # --------------------------------------------------------
+
     text = re.sub(
         r"\n{3,}",
         "\n\n",
@@ -224,13 +298,15 @@ def clean_caption(raw_caption):
 
 def telegram_caption(raw_caption):
     """
-    Produce the final Telegram-ready caption.
+    Produce the Telegram-ready source caption.
 
-    The discovery output contains only the clean source caption.
-    @utcutie is appended later by the publishing workflow.
+    @utcutie is intentionally appended later by the
+    publishing workflow.
     """
 
-    text = clean_caption(raw_caption)
+    text = clean_caption(
+        raw_caption
+    )
 
     if not text:
         return ""
@@ -238,29 +314,58 @@ def telegram_caption(raw_caption):
     if len(text) <= MAX_CAPTION_LENGTH:
         return text
 
-    # Prefer cutting at a natural boundary.
-    shortened = text[:MAX_CAPTION_LENGTH]
+    # --------------------------------------------------------
+    # Prefer a natural boundary.
+    # --------------------------------------------------------
 
-    last_space = shortened.rfind(" ")
+    shortened = text[
+        :MAX_CAPTION_LENGTH
+    ]
 
-    if last_space >= int(
+    last_newline = shortened.rfind(
+        "\n"
+    )
+
+    last_space = shortened.rfind(
+        " "
+    )
+
+    # Prefer a paragraph/line boundary.
+    if last_newline >= int(
         MAX_CAPTION_LENGTH * 0.75
     ):
-        shortened = shortened[:last_space]
+        shortened = shortened[
+            :last_newline
+        ]
+
+    elif last_space >= int(
+        MAX_CAPTION_LENGTH * 0.75
+    ):
+        shortened = shortened[
+            :last_space
+        ]
 
     return shortened.rstrip()
 
 
+# ============================================================
+# TEXT / RELEVANCE
+# ============================================================
+
 def normalize_text(text):
+
     if not text:
         return ""
 
-    text = clean_caption(text)
+    text = clean_caption(
+        text
+    )
 
     return text.lower()
 
 
 def tokenize(text):
+
     return set(
         re.findall(
             r"[a-z0-9]+",
@@ -270,7 +375,10 @@ def tokenize(text):
 
 
 def animal_relevance(text):
-    tokens = tokenize(text)
+
+    tokens = tokenize(
+        text
+    )
 
     score = 0
 
@@ -282,11 +390,16 @@ def animal_relevance(text):
     return score
 
 
+# ============================================================
+# ENGAGEMENT
+# ============================================================
+
 def engagement_score(
     favourites,
     reblogs,
     replies
 ):
+
     favourites = max(
         0,
         int(favourites or 0)
@@ -324,6 +437,10 @@ def engagement_score(
         3
     )
 
+
+# ============================================================
+# RECENCY
+# ============================================================
 
 def recency_score(created_at):
 
@@ -371,10 +488,15 @@ def recency_score(created_at):
         return 0.0
 
 
+# ============================================================
+# VIDEO QUALITY
+# ============================================================
+
 def quality_score(
     width,
     height
 ):
+
     try:
 
         width = int(
@@ -389,7 +511,9 @@ def quality_score(
 
         return 0.0
 
-    pixels = width * height
+    pixels = (
+        width * height
+    )
 
     if pixels >= 1920 * 1080:
         return 25.0
@@ -409,10 +533,63 @@ def quality_score(
     return 0.0
 
 
+# ============================================================
+# CAPTION QUALITY
+# ============================================================
+
+def caption_quality_score(
+    caption
+):
+
+    text = str(
+        caption or ""
+    ).strip()
+
+    if not text:
+        return 0.0
+
+    score = 0.0
+
+    # A short meaningful caption is preferable to an empty one.
+    if len(text) >= 10:
+        score += 2.0
+
+    if len(text) >= 30:
+        score += 1.0
+
+    # Preserve captions that actually contain multiple words.
+    words = re.findall(
+        r"\S+",
+        text
+    )
+
+    if len(words) >= 4:
+        score += 1.0
+
+    # Avoid rewarding captions that are essentially just symbols.
+    alphanumeric = re.findall(
+        r"[A-Za-z0-9\u0600-\u06FF]",
+        text
+    )
+
+    if len(alphanumeric) >= 10:
+        score += 1.0
+
+    return min(
+        5.0,
+        score
+    )
+
+
+# ============================================================
+# JSON
+# ============================================================
+
 def load_json(
     path,
     default
 ):
+
     if not path.exists():
         return default
 
@@ -434,6 +611,7 @@ def save_json(
     path,
     data
 ):
+
     with path.open(
         "w",
         encoding="utf-8"
@@ -460,7 +638,7 @@ def discover_candidates():
     session.headers.update({
         "User-Agent": (
             "Mozilla/5.0 "
-            "UTCutie-Mastodon-Discovery/2.0"
+            "UTCutie-Mastodon-Discovery/3.0"
         )
     })
 
@@ -758,7 +936,7 @@ def download_and_validate(
             headers={
                 "User-Agent": (
                     "Mozilla/5.0 "
-                    "UTCutie-Mastodon-Discovery/2.0"
+                    "UTCutie-Mastodon-Discovery/3.0"
                 )
             }
         )
@@ -773,12 +951,10 @@ def download_and_validate(
             return None
 
         content_type = (
-            response.headers
-            .get(
+            response.headers.get(
                 "content-type",
                 ""
-            )
-            .lower()
+            ).lower()
         )
 
         if (
@@ -970,21 +1146,27 @@ def download_and_validate(
             has_video_stream = True
 
             try:
+
                 width = int(
                     stream.get(
                         "width"
                     ) or 0
                 )
+
             except Exception:
+
                 width = 0
 
             try:
+
                 height = int(
                     stream.get(
                         "height"
                     ) or 0
                 )
+
             except Exception:
+
                 height = 0
 
             break
@@ -1007,6 +1189,10 @@ def download_and_validate(
             )
 
             return None
+
+        # ----------------------------------------------------
+        # SHA-256
+        # ----------------------------------------------------
 
         file_hash = hashlib.sha256()
 
@@ -1050,10 +1236,10 @@ def download_and_validate(
 
         result["width"] = width
         result["height"] = height
+
         result["sha256"] = sha256
 
-        # Make absolutely sure the final caption
-        # remains clean after validation.
+        # Final caption cleanup.
         result["caption"] = telegram_caption(
             result.get(
                 "caption",
@@ -1099,8 +1285,11 @@ def download_and_validate(
         ):
 
             try:
+
                 temp_path.unlink()
+
             except Exception:
+
                 pass
 
 
@@ -1108,10 +1297,11 @@ def download_and_validate(
 # HISTORY
 #
 # IMPORTANT:
-# This file is READ ONLY by discovery.
+# Discovery READS history.json.
+# Discovery NEVER writes to it.
 #
 # Successful publication is recorded by the publishing
-# workflow AFTER Telegram confirms success.
+# workflow only after Telegram confirms success.
 # ============================================================
 
 def history_keys(
@@ -1246,9 +1436,11 @@ def score_candidate(
 ):
 
     text = (
-        candidate.get(
-            "caption",
-            ""
+        str(
+            candidate.get(
+                "caption",
+                ""
+            )
         )
         + " "
         + str(
@@ -1307,11 +1499,22 @@ def score_candidate(
         ),
     )
 
+    caption_quality = caption_quality_score(
+        candidate.get(
+            "caption",
+            ""
+        )
+    )
+
+    # Relevance remains the strongest signal.
+    # Engagement and recency help prioritize attractive
+    # and fresh content.
     total = (
         relevance * 2
         + engagement
         + recency
         + quality
+        + caption_quality
     )
 
     result = dict(
@@ -1334,6 +1537,10 @@ def score_candidate(
         quality
     )
 
+    result["caption_quality_score"] = (
+        caption_quality
+    )
+
     result["total_score"] = round(
         total,
         3
@@ -1343,18 +1550,139 @@ def score_candidate(
 
 
 # ============================================================
+# DIVERSE FINAL SELECTION
+# ============================================================
+
+def select_diverse_candidates(
+    candidates
+):
+
+    selected = []
+
+    account_counts = {}
+    instance_counts = {}
+
+    # --------------------------------------------------------
+    # First pass:
+    #
+    # Take the highest-ranked candidates while respecting
+    # diversity limits.
+    # --------------------------------------------------------
+
+    for candidate in candidates:
+
+        if len(selected) >= MAX_SELECTED:
+            break
+
+        account = (
+            candidate.get(
+                "account"
+            )
+            or candidate.get(
+                "account_display_name"
+            )
+            or "unknown-account"
+        )
+
+        instance = (
+            candidate.get(
+                "instance"
+            )
+            or "unknown-instance"
+        )
+
+        account_count = account_counts.get(
+            account,
+            0
+        )
+
+        instance_count = instance_counts.get(
+            instance,
+            0
+        )
+
+        if (
+            account_count
+            >= MAX_VIDEOS_PER_ACCOUNT
+        ):
+            continue
+
+        if (
+            instance_count
+            >= MAX_VIDEOS_PER_INSTANCE
+        ):
+            continue
+
+        selected.append(
+            candidate
+        )
+
+        account_counts[
+            account
+        ] = account_count + 1
+
+        instance_counts[
+            instance
+        ] = instance_count + 1
+
+    # --------------------------------------------------------
+    # Second pass:
+    #
+    # If diversity limits prevented us from reaching 20,
+    # fill remaining positions with the highest-ranked
+    # candidates not already selected.
+    #
+    # This means diversity is a preference, NOT a quota.
+    # --------------------------------------------------------
+
+    if len(selected) < MAX_SELECTED:
+
+        selected_ids = {
+            candidate.get(
+                "sha256"
+            )
+            for candidate in selected
+        }
+
+        for candidate in candidates:
+
+            if len(selected) >= MAX_SELECTED:
+                break
+
+            candidate_id = candidate.get(
+                "sha256"
+            )
+
+            if candidate_id in selected_ids:
+                continue
+
+            selected.append(
+                candidate
+            )
+
+            selected_ids.add(
+                candidate_id
+            )
+
+    return selected
+
+
+# ============================================================
 # MAIN
 # ============================================================
 
 def main():
 
     print("=" * 70)
+
     print(
         "UTCutie Mastodon Video Discovery"
     )
+
     print("=" * 70)
 
     print()
+
     print(
         "Starting discovery..."
     )
@@ -1362,10 +1690,15 @@ def main():
     candidates = discover_candidates()
 
     print()
+
     print(
         f"RAW VIDEO CANDIDATES: "
         f"{len(candidates)}"
     )
+
+    # --------------------------------------------------------
+    # URL-level deduplication.
+    # --------------------------------------------------------
 
     candidates = deduplicate_candidates(
         candidates
@@ -1381,7 +1714,12 @@ def main():
         candidates
     )
 
+    # --------------------------------------------------------
+    # Actual media validation.
+    # --------------------------------------------------------
+
     print()
+
     print(
         "Starting media validation..."
     )
@@ -1413,6 +1751,7 @@ def main():
         )
 
     print()
+
     print(
         f"VALIDATED VIDEOS: "
         f"{len(validated)}"
@@ -1424,10 +1763,11 @@ def main():
     )
 
     # --------------------------------------------------------
-    # Actual media deduplication
+    # Actual media deduplication.
     # --------------------------------------------------------
 
     print()
+
     print(
         "Removing duplicate video files..."
     )
@@ -1442,10 +1782,7 @@ def main():
     )
 
     # --------------------------------------------------------
-    # Publication history
-    #
-    # history.json contains ONLY successfully published
-    # videos. This script never modifies it.
+    # Publication history.
     # --------------------------------------------------------
 
     history = load_json(
@@ -1457,6 +1794,7 @@ def main():
         history,
         list
     ):
+
         history = []
 
     seen_keys = history_keys(
@@ -1483,7 +1821,7 @@ def main():
     )
 
     # --------------------------------------------------------
-    # Final ranking
+    # Final ranking.
     # --------------------------------------------------------
 
     fresh.sort(
@@ -1501,23 +1839,38 @@ def main():
                 0
             ),
             item.get(
+                "recency_score",
+                0
+            ),
+            item.get(
                 "quality_score",
+                0
+            ),
+            item.get(
+                "caption_quality_score",
                 0
             ),
         ),
         reverse=True
     )
 
-    selected = fresh[
-        :MAX_SELECTED
-    ]
+    # --------------------------------------------------------
+    # Diverse selection.
+    # --------------------------------------------------------
+
+    selected = select_diverse_candidates(
+        fresh
+    )
 
     print()
+
     print("=" * 70)
+
     print(
         f"SELECTED UNIQUE VIDEOS: "
         f"{len(selected)}"
     )
+
     print("=" * 70)
 
     for index, candidate in enumerate(
@@ -1526,11 +1879,26 @@ def main():
     ):
 
         print()
+
         print(
             f"{index}. "
             f"score={candidate.get('total_score')} "
             f"duration={candidate.get('duration')}s "
             f"size={candidate.get('file_size_mb')}MB"
+        )
+
+        print(
+            "   Account:",
+            candidate.get(
+                "account"
+            )
+        )
+
+        print(
+            "   Instance:",
+            candidate.get(
+                "instance"
+            )
         )
 
         print(
@@ -1563,23 +1931,26 @@ def main():
     # --------------------------------------------------------
     # IMPORTANT:
     #
-    # DO NOT write selected candidates into history here.
+    # Discovery NEVER writes to history.json.
     #
-    # Publication history is now owned by the sender.
-    # A candidate enters history ONLY after Telegram confirms
-    # successful publication.
+    # Only the publishing workflow adds an item to history
+    # after Telegram confirms successful publication.
     # --------------------------------------------------------
 
     print()
+
     print(
         "Publication history was NOT modified."
     )
 
     print()
+
     print("=" * 70)
+
     print(
         "DISCOVERY COMPLETE"
     )
+
     print("=" * 70)
 
     print(
