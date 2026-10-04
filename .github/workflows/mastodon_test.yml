@@ -14,6 +14,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Save existing history
+        run: |
+          cp history.json history_before_run.json
+
+      - name: Reset temporary discovery history
+        run: |
+          echo "[]" > history.json
+
       - name: Install FFmpeg
         run: |
           sudo apt-get update
@@ -27,6 +35,10 @@ jobs:
       - name: Run Mastodon discovery
         run: python mastodon_test.py
 
+      - name: Restore real publication history
+        run: |
+          cp history_before_run.json history.json
+
       - name: Send selected videos to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
@@ -36,6 +48,8 @@ jobs:
           import os
           import sys
           import time
+          from datetime import datetime, timezone
+
           import requests
 
           RENDER_URL = (
@@ -52,12 +66,40 @@ jobs:
           ) as f:
               candidates = json.load(f)
 
+          with open(
+              "history.json",
+              "r",
+              encoding="utf-8"
+          ) as f:
+              history = json.load(f)
+
+          if not isinstance(history, list):
+              history = []
+
           print(
               f"Selected candidates: {len(candidates)}"
           )
 
           sent = 0
           failed = 0
+
+          existing_keys = set()
+
+          for item in history:
+              if not isinstance(item, dict):
+                  continue
+
+              for field in (
+                  "sha256",
+                  "media_url",
+                  "status_url"
+              ):
+                  value = item.get(field)
+
+                  if value:
+                      existing_keys.add(
+                          f"{field}:{value}"
+                      )
 
           for index, candidate in enumerate(
               candidates,
@@ -73,12 +115,47 @@ jobs:
                   ""
               ).strip()
 
+              sha256 = candidate.get(
+                  "sha256"
+              )
+
+              status_url = candidate.get(
+                  "status_url"
+              )
+
+              print("")
+              print("=" * 70)
+              print(
+                  f"VIDEO {index}/{len(candidates)}"
+              )
+              print("=" * 70)
+
               if not media_url:
                   print(
-                      f"[{index}] SKIP: "
-                      "missing media_url"
+                      "SKIP: missing media_url"
                   )
                   failed += 1
+                  continue
+
+              duplicate = False
+
+              for field, value in (
+                  ("sha256", sha256),
+                  ("media_url", media_url),
+                  ("status_url", status_url)
+              ):
+                  if (
+                      value
+                      and f"{field}:{value}"
+                      in existing_keys
+                  ):
+                      duplicate = True
+                      break
+
+              if duplicate:
+                  print(
+                      "SKIP: already published"
+                  )
                   continue
 
               if caption:
@@ -91,13 +168,11 @@ jobs:
                   final_caption = "@utcutie"
 
               print(
-                  f"[{index}] Sending:"
+                  "Sending to Render..."
               )
+
               print(
-                  f"  URL: {media_url}"
-              )
-              print(
-                  f"  Caption: {final_caption}"
+                  f"Media URL: {media_url}"
               )
 
               try:
@@ -115,47 +190,94 @@ jobs:
                   )
 
                   print(
-                      f"  HTTP: "
-                      f"{response.status_code}"
+                      f"HTTP {response.status_code}"
                   )
 
                   print(
-                      f"  Response: "
-                      f"{response.text}"
+                      response.text
                   )
 
-                  if response.ok:
-
-                      data = response.json()
-
-                      if data.get(
-                          "telegram_sent"
-                      ):
-
-                          sent += 1
-
-                          print(
-                              f"  SUCCESS "
-                              f"Telegram message "
-                              f"{data.get('telegram_message_id')}"
-                          )
-
-                      else:
-
-                          failed += 1
-
-                          print(
-                              "  FAILED: "
-                              "Telegram was not confirmed"
-                          )
-
-                  else:
-
+                  if not response.ok:
                       failed += 1
-
                       print(
-                          "  FAILED: "
-                          "Render returned an error"
+                          "FAILED: Render rejected video"
+                      )
+                      continue
+
+                  data = response.json()
+
+                  if not data.get(
+                      "telegram_sent"
+                  ):
+                      failed += 1
+                      print(
+                          "FAILED: Telegram not confirmed"
+                      )
+                      continue
+
+                  message_id = data.get(
+                      "telegram_message_id"
+                  )
+
+                  print(
+                      "SUCCESS"
+                  )
+
+                  print(
+                      f"Telegram message: "
+                      f"{message_id}"
+                  )
+
+                  sent += 1
+
+                  history_entry = {
+                      "published_at": (
+                          datetime.now(
+                              timezone.utc
+                          ).isoformat()
+                      ),
+                      "telegram_message_id": (
+                          message_id
+                      ),
+                      "sha256": sha256,
+                      "media_url": media_url,
+                      "status_url": status_url,
+                      "duration": candidate.get(
+                          "duration"
+                      ),
+                      "file_size": candidate.get(
+                          "file_size"
+                      ),
+                      "total_score": candidate.get(
+                          "total_score"
+                      )
+                  }
+
+                  history.append(
+                      history_entry
+                  )
+
+                  for field, value in (
+                      ("sha256", sha256),
+                      ("media_url", media_url),
+                      ("status_url", status_url)
+                  ):
+                      if value:
+                          existing_keys.add(
+                              f"{field}:{value}"
+                          )
+
+                  with open(
+                      "history.json",
+                      "w",
+                      encoding="utf-8"
+                  ) as history_file:
+
+                      json.dump(
+                          history,
+                          history_file,
+                          ensure_ascii=False,
+                          indent=2
                       )
 
               except Exception as exc:
@@ -163,40 +285,51 @@ jobs:
                   failed += 1
 
                   print(
-                      f"  EXCEPTION: {exc}"
+                      "EXCEPTION:",
+                      type(exc).__name__,
+                      exc
                   )
 
               if index < len(candidates):
 
                   print(
-                      "  Waiting 5 seconds..."
+                      "Waiting 5 seconds..."
                   )
 
                   time.sleep(5)
 
           print("")
-          print("==============================")
-          print("SEND SUMMARY")
-          print("==============================")
+          print("=" * 70)
+          print("FINAL SEND SUMMARY")
+          print("=" * 70)
+
           print(
               f"Selected: {len(candidates)}"
           )
+
           print(
-              f"Sent: {sent}"
+              f"Sent successfully: {sent}"
           )
+
           print(
               f"Failed: {failed}"
           )
 
           if sent == 0:
+
               print(
                   "No videos were successfully sent."
               )
+
               sys.exit(1)
 
           PY
 
-      - name: Save discovery results
+      - name: Remove temporary history backup
+        run: |
+          rm -f history_before_run.json
+
+      - name: Save publication history and discovery results
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -206,6 +339,6 @@ jobs:
                   validated_candidates.json \
                   selected_candidates.json
 
-          git diff --cached --quiet || git commit -m "Update UTCutie discovery results"
+          git diff --cached --quiet || git commit -m "Publish UTCutie discovery batch"
 
           git push
