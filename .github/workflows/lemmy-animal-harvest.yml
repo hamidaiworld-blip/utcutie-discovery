@@ -11,10 +11,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install yt-dlp
+      - name: Install yt-dlp and ffmpeg
         run: |
           python -m pip install --upgrade pip
           python -m pip install yt-dlp
+
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
 
       - name: Harvest Lemmy animal videos
         shell: bash
@@ -43,8 +46,7 @@ jobs:
               ("lemmybewholesome", "lemmy.world"),
           ]
 
-          POSTS_PER_COMMUNITY = 75
-          MAX_CANDIDATES = 50
+          POSTS_PER_COMMUNITY = 50
           MAX_DOWNLOAD_TESTS = 40
 
           MIN_DURATION = 15
@@ -63,10 +65,8 @@ jobs:
               "duck", "ducks",
               "goose", "geese",
               "chicken", "chickens",
-              "horse", "horses",
-              "foal",
-              "cow", "cows",
-              "calf",
+              "horse", "horses", "foal",
+              "cow", "cows", "calf",
               "goat", "goats",
               "sheep",
               "pig", "pigs",
@@ -116,7 +116,7 @@ jobs:
               "fb.watch",
           )
 
-          def fetch_json(url, retries=3):
+          def fetch_json(url, retries=4):
               last_error = None
 
               for attempt in range(retries):
@@ -127,23 +127,28 @@ jobs:
                               "User-Agent": (
                                   "Mozilla/5.0 "
                                   "(compatible; UTCutieBot/1.0)"
-                              )
-                          }
+                              ),
+                              "Accept": "application/json",
+                          },
                       )
 
                       with urllib.request.urlopen(
                           request,
-                          timeout=30
+                          timeout=30,
                       ) as response:
                           return json.loads(
-                              response.read().decode("utf-8")
+                              response.read().decode(
+                                  "utf-8"
+                              )
                           )
 
                   except Exception as exc:
                       last_error = exc
 
                       if attempt < retries - 1:
-                          time.sleep(2 * (attempt + 1))
+                          time.sleep(
+                              2 * (attempt + 1)
+                          )
 
               raise last_error
 
@@ -160,6 +165,33 @@ jobs:
 
               return url
 
+          def extract_urls(text):
+              if not text:
+                  return []
+
+              pattern = (
+                  r'https?://[^\s<>"\']+'
+              )
+
+              found = re.findall(
+                  pattern,
+                  text,
+              )
+
+              results = []
+
+              for url in found:
+                  url = url.rstrip(
+                      ".,);]}>\"'"
+                  )
+
+                  url = clean_url(url)
+
+                  if url and url not in results:
+                      results.append(url)
+
+              return results
+
           def url_extension(url):
               try:
                   path = urllib.parse.urlparse(
@@ -167,6 +199,7 @@ jobs:
                   ).path.lower()
 
                   return Path(path).suffix
+
               except Exception:
                   return ""
 
@@ -196,39 +229,14 @@ jobs:
 
                   return any(
                       host == item
-                      or host.endswith("." + item)
+                      or host.endswith(
+                          "." + item
+                      )
                       for item in EXTERNAL_VIDEO_HOSTS
                   )
 
               except Exception:
                   return False
-
-          def extract_urls(text):
-              if not text:
-                  return []
-
-              pattern = (
-                  r'https?://[^\s<>"\']+'
-              )
-
-              found = re.findall(
-                  pattern,
-                  text
-              )
-
-              results = []
-
-              for url in found:
-                  url = url.rstrip(
-                      ".,);]}>\"'"
-                  )
-
-                  url = clean_url(url)
-
-                  if url and url not in results:
-                      results.append(url)
-
-              return results
 
           def animal_score(title, body):
               text = (
@@ -247,13 +255,13 @@ jobs:
 
                   if re.search(
                       pattern,
-                      text
+                      text,
                   ):
                       score += 1
 
               return score
 
-          def get_duration_with_ffprobe(path):
+          def get_duration(path):
               try:
                   result = subprocess.run(
                       [
@@ -263,7 +271,9 @@ jobs:
                           "-show_entries",
                           "format=duration",
                           "-of",
-                          "default=noprint_wrappers=1:nokey=1",
+                          "default="
+                          "noprint_wrappers=1:"
+                          "nokey=1",
                           str(path),
                       ],
                       capture_output=True,
@@ -291,27 +301,21 @@ jobs:
                       "User-Agent": (
                           "Mozilla/5.0 "
                           "(compatible; UTCutieBot/1.0)"
-                      )
-                  }
+                      ),
+                      "Accept": "*/*",
+                  },
               )
 
               with urllib.request.urlopen(
                   request,
-                  timeout=60
+                  timeout=90,
               ) as response:
-
-                  content_type = (
-                      response.headers.get(
-                          "Content-Type",
-                          ""
-                      ).lower()
-                  )
 
                   total = 0
 
                   with open(
                       output,
-                      "wb"
+                      "wb",
                   ) as file:
 
                       while True:
@@ -331,12 +335,15 @@ jobs:
                               * 1024
                           ):
                               file.close()
+
                               output.unlink(
                                   missing_ok=True
                               )
-                              return False, (
-                                  "file larger than "
-                                  f"{MAX_SIZE_MB} MB"
+
+                              return (
+                                  False,
+                                  "file exceeds "
+                                  f"{MAX_SIZE_MB} MB",
                               )
 
                           file.write(chunk)
@@ -345,9 +352,16 @@ jobs:
                   output.unlink(
                       missing_ok=True
                   )
-                  return False, "empty file"
 
-              return True, content_type
+                  return (
+                      False,
+                      "empty file",
+                  )
+
+              return (
+                  True,
+                  "downloaded",
+              )
 
           all_posts = []
           seen_posts = set()
@@ -358,12 +372,10 @@ jobs:
               print(
                   "============================================================"
               )
-
               print(
                   f"COMMUNITY: "
                   f"{community_name}@{instance}"
               )
-
               print(
                   "============================================================"
               )
@@ -400,7 +412,8 @@ jobs:
                   )
 
                   print(
-                      f"Community ID: {community_id}"
+                      f"Community ID: "
+                      f"{community_id}"
                   )
 
                   if not community_id:
@@ -415,16 +428,47 @@ jobs:
                       f"&limit={POSTS_PER_COMMUNITY}"
                   )
 
-                  data = fetch_json(
-                      posts_url
+                  try:
+                      data = fetch_json(
+                          posts_url
+                      )
+
+                  except Exception as first_error:
+
+                      print(
+                          "Primary post request "
+                          "failed:"
+                      )
+
+                      print(
+                          f"{type(first_error).__name__}: "
+                          f"{first_error}"
+                      )
+
+                      print(
+                          "Retrying with "
+                          "minimal parameters..."
+                      )
+
+                      fallback_url = (
+                          f"https://{instance}"
+                          f"/api/v3/post/list"
+                          f"?community_id={community_id}"
+                          f"&limit=50"
+                      )
+
+                      data = fetch_json(
+                          fallback_url
+                      )
+
+                  posts = (
+                      data.get("posts")
+                      or []
                   )
 
-                  posts = data.get(
-                      "posts"
-                  ) or []
-
                   print(
-                      f"RECENT POSTS: {len(posts)}"
+                      f"RECENT POSTS: "
+                      f"{len(posts)}"
                   )
 
                   for item in posts:
@@ -446,7 +490,7 @@ jobs:
 
                       key = (
                           instance,
-                          post_id
+                          post_id,
                       )
 
                       if key in seen_posts:
@@ -479,7 +523,9 @@ jobs:
                           body
                       ):
                           if url not in urls:
-                              urls.append(url)
+                              urls.append(
+                                  url
+                              )
 
                       relevance = animal_score(
                           title,
@@ -531,11 +577,9 @@ jobs:
           print(
               "============================================================"
           )
-
           print(
               "HARVEST SUMMARY"
           )
-
           print(
               "============================================================"
           )
@@ -554,7 +598,7 @@ jobs:
               key=lambda x: (
                   x.get(
                       "animal_relevance",
-                      0
+                      0,
                   ),
                   x.get(
                       "score"
@@ -563,7 +607,7 @@ jobs:
                       "comments"
                   ) or 0,
               ),
-              reverse=True
+              reverse=True,
           )
 
           Path(
@@ -572,9 +616,9 @@ jobs:
               json.dumps(
                   all_posts,
                   ensure_ascii=False,
-                  indent=2
+                  indent=2,
               ),
-              encoding="utf-8"
+              encoding="utf-8",
           )
 
           media_candidates = []
@@ -584,7 +628,7 @@ jobs:
 
               for url in post.get(
                   "media_urls",
-                  []
+                  [],
               ):
 
                   if url in seen_urls:
@@ -611,28 +655,31 @@ jobs:
                       ),
                   })
 
-          print(
-              f"MEDIA CANDIDATES: "
-              f"{len(media_candidates)}"
-          )
-
           direct = [
-              x for x in media_candidates
+              x
+              for x in media_candidates
               if x["media_type"] == "direct"
           ]
 
           external = [
-              x for x in media_candidates
+              x
+              for x in media_candidates
               if x["media_type"] == "external"
           ]
 
+          print()
           print(
-              f"DIRECT VIDEO URLS: "
+              "MEDIA CANDIDATES: "
+              f"{len(media_candidates)}"
+          )
+
+          print(
+              "DIRECT VIDEO URLS: "
               f"{len(direct)}"
           )
 
           print(
-              f"EXTERNAL VIDEO PAGES: "
+              "EXTERNAL VIDEO PAGES: "
               f"{len(external)}"
           )
 
@@ -642,9 +689,9 @@ jobs:
               json.dumps(
                   media_candidates,
                   ensure_ascii=False,
-                  indent=2
+                  indent=2,
               ),
-              encoding="utf-8"
+              encoding="utf-8",
           )
 
           successful = []
@@ -661,7 +708,7 @@ jobs:
               media_candidates[
                   :MAX_DOWNLOAD_TESTS
               ],
-              start=1
+              start=1,
           ):
 
               url = candidate[
@@ -685,7 +732,7 @@ jobs:
 
               output = (
                   test_dir
-                  / f"video_{index}.bin"
+                  / f"video_{index}.mp4"
               )
 
               try:
@@ -698,13 +745,13 @@ jobs:
                       ok, info = (
                           download_direct(
                               url,
-                              output
+                              output,
                           )
                       )
 
                       if not ok:
                           print(
-                              f"DIRECT DOWNLOAD: "
+                              "DIRECT DOWNLOAD: "
                               f"FAIL - {info}"
                           )
                           continue
@@ -737,10 +784,11 @@ jobs:
                           command,
                           capture_output=True,
                           text=True,
-                          timeout=90
+                          timeout=90,
                       )
 
                       if result.returncode != 0:
+
                           print(
                               "YT-DLP: FAIL"
                           )
@@ -784,10 +832,8 @@ jobs:
                       / 1024
                   )
 
-                  duration = (
-                      get_duration_with_ffprobe(
-                          output
-                      )
+                  duration = get_duration(
+                      output
                   )
 
                   print(
@@ -831,16 +877,13 @@ jobs:
 
                   successful.append({
                       **candidate,
-                      "downloaded_file": (
-                          str(output)
-                      ),
                       "size_mb": round(
                           size_mb,
-                          2
+                          2,
                       ),
                       "duration": round(
                           duration,
-                          2
+                          2,
                       ),
                   })
 
@@ -854,6 +897,10 @@ jobs:
 
               finally:
 
+                  output.unlink(
+                      missing_ok=True
+                  )
+
                   for file in test_dir.glob(
                       f"external_{index}.*"
                   ):
@@ -861,30 +908,24 @@ jobs:
                           missing_ok=True
                       )
 
-                  output.unlink(
-                      missing_ok=True
-                  )
-
           Path(
               "lemmy_successful_videos.json"
           ).write_text(
               json.dumps(
                   successful,
                   ensure_ascii=False,
-                  indent=2
+                  indent=2,
               ),
-              encoding="utf-8"
+              encoding="utf-8",
           )
 
           print()
           print(
               "============================================================"
           )
-
           print(
               "FINAL"
           )
-
           print(
               "============================================================"
           )
@@ -917,23 +958,6 @@ jobs:
           print(
               f"VALID VIDEOS: "
               f"{len(successful)}"
-          )
-
-          print()
-          print(
-              "Generated:"
-          )
-
-          print(
-              "  lemmy_animal_posts.json"
-          )
-
-          print(
-              "  lemmy_media_candidates.json"
-          )
-
-          print(
-              "  lemmy_successful_videos.json"
           )
 
           PY
