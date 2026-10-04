@@ -16,13 +16,22 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git
+
       - name: Run discovery
         run: |
           python discover.py
 
-      - name: Show candidate file
+      - name: Show candidate URLs
+        if: always()
         run: |
-          echo "===== candidate_urls.txt ====="
+          echo "========================================"
+          echo "candidate_urls.txt"
+          echo "========================================"
+
           if [ -f candidate_urls.txt ]; then
             cat candidate_urls.txt
           else
