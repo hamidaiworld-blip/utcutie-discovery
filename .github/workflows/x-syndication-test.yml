@@ -1,0 +1,142 @@
+name: X Syndication Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-syndication:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Test X syndication endpoint
+        run: |
+          python - <<'PY'
+          import requests
+          import json
+
+          tweet_id = "2054157777073762305"
+
+          urls = [
+              f"https://cdn.syndication.twimg.com/tweet-result?id={tweet_id}",
+              f"https://cdn.syndication.twimg.com/tweet-result?id={tweet_id}&lang=en",
+          ]
+
+          headers = {
+              "User-Agent": (
+                  "Mozilla/5.0 (X11; Linux x86_64) "
+                  "AppleWebKit/537.36 "
+                  "(KHTML, like Gecko) "
+                  "Chrome/140.0 Safari/537.36"
+              ),
+              "Accept": "application/json,text/plain,*/*",
+          }
+
+          print("=" * 70)
+          print("X SYNDICATION TEST")
+          print("=" * 70)
+          print("Tweet ID:", tweet_id)
+          print()
+
+          for index, url in enumerate(urls, start=1):
+
+              print("-" * 70)
+              print(f"TEST {index}")
+              print(url)
+              print("-" * 70)
+
+              try:
+                  response = requests.get(
+                      url,
+                      headers=headers,
+                      timeout=30,
+                  )
+
+                  print("HTTP status:", response.status_code)
+                  print(
+                      "Content-Type:",
+                      response.headers.get("content-type")
+                  )
+                  print(
+                      "Response size:",
+                      len(response.content),
+                      "bytes"
+                  )
+
+                  output_file = f"syndication_{index}.txt"
+
+                  with open(
+                      output_file,
+                      "wb"
+                  ) as f:
+                      f.write(response.content)
+
+                  print("Saved:", output_file)
+
+                  if response.status_code == 200:
+
+                      try:
+                          data = response.json()
+
+                          print()
+                          print("JSON RESPONSE: YES")
+
+                          print(
+                              json.dumps(
+                                  data,
+                                  indent=2,
+                                  ensure_ascii=False
+                              )[:12000]
+                          )
+
+                          print()
+                          print("KEYS:")
+
+                          if isinstance(data, dict):
+                              for key in sorted(data.keys()):
+                                  print("-", key)
+
+                          print()
+                          print("SYNDICATION ACCESS: YES")
+
+                      except Exception as e:
+                          print()
+                          print(
+                              "JSON RESPONSE: NO"
+                          )
+                          print(
+                              "Parse error:",
+                              str(e)
+                          )
+
+                  else:
+                      print()
+                      print(
+                          "SYNDICATION ACCESS: NO"
+                      )
+
+                      print()
+                      print(
+                          response.text[:2000]
+                      )
+
+              except Exception as e:
+                  print(
+                      "REQUEST ERROR:",
+                      repr(e)
+                  )
+
+          PY
+
+      - name: Upload syndication test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: x-syndication-test
+          path: |
+            syndication_*.txt
+          if-no-files-found: ignore
