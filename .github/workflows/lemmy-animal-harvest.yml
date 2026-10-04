@@ -16,26 +16,20 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install yt-dlp
 
-      - name: Clone socialfetch
-        run: |
-          git clone --depth 1 https://github.com/EdgeAIG/socialfetch.git
-          cd socialfetch
-          chmod +x socialfetch
-
-      - name: Harvest recent Lemmy animal communities
+      - name: Harvest Lemmy animal videos
         shell: bash
         run: |
           set -e
 
           echo "============================================================"
-          echo "UTCUTIE LEMMY DIRECT POST HARVEST"
+          echo "UTCUTIE LEMMY MEDIA HARVEST"
           echo "============================================================"
 
           python <<'PY'
           import json
           import re
           import subprocess
-          import sys
+          import time
           import urllib.parse
           import urllib.request
           from pathlib import Path
@@ -49,15 +43,19 @@ jobs:
               ("lemmybewholesome", "lemmy.world"),
           ]
 
-          POSTS_PER_COMMUNITY = 50
-          MAX_DOWNLOAD_TESTS = 30
+          POSTS_PER_COMMUNITY = 75
+          MAX_CANDIDATES = 50
+          MAX_DOWNLOAD_TESTS = 40
+
+          MIN_DURATION = 15
+          MAX_DURATION = 180
+          MAX_SIZE_MB = 48
 
           ANIMAL_WORDS = [
               "cat", "cats", "kitten", "kittens",
               "dog", "dogs", "puppy", "puppies",
               "pet", "pets",
               "animal", "animals",
-              "puppy", "pup",
               "rabbit", "bunny", "bunnies",
               "hamster", "guinea pig",
               "bird", "birds",
@@ -106,21 +104,48 @@ jobs:
               ".gif",
           )
 
-          def fetch_json(url):
-              request = urllib.request.Request(
-                  url,
-                  headers={
-                      "User-Agent": "UTCutieBot/1.0"
-                  }
-              )
+          EXTERNAL_VIDEO_HOSTS = (
+              "youtube.com",
+              "youtu.be",
+              "vimeo.com",
+              "tiktok.com",
+              "x.com",
+              "twitter.com",
+              "instagram.com",
+              "facebook.com",
+              "fb.watch",
+          )
 
-              with urllib.request.urlopen(
-                  request,
-                  timeout=30
-              ) as response:
-                  return json.loads(
-                      response.read().decode("utf-8")
-                  )
+          def fetch_json(url, retries=3):
+              last_error = None
+
+              for attempt in range(retries):
+                  try:
+                      request = urllib.request.Request(
+                          url,
+                          headers={
+                              "User-Agent": (
+                                  "Mozilla/5.0 "
+                                  "(compatible; UTCutieBot/1.0)"
+                              )
+                          }
+                      )
+
+                      with urllib.request.urlopen(
+                          request,
+                          timeout=30
+                      ) as response:
+                          return json.loads(
+                              response.read().decode("utf-8")
+                          )
+
+                  except Exception as exc:
+                      last_error = exc
+
+                      if attempt < retries - 1:
+                          time.sleep(2 * (attempt + 1))
+
+              raise last_error
 
           def clean_url(url):
               if not url:
@@ -128,57 +153,201 @@ jobs:
 
               url = url.strip()
 
-              if not url.startswith(("http://", "https://")):
+              if not url.startswith(
+                  ("http://", "https://")
+              ):
                   return None
 
               return url
 
-          def is_video_extension(url):
-              path = urllib.parse.urlparse(url).path.lower()
-              return path.endswith(VIDEO_EXTENSIONS)
+          def url_extension(url):
+              try:
+                  path = urllib.parse.urlparse(
+                      url
+                  ).path.lower()
 
-          def is_image_extension(url):
-              path = urllib.parse.urlparse(url).path.lower()
-              return path.endswith(IMAGE_EXTENSIONS)
+                  return Path(path).suffix
+              except Exception:
+                  return ""
 
-          def is_external_video_page(url):
+          def is_direct_video(url):
+              return (
+                  url_extension(url)
+                  in VIDEO_EXTENSIONS
+              )
+
+          def is_image(url):
+              return (
+                  url_extension(url)
+                  in IMAGE_EXTENSIONS
+              )
+
+          def is_external_video(url):
               if not url:
                   return False
 
-              hosts = (
-                  "youtube.com",
-                  "youtu.be",
-                  "vimeo.com",
-                  "tiktok.com",
-                  "x.com",
-                  "twitter.com",
-                  "instagram.com",
-                  "facebook.com",
-                  "fb.watch",
+              try:
+                  host = urllib.parse.urlparse(
+                      url
+                  ).netloc.lower()
+
+                  if host.startswith("www."):
+                      host = host[4:]
+
+                  return any(
+                      host == item
+                      or host.endswith("." + item)
+                      for item in EXTERNAL_VIDEO_HOSTS
+                  )
+
+              except Exception:
+                  return False
+
+          def extract_urls(text):
+              if not text:
+                  return []
+
+              pattern = (
+                  r'https?://[^\s<>"\']+'
               )
 
-              host = urllib.parse.urlparse(url).netloc.lower()
-
-              if host.startswith("www."):
-                  host = host[4:]
-
-              return any(
-                  host == h or host.endswith("." + h)
-                  for h in hosts
+              found = re.findall(
+                  pattern,
+                  text
               )
 
-          def animal_relevance(title, body):
-              text = f"{title or ''} {body or ''}".lower()
+              results = []
+
+              for url in found:
+                  url = url.rstrip(
+                      ".,);]}>\"'"
+                  )
+
+                  url = clean_url(url)
+
+                  if url and url not in results:
+                      results.append(url)
+
+              return results
+
+          def animal_score(title, body):
+              text = (
+                  f"{title or ''} "
+                  f"{body or ''}"
+              ).lower()
 
               score = 0
 
               for word in ANIMAL_WORDS:
-                  pattern = r"(?<![a-z])" + re.escape(word) + r"(?![a-z])"
+                  pattern = (
+                      r"(?<![a-z])"
+                      + re.escape(word)
+                      + r"(?![a-z])"
+                  )
 
-                  if re.search(pattern, text):
+                  if re.search(
+                      pattern,
+                      text
+                  ):
                       score += 1
 
               return score
+
+          def get_duration_with_ffprobe(path):
+              try:
+                  result = subprocess.run(
+                      [
+                          "ffprobe",
+                          "-v",
+                          "error",
+                          "-show_entries",
+                          "format=duration",
+                          "-of",
+                          "default=noprint_wrappers=1:nokey=1",
+                          str(path),
+                      ],
+                      capture_output=True,
+                      text=True,
+                      timeout=30,
+                  )
+
+                  if result.returncode != 0:
+                      return None
+
+                  value = result.stdout.strip()
+
+                  if not value:
+                      return None
+
+                  return float(value)
+
+              except Exception:
+                  return None
+
+          def download_direct(url, output):
+              request = urllib.request.Request(
+                  url,
+                  headers={
+                      "User-Agent": (
+                          "Mozilla/5.0 "
+                          "(compatible; UTCutieBot/1.0)"
+                      )
+                  }
+              )
+
+              with urllib.request.urlopen(
+                  request,
+                  timeout=60
+              ) as response:
+
+                  content_type = (
+                      response.headers.get(
+                          "Content-Type",
+                          ""
+                      ).lower()
+                  )
+
+                  total = 0
+
+                  with open(
+                      output,
+                      "wb"
+                  ) as file:
+
+                      while True:
+                          chunk = response.read(
+                              1024 * 1024
+                          )
+
+                          if not chunk:
+                              break
+
+                          total += len(chunk)
+
+                          if (
+                              total
+                              > MAX_SIZE_MB
+                              * 1024
+                              * 1024
+                          ):
+                              file.close()
+                              output.unlink(
+                                  missing_ok=True
+                              )
+                              return False, (
+                                  "file larger than "
+                                  f"{MAX_SIZE_MB} MB"
+                              )
+
+                          file.write(chunk)
+
+              if total == 0:
+                  output.unlink(
+                      missing_ok=True
+                  )
+                  return False, "empty file"
+
+              return True, content_type
 
           all_posts = []
           seen_posts = set()
@@ -186,54 +355,73 @@ jobs:
           for community_name, instance in COMMUNITIES:
 
               print()
-              print("============================================================")
-              print(f"COMMUNITY: {community_name}@{instance}")
-              print("============================================================")
+              print(
+                  "============================================================"
+              )
+
+              print(
+                  f"COMMUNITY: "
+                  f"{community_name}@{instance}"
+              )
+
+              print(
+                  "============================================================"
+              )
 
               try:
+
                   community_url = (
-                      f"https://{instance}/api/v3/community"
-                      f"?name={urllib.parse.quote(community_name)}"
+                      f"https://{instance}"
+                      f"/api/v3/community"
+                      f"?name="
+                      f"{urllib.parse.quote(community_name)}"
                   )
 
                   community_data = fetch_json(
                       community_url
                   )
 
-                  community_view = community_data.get(
-                      "community_view"
+                  community_view = (
+                      community_data.get(
+                          "community_view"
+                      )
                   )
 
                   if not community_view:
-                      print("COMMUNITY LOOKUP FAILED")
+                      print(
+                          "COMMUNITY LOOKUP FAILED"
+                      )
                       continue
 
-                  community = community_view.get(
-                      "community",
-                      {}
+                  community_id = (
+                      community_view
+                      .get("community", {})
+                      .get("id")
                   )
-
-                  community_id = community.get("id")
 
                   print(
                       f"Community ID: {community_id}"
                   )
 
                   if not community_id:
-                      print("NO COMMUNITY ID")
                       continue
 
                   posts_url = (
-                      f"https://{instance}/api/v3/post/list"
+                      f"https://{instance}"
+                      f"/api/v3/post/list"
                       f"?community_id={community_id}"
                       f"&type_=All"
                       f"&sort=New"
                       f"&limit={POSTS_PER_COMMUNITY}"
                   )
 
-                  data = fetch_json(posts_url)
+                  data = fetch_json(
+                      posts_url
+                  )
 
-                  posts = data.get("posts") or []
+                  posts = data.get(
+                      "posts"
+                  ) or []
 
                   print(
                       f"RECENT POSTS: {len(posts)}"
@@ -241,24 +429,59 @@ jobs:
 
                   for item in posts:
 
-                      post = item.get("post") or {}
-                      counts = item.get("counts") or {}
+                      post = item.get(
+                          "post"
+                      ) or {}
 
-                      post_id = post.get("id")
+                      counts = item.get(
+                          "counts"
+                      ) or {}
+
+                      post_id = post.get(
+                          "id"
+                      )
 
                       if post_id is None:
                           continue
 
-                      if post_id in seen_posts:
+                      key = (
+                          instance,
+                          post_id
+                      )
+
+                      if key in seen_posts:
                           continue
 
-                      seen_posts.add(post_id)
+                      seen_posts.add(key)
 
-                      title = post.get("name") or ""
-                      body = post.get("body") or ""
-                      url = clean_url(post.get("url"))
+                      title = (
+                          post.get("name")
+                          or ""
+                      )
 
-                      relevance = animal_relevance(
+                      body = (
+                          post.get("body")
+                          or ""
+                      )
+
+                      post_url = clean_url(
+                          post.get("url")
+                      )
+
+                      urls = []
+
+                      if post_url:
+                          urls.append(
+                              post_url
+                          )
+
+                      for url in extract_urls(
+                          body
+                      ):
+                          if url not in urls:
+                              urls.append(url)
+
+                      relevance = animal_score(
                           title,
                           body
                       )
@@ -266,45 +489,79 @@ jobs:
                       if relevance <= 0:
                           continue
 
-                      record = {
+                      all_posts.append({
                           "post_id": post_id,
-                          "community": f"{community_name}@{instance}",
+                          "community": (
+                              f"{community_name}"
+                              f"@{instance}"
+                          ),
                           "title": title,
                           "body": body,
-                          "url": url,
-                          "published": post.get("published"),
-                          "score": counts.get("score"),
-                          "comments": counts.get("comments"),
-                          "upvotes": counts.get("upvotes"),
-                          "downvotes": counts.get("downvotes"),
-                          "animal_relevance": relevance,
-                      }
-
-                      all_posts.append(record)
+                          "post_url": post_url,
+                          "media_urls": urls,
+                          "published": post.get(
+                              "published"
+                          ),
+                          "score": counts.get(
+                              "score"
+                          ),
+                          "comments": counts.get(
+                              "comments"
+                          ),
+                          "upvotes": counts.get(
+                              "upvotes"
+                          ),
+                          "downvotes": counts.get(
+                              "downvotes"
+                          ),
+                          "animal_relevance": (
+                              relevance
+                          ),
+                      })
 
               except Exception as exc:
+
                   print(
-                      f"ERROR: {type(exc).__name__}: {exc}"
+                      f"ERROR: "
+                      f"{type(exc).__name__}: "
+                      f"{exc}"
                   )
 
           print()
-          print("============================================================")
-          print("HARVEST SUMMARY")
-          print("============================================================")
-
           print(
-              f"UNIQUE POSTS: {len(seen_posts)}"
+              "============================================================"
           )
 
           print(
-              f"ANIMAL POSTS: {len(all_posts)}"
+              "HARVEST SUMMARY"
+          )
+
+          print(
+              "============================================================"
+          )
+
+          print(
+              f"UNIQUE POSTS: "
+              f"{len(seen_posts)}"
+          )
+
+          print(
+              f"ANIMAL POSTS: "
+              f"{len(all_posts)}"
           )
 
           all_posts.sort(
               key=lambda x: (
-                  x.get("animal_relevance", 0),
-                  x.get("score") or 0,
-                  x.get("comments") or 0,
+                  x.get(
+                      "animal_relevance",
+                      0
+                  ),
+                  x.get(
+                      "score"
+                  ) or 0,
+                  x.get(
+                      "comments"
+                  ) or 0,
               ),
               reverse=True
           )
@@ -320,180 +577,292 @@ jobs:
               encoding="utf-8"
           )
 
-          direct_videos = []
-          external_pages = []
-
+          media_candidates = []
           seen_urls = set()
 
           for post in all_posts:
 
-              url = post.get("url")
+              for url in post.get(
+                  "media_urls",
+                  []
+              ):
 
-              if not url:
-                  continue
+                  if url in seen_urls:
+                      continue
 
-              if url in seen_urls:
-                  continue
+                  seen_urls.add(url)
 
-              seen_urls.add(url)
+                  if is_image(url):
+                      continue
 
-              if is_video_extension(url):
-                  direct_videos.append(post)
+                  if not (
+                      is_direct_video(url)
+                      or is_external_video(url)
+                  ):
+                      continue
 
-              elif is_image_extension(url):
-                  continue
-
-              elif is_external_video_page(url):
-                  external_pages.append(post)
+                  media_candidates.append({
+                      **post,
+                      "media_url": url,
+                      "media_type": (
+                          "direct"
+                          if is_direct_video(url)
+                          else "external"
+                      ),
+                  })
 
           print(
-              f"DIRECT VIDEO URLS: {len(direct_videos)}"
+              f"MEDIA CANDIDATES: "
+              f"{len(media_candidates)}"
+          )
+
+          direct = [
+              x for x in media_candidates
+              if x["media_type"] == "direct"
+          ]
+
+          external = [
+              x for x in media_candidates
+              if x["media_type"] == "external"
+          ]
+
+          print(
+              f"DIRECT VIDEO URLS: "
+              f"{len(direct)}"
           )
 
           print(
-              f"EXTERNAL VIDEO PAGES: {len(external_pages)}"
+              f"EXTERNAL VIDEO PAGES: "
+              f"{len(external)}"
           )
 
           Path(
-              "lemmy_direct_videos.json"
+              "lemmy_media_candidates.json"
           ).write_text(
               json.dumps(
-                  direct_videos,
+                  media_candidates,
                   ensure_ascii=False,
                   indent=2
               ),
               encoding="utf-8"
           )
-
-          Path(
-              "lemmy_external_video_pages.json"
-          ).write_text(
-              json.dumps(
-                  external_pages,
-                  ensure_ascii=False,
-                  indent=2
-              ),
-              encoding="utf-8"
-          )
-
-          print()
-          print("============================================================")
-          print("DIRECT VIDEO DOWNLOAD TEST")
-          print("============================================================")
 
           successful = []
 
-          candidates = (
-              direct_videos +
-              external_pages
+          test_dir = Path(
+              "lemmy_video_test"
           )
 
-          for index, post in enumerate(
-              candidates[:MAX_DOWNLOAD_TESTS],
+          test_dir.mkdir(
+              exist_ok=True
+          )
+
+          for index, candidate in enumerate(
+              media_candidates[
+                  :MAX_DOWNLOAD_TESTS
+              ],
               start=1
           ):
 
-              url = post.get("url")
+              url = candidate[
+                  "media_url"
+              ]
 
               print()
               print(
-                  f"[{index}/{min(len(candidates), MAX_DOWNLOAD_TESTS)}]"
+                  f"[{index}/"
+                  f"{min(len(media_candidates), MAX_DOWNLOAD_TESTS)}]"
+              )
+
+              print(
+                  f"TYPE: "
+                  f"{candidate['media_type']}"
               )
 
               print(
                   f"URL: {url}"
               )
 
-              output_dir = Path(
-                  "lemmy_video_test"
+              output = (
+                  test_dir
+                  / f"video_{index}.bin"
               )
-
-              output_dir.mkdir(
-                  exist_ok=True
-              )
-
-              output_template = str(
-                  output_dir / "%(id)s.%(ext)s"
-              )
-
-              command = [
-                  "yt-dlp",
-                  "--no-playlist",
-                  "--no-warnings",
-                  "--max-filesize",
-                  "48M",
-                  "--match-filter",
-                  "duration >= 15 & duration <= 180",
-                  "-f",
-                  "best[ext=mp4]/best",
-                  "--merge-output-format",
-                  "mp4",
-                  "-o",
-                  output_template,
-                  url,
-              ]
 
               try:
-                  result = subprocess.run(
-                      command,
-                      capture_output=True,
-                      text=True,
-                      timeout=90
-                  )
 
-                  if result.returncode != 0:
-                      print("YT-DLP: FAIL")
+                  if (
+                      candidate["media_type"]
+                      == "direct"
+                  ):
 
-                      stderr = (
-                          result.stderr or ""
-                      ).strip()
+                      ok, info = (
+                          download_direct(
+                              url,
+                              output
+                          )
+                      )
 
-                      if stderr:
+                      if not ok:
                           print(
-                              stderr[-1000:]
+                              f"DIRECT DOWNLOAD: "
+                              f"FAIL - {info}"
+                          )
+                          continue
+
+                  else:
+
+                      output_template = str(
+                          test_dir
+                          / f"external_{index}.%(ext)s"
+                      )
+
+                      command = [
+                          "yt-dlp",
+                          "--no-playlist",
+                          "--no-warnings",
+                          "--max-filesize",
+                          "48M",
+                          "--match-filter",
+                          "duration >= 15 & duration <= 180",
+                          "-f",
+                          "best[ext=mp4]/best",
+                          "--merge-output-format",
+                          "mp4",
+                          "-o",
+                          output_template,
+                          url,
+                      ]
+
+                      result = subprocess.run(
+                          command,
+                          capture_output=True,
+                          text=True,
+                          timeout=90
+                      )
+
+                      if result.returncode != 0:
+                          print(
+                              "YT-DLP: FAIL"
                           )
 
-                      continue
+                          error = (
+                              result.stderr
+                              or result.stdout
+                              or ""
+                          ).strip()
 
-                  files = list(
-                      output_dir.glob("*")
-                  )
+                          if error:
+                              print(
+                                  error[-1000:]
+                              )
 
-                  if not files:
+                          continue
+
+                      files = list(
+                          test_dir.glob(
+                              f"external_{index}.*"
+                          )
+                      )
+
+                      if not files:
+                          print(
+                              "YT-DLP: NO FILE"
+                          )
+                          continue
+
+                      output = files[0]
+
+                  if not output.exists():
                       print(
-                          "YT-DLP: NO FILE"
+                          "DOWNLOAD: NO FILE"
                       )
                       continue
 
-                  video = files[0]
-
                   size_mb = (
-                      video.stat().st_size
+                      output.stat().st_size
                       / 1024
                       / 1024
+                  )
+
+                  duration = (
+                      get_duration_with_ffprobe(
+                          output
+                      )
                   )
 
                   print(
-                      f"YT-DLP: SUCCESS "
+                      f"SIZE: "
                       f"{size_mb:.2f} MB"
                   )
 
+                  print(
+                      f"DURATION: "
+                      f"{duration}"
+                  )
+
+                  if duration is None:
+                      print(
+                          "VALIDATION: "
+                          "NO DURATION"
+                      )
+                      continue
+
+                  if not (
+                      MIN_DURATION
+                      <= duration
+                      <= MAX_DURATION
+                  ):
+                      print(
+                          "VALIDATION: "
+                          "DURATION FAIL"
+                      )
+                      continue
+
+                  if size_mb > MAX_SIZE_MB:
+                      print(
+                          "VALIDATION: "
+                          "SIZE FAIL"
+                      )
+                      continue
+
+                  print(
+                      "VALIDATION: PASS"
+                  )
+
                   successful.append({
-                      **post,
-                      "downloaded_file": str(video),
+                      **candidate,
+                      "downloaded_file": (
+                          str(output)
+                      ),
                       "size_mb": round(
                           size_mb,
                           2
                       ),
+                      "duration": round(
+                          duration,
+                          2
+                      ),
                   })
 
-                  video.unlink(
-                      missing_ok=True
+              except Exception as exc:
+
+                  print(
+                      f"DOWNLOAD ERROR: "
+                      f"{type(exc).__name__}: "
+                      f"{exc}"
                   )
 
-              except subprocess.TimeoutExpired:
-                  print(
-                      "YT-DLP: TIMEOUT"
+              finally:
+
+                  for file in test_dir.glob(
+                      f"external_{index}.*"
+                  ):
+                      file.unlink(
+                          missing_ok=True
+                      )
+
+                  output.unlink(
+                      missing_ok=True
                   )
 
           Path(
@@ -508,33 +877,51 @@ jobs:
           )
 
           print()
-          print("============================================================")
-          print("FINAL")
-          print("============================================================")
-
           print(
-              f"RAW/UNIQUE POSTS: {len(seen_posts)}"
+              "============================================================"
           )
 
           print(
-              f"ANIMAL CANDIDATES: {len(all_posts)}"
+              "FINAL"
           )
 
           print(
-              f"DIRECT VIDEO URLS: {len(direct_videos)}"
+              "============================================================"
           )
 
           print(
-              f"EXTERNAL VIDEO PAGES: {len(external_pages)}"
+              f"UNIQUE POSTS: "
+              f"{len(seen_posts)}"
           )
 
           print(
-              f"YT-DLP SUCCESS: {len(successful)}"
+              f"ANIMAL POSTS: "
+              f"{len(all_posts)}"
+          )
+
+          print(
+              f"MEDIA CANDIDATES: "
+              f"{len(media_candidates)}"
+          )
+
+          print(
+              f"DIRECT VIDEO URLS: "
+              f"{len(direct)}"
+          )
+
+          print(
+              f"EXTERNAL VIDEO PAGES: "
+              f"{len(external)}"
+          )
+
+          print(
+              f"VALID VIDEOS: "
+              f"{len(successful)}"
           )
 
           print()
           print(
-              "Files generated:"
+              "Generated:"
           )
 
           print(
@@ -542,11 +929,7 @@ jobs:
           )
 
           print(
-              "  lemmy_direct_videos.json"
-          )
-
-          print(
-              "  lemmy_external_video_pages.json"
+              "  lemmy_media_candidates.json"
           )
 
           print(
@@ -561,7 +944,6 @@ jobs:
           name: lemmy-animal-harvest
           path: |
             lemmy_animal_posts.json
-            lemmy_direct_videos.json
-            lemmy_external_video_pages.json
+            lemmy_media_candidates.json
             lemmy_successful_videos.json
           if-no-files-found: warn
