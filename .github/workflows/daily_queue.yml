@@ -3,16 +3,12 @@ name: UTCutie Daily Queue Preparation
 on:
   workflow_dispatch:
 
-  # GitHub cron is UTC.
-  # We run at both 08:00 and 09:00 UTC and let the script
-  # continue only when it is actually 10:00 in Europe/Paris.
-  #
-  # This handles both daylight-saving and winter time:
-  # Summer: 10:00 CEST = 08:00 UTC
-  # Winter: 10:00 CET  = 09:00 UTC
+  # GitHub Actions cron uses UTC.
+  # These two triggers cover 10:00 Tehran time across
+  # the current Asia/Tehran UTC offset.
   schedule:
-    - cron: "0 8 * * *"
-    - cron: "0 9 * * *"
+    - cron: "30 6 * * *"
+    - cron: "30 7 * * *"
 
 permissions:
   contents: write
@@ -40,39 +36,39 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests
 
-      - name: Check local time
+      - name: Check Tehran local time
         id: time_check
         run: |
           python - <<'PY'
           from datetime import datetime
           from zoneinfo import ZoneInfo
 
-          now = datetime.now(ZoneInfo("Europe/Paris"))
+          tehran = ZoneInfo("Asia/Tehran")
+          now = datetime.now(tehran)
 
-          print("Current UTC time:")
-          print(datetime.now(ZoneInfo("UTC")).isoformat())
-
-          print("Europe/Paris time:")
+          print("Current Tehran time:")
           print(now.isoformat())
 
+          print("Tehran UTC offset:")
+          print(now.utcoffset())
+
           if now.hour == 10:
-              print("LOCAL_10AM=true")
+              print("It is 10:00 hour in Tehran.")
           else:
-              print("LOCAL_10AM=false")
+              print("This is not the 10:00 Tehran trigger.")
           PY
 
-          LOCAL_HOUR=$(TZ=Europe/Paris date +%H)
+          TEHRAN_HOUR=$(TZ=Asia/Tehran date +%H)
 
-          if [ "$LOCAL_HOUR" = "10" ]; then
+          if [ "$TEHRAN_HOUR" = "10" ]; then
             echo "run_now=true" >> "$GITHUB_OUTPUT"
-            echo "It is 10:00 in Europe/Paris. Continuing."
+            echo "It is 10:00 in Tehran. Continuing."
           else
             echo "run_now=false" >> "$GITHUB_OUTPUT"
-            echo "This is the alternate UTC trigger. It is not 10:00 in Europe/Paris."
-            echo "The workflow will stop without changing anything."
+            echo "Not 10:00 Tehran. Stopping safely."
           fi
 
-      - name: Stop if this is not the 10 AM trigger
+      - name: Stop if this is not the Tehran 10 AM trigger
         if: steps.time_check.outputs.run_now != 'true'
         run: |
           echo "No queue preparation needed at this trigger."
@@ -95,29 +91,36 @@ jobs:
           SOURCE = Path("selected_candidates.json")
           OUTPUT = Path("daily_queue.json")
 
-          timezone = ZoneInfo("Europe/Paris")
-          now = datetime.now(timezone)
+          TEHRAN = ZoneInfo("Asia/Tehran")
+
+          now = datetime.now(TEHRAN)
           today = now.date()
 
           if not SOURCE.exists():
-              raise SystemExit("ERROR: selected_candidates.json was not created.")
+              raise SystemExit(
+                  "ERROR: selected_candidates.json was not created."
+              )
 
           with SOURCE.open("r", encoding="utf-8") as f:
               candidates = json.load(f)
 
           if not isinstance(candidates, list):
-              raise SystemExit("ERROR: selected_candidates.json is not a list.")
+              raise SystemExit(
+                  "ERROR: selected_candidates.json is not a list."
+              )
 
-          # Hard safety limit.
+          # Never schedule more than 20 videos.
           candidates = candidates[:20]
 
           queue = []
-
           count = len(candidates)
 
           if count == 0:
               print("No suitable videos were selected.")
+
           else:
+              # Tehran publishing window:
+              # 11:00 AM → 11:00 PM
               start_time = datetime(
                   today.year,
                   today.month,
@@ -125,7 +128,7 @@ jobs:
                   11,
                   0,
                   0,
-                  tzinfo=timezone,
+                  tzinfo=TEHRAN,
               )
 
               end_time = datetime(
@@ -135,11 +138,12 @@ jobs:
                   23,
                   0,
                   0,
-                  tzinfo=timezone,
+                  tzinfo=TEHRAN,
               )
 
               if count == 1:
                   scheduled_times = [start_time]
+
               else:
                   total_seconds = (
                       end_time - start_time
@@ -148,17 +152,22 @@ jobs:
                   interval = total_seconds / (count - 1)
 
                   scheduled_times = [
-                      start_time + timedelta(seconds=interval * i)
+                      start_time + timedelta(
+                          seconds=interval * i
+                      )
                       for i in range(count)
                   ]
 
-              for index, candidate in enumerate(candidates, start=1):
+              for index, candidate in enumerate(
+                  candidates,
+                  start=1,
+              ):
                   media_url = candidate.get("media_url")
 
                   if not media_url:
                       print(
-                          f"WARNING: Candidate {index} has no media_url. "
-                          "Skipping."
+                          f"WARNING: Candidate {index} "
+                          "has no media_url. Skipping."
                       )
                       continue
 
@@ -168,58 +177,88 @@ jobs:
                       or ""
                   ).strip()
 
-                  # The discovery script already removes hashtags and
-                  # cleans the caption. We only add the channel handle here.
+                  # mastodon_test.py already removes hashtags
+                  # and cleans the source caption.
+                  #
+                  # We only add the channel handle here.
                   if source_caption:
-                      final_caption = f"{source_caption}\n\n@utcutie"
+                      final_caption = (
+                          f"{source_caption}\n\n@utcutie"
+                      )
                   else:
                       final_caption = "@utcutie"
 
-                  # Telegram captions have a 1024-character limit.
+                  # Telegram caption maximum.
                   final_caption = final_caption[:1024]
 
                   scheduled_at = scheduled_times[index - 1]
 
-                  item = {
-                      "queue_id": index,
-                      "scheduled_at": scheduled_at.isoformat(),
-                      "status": "pending",
-                      "media_url": media_url,
-                      "caption": final_caption,
-                      "source_url": candidate.get("status_url", ""),
-                      "duration": candidate.get("duration"),
-                      "file_size": candidate.get("file_size"),
-                      "score": candidate.get("score"),
-                      "instance": candidate.get("instance"),
-                      "account": candidate.get("account"),
-                  }
-
-                  queue.append(item)
+                  queue.append(
+                      {
+                          "queue_id": index,
+                          "scheduled_at": scheduled_at.isoformat(),
+                          "status": "pending",
+                          "media_url": media_url,
+                          "caption": final_caption,
+                          "source_url": candidate.get(
+                              "status_url",
+                              "",
+                          ),
+                          "duration": candidate.get(
+                              "duration"
+                          ),
+                          "file_size": candidate.get(
+                              "file_size"
+                          ),
+                          "score": candidate.get(
+                              "score"
+                          ),
+                          "instance": candidate.get(
+                              "instance"
+                          ),
+                          "account": candidate.get(
+                              "account"
+                          ),
+                      }
+                  )
 
           payload = {
               "created_at": now.isoformat(),
-              "timezone": "Europe/Paris",
+              "timezone": "Asia/Tehran",
+              "timezone_display": "Tehran",
               "target_channel": "@utcutie",
+
+              # Keep test destination until the complete
+              # scheduled system has been verified.
               "test_chat_id": "333331538",
+
               "max_items": 20,
               "selected_count": len(queue),
+
               "publishing_window": {
                   "start": "11:00",
                   "end": "23:00",
               },
+
               "queue": queue,
           }
 
           with OUTPUT.open("w", encoding="utf-8") as f:
-              json.dump(payload, f, ensure_ascii=False, indent=2)
+              json.dump(
+                  payload,
+                  f,
+                  ensure_ascii=False,
+                  indent=2,
+              )
 
           print()
           print("=" * 70)
-          print("DAILY QUEUE CREATED")
+          print("UTCUTIE DAILY QUEUE CREATED")
           print("=" * 70)
           print(f"Date: {today.isoformat()}")
-          print(f"Timezone: Europe/Paris")
+          print("Timezone: Asia/Tehran")
           print(f"Selected videos: {len(queue)}")
+          print("Publishing window: 11:00 → 23:00 Tehran")
           print()
 
           for item in queue:
