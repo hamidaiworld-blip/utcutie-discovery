@@ -16,26 +16,41 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install dependencies
+      - name: Install yt-dlp
         run: |
           python -m pip install --upgrade pip
-          pip install requests
+          python -m pip install -U yt-dlp
 
-      - name: Run discovery
+      - name: Verify yt-dlp
+        run: |
+          python -m yt_dlp --version
+
+      - name: Run professional validation engine
         run: |
           python discover.py
 
-      - name: Show discovered URLs
+      - name: Show validation results
         if: always()
         run: |
           echo "========================================"
-          echo "DISCOVERED X POSTS"
+          echo "VALIDATED CANDIDATES"
           echo "========================================"
 
-          if [ -f candidate_urls.txt ]; then
-            cat candidate_urls.txt
+          if [ -f validated_candidates.json ]; then
+            cat validated_candidates.json
           else
-            echo "candidate_urls.txt was not created"
+            echo "validated_candidates.json was not created"
+          fi
+
+          echo ""
+          echo "========================================"
+          echo "SELECTED CANDIDATES"
+          echo "========================================"
+
+          if [ -f selected_candidates.json ]; then
+            cat selected_candidates.json
+          else
+            echo "selected_candidates.json was not created"
           fi
 
       - name: Upload discovery results
@@ -43,5 +58,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: discovery-results
-          path: candidate_urls.txt
+          path: |
+            candidate_urls.txt
+            validated_candidates.json
+            selected_candidates.json
           if-no-files-found: ignore
