@@ -16,20 +16,20 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install system dependencies
+      - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y git
+          python -m pip install --upgrade pip
+          pip install requests
 
       - name: Run discovery
         run: |
           python discover.py
 
-      - name: Show candidate URLs
+      - name: Show discovered URLs
         if: always()
         run: |
           echo "========================================"
-          echo "candidate_urls.txt"
+          echo "DISCOVERED X POSTS"
           echo "========================================"
 
           if [ -f candidate_urls.txt ]; then
@@ -37,3 +37,11 @@ jobs:
           else
             echo "candidate_urls.txt was not created"
           fi
+
+      - name: Upload discovery results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: discovery-results
+          path: candidate_urls.txt
+          if-no-files-found: ignore
