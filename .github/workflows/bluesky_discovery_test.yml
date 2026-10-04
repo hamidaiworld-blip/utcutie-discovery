@@ -1,0 +1,63 @@
+name: UTCutie Bluesky Discovery Test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bluesky-discovery:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests yt-dlp
+
+      - name: Run Bluesky discovery
+        run: |
+          python bluesky_test.py
+
+      - name: Show selected candidates
+        run: |
+          echo
+          echo "============================================================"
+          echo "BLUESKY SELECTED CANDIDATES"
+          echo "============================================================"
+
+          if [ -f bluesky_selected_candidates.json ]; then
+            cat bluesky_selected_candidates.json
+          else
+            echo "No selected-candidates file was created."
+            exit 1
+          fi
+
+      - name: Commit test results
+        run: |
+          git config user.name "UTCutie Bot"
+          git config user.email "actions@users.noreply.github.com"
+
+          git add bluesky_candidates.json
+          git add bluesky_selected_candidates.json
+
+          if git diff --cached --quiet; then
+            echo "No Bluesky result changes to commit."
+          else
+            git commit -m "Update Bluesky discovery test results"
+            git push
+          fi
