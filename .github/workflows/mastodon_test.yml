@@ -1,0 +1,42 @@
+name: UTCutie Mastodon Video Discovery Test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Run Mastodon discovery
+        run: python mastodon_test.py
+
+      - name: Save discovery results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add history.json \
+                  mastodon_candidates.json \
+                  validated_candidates.json \
+                  selected_candidates.json
+
+          git diff --cached --quiet || git commit -m "Update UTCutie discovery results"
+
+          git push
