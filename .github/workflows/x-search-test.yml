@@ -1,0 +1,149 @@
+name: X Search Access Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-search:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -U yt-dlp requests
+
+      - name: Test X search page
+        run: |
+          python - <<'PY'
+          import requests
+
+          url = "https://x.com/search?q=cats%20filter%3Avideos&src=typed_query"
+
+          headers = {
+              "User-Agent": (
+                  "Mozilla/5.0 (X11; Linux x86_64) "
+                  "AppleWebKit/537.36 "
+                  "(KHTML, like Gecko) "
+                  "Chrome/140.0 Safari/537.36"
+              ),
+              "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+              "Accept-Language": "en-US,en;q=0.9",
+          }
+
+          print("=" * 70)
+          print("X SEARCH ACCESS TEST")
+          print("=" * 70)
+          print("URL:")
+          print(url)
+          print()
+
+          response = requests.get(
+              url,
+              headers=headers,
+              timeout=30,
+              allow_redirects=True,
+          )
+
+          print("HTTP status:", response.status_code)
+          print("Final URL:", response.url)
+          print("Response size:", len(response.content), "bytes")
+          print("Content-Type:", response.headers.get("content-type"))
+
+          with open("x_search_response.html", "wb") as f:
+              f.write(response.content)
+
+          print()
+          print("Saved: x_search_response.html")
+
+          text = response.text.lower()
+
+          indicators = {
+              "contains x.com": "x.com" in text,
+              "contains search": "search" in text,
+              "contains cats": "cats" in text,
+              "contains tweet/status": (
+                  "/status/" in text
+                  or "tweet" in text
+              ),
+          }
+
+          print()
+          print("Indicators:")
+
+          for name, value in indicators.items():
+              print(f"{name}: {value}")
+
+          print()
+          print("FIRST 1000 CHARACTERS:")
+          print(response.text[:1000])
+          PY
+
+      - name: Extract possible X status URLs
+        if: always()
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+
+          path = Path("x_search_response.html")
+
+          if not path.exists():
+              print("No response file found.")
+              raise SystemExit(0)
+
+          text = path.read_text(
+              encoding="utf-8",
+              errors="ignore"
+          )
+
+          patterns = [
+              r'https?://(?:www\.)?x\.com/[^"\'<>\s]+/status/\d+',
+              r'https?://x\.com/[^"\'<>\s]+/status/\d+',
+          ]
+
+          found = []
+
+          for pattern in patterns:
+              found.extend(
+                  re.findall(pattern, text)
+              )
+
+          unique = []
+
+          for url in found:
+              url = url.replace("\\/", "/")
+
+              if url not in unique:
+                  unique.append(url)
+
+          print("=" * 70)
+          print("POSSIBLE X STATUS URLS")
+          print("=" * 70)
+
+          if not unique:
+              print("NO STATUS URLS FOUND")
+          else:
+              for url in unique[:50]:
+                  print(url)
+
+          Path("search_candidates.txt").write_text(
+              "\n".join(unique[:50]),
+              encoding="utf-8"
+          )
+          PY
+
+      - name: Upload test result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: x-search-test
+          path: |
+            x_search_response.html
+            search_candidates.txt
+          if-no-files-found: ignore
