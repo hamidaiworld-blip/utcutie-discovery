@@ -1,0 +1,514 @@
+name: UTCutie Mastodon + Lemmy Video Discovery
+
+on:
+  workflow_dispatch:
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Install socialfetch
+        run: |
+          git clone --depth 1 https://github.com/EdgeAIG/socialfetch.git
+          cd socialfetch
+          chmod +x socialfetch
+
+      - name: Run Mastodon discovery
+        run: |
+          cd socialfetch
+
+          echo "============================================================"
+          echo "MASTODON ANIMAL DISCOVERY"
+          echo "============================================================"
+
+          queries=(
+            "funny dog"
+            "funny cat"
+            "cute dog"
+            "cute cat"
+            "funny puppy"
+            "funny kitten"
+            "cute puppy"
+            "cute kitten"
+            "funny pets"
+            "cute pets"
+            "wholesome animals"
+            "animal friendship"
+          )
+
+          for query in "${queries[@]}"; do
+            echo ""
+            echo "------------------------------------------------------------"
+            echo "QUERY: $query"
+            echo "------------------------------------------------------------"
+
+            ./socialfetch masto search "$query" \
+              --limit 20 \
+              --json || true
+
+            sleep 1
+          done
+
+      - name: Run Lemmy discovery
+        run: |
+          cd socialfetch
+
+          echo ""
+          echo "============================================================"
+          echo "LEMMY ANIMAL DISCOVERY"
+          echo "============================================================"
+
+          queries=(
+            "funny dog"
+            "funny cat"
+            "cute dog"
+            "cute cat"
+            "funny puppy"
+            "funny kitten"
+            "cute pets"
+            "animals"
+            "wholesome animals"
+          )
+
+          for query in "${queries[@]}"; do
+            echo ""
+            echo "------------------------------------------------------------"
+            echo "QUERY: $query"
+            echo "------------------------------------------------------------"
+
+            ./socialfetch lemmy search "$query" \
+              --limit 20 \
+              --json || true
+
+            sleep 1
+          done
+
+      - name: Test direct media extraction from discovered URLs
+        run: |
+          cd socialfetch
+
+          echo ""
+          echo "============================================================"
+          echo "DIRECT MEDIA / URL EXTRACTION TEST"
+          echo "============================================================"
+
+          python - <<'PY'
+          import json
+          import re
+          import subprocess
+          import urllib.parse
+          import urllib.request
+
+          queries = [
+              "funny dog",
+              "funny cat",
+              "cute dog",
+              "cute cat",
+              "funny puppy",
+              "funny kitten",
+              "cute pets",
+              "wholesome animals",
+          ]
+
+          ua = (
+              "Mozilla/5.0 (X11; Linux x86_64) "
+              "AppleWebKit/537.36 "
+              "(KHTML, like Gecko) "
+              "Chrome/140.0 Safari/537.36"
+          )
+
+          mastodon_posts = []
+          lemmy_posts = []
+
+          def run_socialfetch(args):
+              try:
+                  result = subprocess.run(
+                      ["./socialfetch"] + args + ["--json"],
+                      capture_output=True,
+                      text=True,
+                      timeout=30,
+                  )
+
+                  if result.returncode != 0:
+                      return None
+
+                  return json.loads(result.stdout)
+
+              except Exception:
+                  return None
+
+          print()
+          print("Collecting Mastodon results...")
+
+          for q in queries:
+              data = run_socialfetch([
+                  "masto",
+                  "search",
+                  q,
+                  "--limit",
+                  "20",
+              ])
+
+              if not data:
+                  continue
+
+              payload = data.get("data")
+
+              if isinstance(payload, dict):
+                  items = (
+                      payload.get("statuses")
+                      or payload.get("posts")
+                      or payload.get("items")
+                      or []
+                  )
+              elif isinstance(payload, list):
+                  items = payload
+              else:
+                  items = []
+
+              for item in items:
+                  if isinstance(item, dict):
+                      item["_query"] = q
+                      mastodon_posts.append(item)
+
+          print(
+              f"Mastodon raw posts collected: "
+              f"{len(mastodon_posts)}"
+          )
+
+          print()
+          print("Collecting Lemmy results...")
+
+          for q in queries:
+              data = run_socialfetch([
+                  "lemmy",
+                  "search",
+                  q,
+                  "--limit",
+                  "20",
+              ])
+
+              if not data:
+                  continue
+
+              payload = data.get("data")
+
+              if isinstance(payload, dict):
+                  items = (
+                      payload.get("posts")
+                      or payload.get("items")
+                      or []
+                  )
+              elif isinstance(payload, list):
+                  items = payload
+              else:
+                  items = []
+
+              for item in items:
+                  if isinstance(item, dict):
+                      item["_query"] = q
+                      lemmy_posts.append(item)
+
+          print(
+              f"Lemmy raw posts collected: "
+              f"{len(lemmy_posts)}"
+          )
+
+          # ----------------------------------------------------------
+          # Find URLs in arbitrary JSON structures
+          # ----------------------------------------------------------
+
+          url_pattern = re.compile(
+              r'https?://[^\s"\'<>]+'
+          )
+
+          def collect_urls(value):
+              urls = set()
+
+              if isinstance(value, str):
+                  for match in url_pattern.findall(value):
+                      url = match.rstrip(".,;:!?)]}")
+                      urls.add(url)
+
+              elif isinstance(value, dict):
+                  for v in value.values():
+                      urls.update(collect_urls(v))
+
+              elif isinstance(value, list):
+                  for v in value:
+                      urls.update(collect_urls(v))
+
+              return urls
+
+          def likely_video_url(url):
+              lower = url.lower()
+
+              video_extensions = (
+                  ".mp4",
+                  ".webm",
+                  ".mov",
+                  ".m4v",
+                  ".mkv",
+                  ".avi",
+                  ".ogv",
+              )
+
+              video_hosts = (
+                  "v.redd.it",
+                  "video.twimg.com",
+                  "cdn.masto.host",
+                  "media.",
+                  "files.",
+                  "storage.",
+              )
+
+              if lower.split("?")[0].endswith(video_extensions):
+                  return True
+
+              if any(host in lower for host in video_hosts):
+                  return True
+
+              return False
+
+          # ----------------------------------------------------------
+          # Analyze Mastodon
+          # ----------------------------------------------------------
+
+          print()
+          print("============================================================")
+          print("MASTODON RESULTS")
+          print("============================================================")
+
+          masto_urls = set()
+
+          for index, post in enumerate(mastodon_posts[:100], 1):
+              urls = collect_urls(post)
+
+              media_urls = {
+                  u for u in urls
+                  if likely_video_url(u)
+              }
+
+              masto_urls.update(media_urls)
+
+              text = ""
+
+              for key in (
+                  "content",
+                  "text",
+                  "title",
+                  "spoiler_text",
+              ):
+                  value = post.get(key)
+
+                  if isinstance(value, str):
+                      text += " " + value
+
+              print()
+              print(f"POST {index}")
+              print(f"QUERY: {post.get('_query')}")
+              print(f"TEXT: {re.sub(r'<[^>]+>', ' ', text)[:300]}")
+              print(f"ALL URLS: {len(urls)}")
+              print(f"LIKELY VIDEO URLS: {len(media_urls)}")
+
+              for url in list(media_urls)[:5]:
+                  print(f"VIDEO: {url}")
+
+          print()
+          print(
+              f"UNIQUE MASTODON VIDEO URLS: "
+              f"{len(masto_urls)}"
+          )
+
+          # ----------------------------------------------------------
+          # Analyze Lemmy
+          # ----------------------------------------------------------
+
+          print()
+          print("============================================================")
+          print("LEMMY RESULTS")
+          print("============================================================")
+
+          lemmy_urls = set()
+
+          for index, post in enumerate(lemmy_posts[:100], 1):
+              urls = collect_urls(post)
+
+              media_urls = {
+                  u for u in urls
+                  if likely_video_url(u)
+              }
+
+              lemmy_urls.update(media_urls)
+
+              print()
+              print(f"POST {index}")
+              print(f"QUERY: {post.get('_query')}")
+
+              title = post.get("name") or post.get("title") or ""
+              body = post.get("body") or ""
+
+              print(
+                  f"TITLE: {str(title)[:300]}"
+              )
+
+              print(
+                  f"BODY: {str(body)[:300]}"
+              )
+
+              print(
+                  f"ALL URLS: {len(urls)}"
+              )
+
+              print(
+                  f"LIKELY VIDEO URLS: "
+                  f"{len(media_urls)}"
+              )
+
+              for url in list(media_urls)[:5]:
+                  print(f"VIDEO: {url}")
+
+          print()
+          print(
+              f"UNIQUE LEMMY VIDEO URLS: "
+              f"{len(lemmy_urls)}"
+          )
+
+          # ----------------------------------------------------------
+          # Save raw diagnostic data
+          # ----------------------------------------------------------
+
+          with open(
+              "../mastodon_raw.json",
+              "w",
+              encoding="utf-8"
+          ) as f:
+              json.dump(
+                  mastodon_posts,
+                  f,
+                  ensure_ascii=False,
+                  indent=2
+              )
+
+          with open(
+              "../lemmy_raw.json",
+              "w",
+              encoding="utf-8"
+          ) as f:
+              json.dump(
+                  lemmy_posts,
+                  f,
+                  ensure_ascii=False,
+                  indent=2
+              )
+
+          with open(
+              "../mastodon_video_urls.txt",
+              "w",
+              encoding="utf-8"
+          ) as f:
+              for url in sorted(masto_urls):
+                  f.write(url + "\n")
+
+          with open(
+              "../lemmy_video_urls.txt",
+              "w",
+              encoding="utf-8"
+          ) as f:
+              for url in sorted(lemmy_urls):
+                  f.write(url + "\n")
+
+          # ----------------------------------------------------------
+          # yt-dlp test against discovered media
+          # ----------------------------------------------------------
+
+          all_media = list(masto_urls | lemmy_urls)
+
+          print()
+          print("============================================================")
+          print("YT-DLP DIRECT MEDIA TEST")
+          print("============================================================")
+
+          if not all_media:
+              print("NO DIRECT VIDEO URLS FOUND.")
+          else:
+              for index, url in enumerate(
+                  all_media[:10],
+                  1
+              ):
+                  print()
+                  print(
+                      f"TEST {index}/{min(10, len(all_media))}"
+                  )
+                  print(url)
+
+                  try:
+                      result = subprocess.run(
+                          [
+                              "yt-dlp",
+                              "--dump-single-json",
+                              "--skip-download",
+                              "--no-warnings",
+                              url,
+                          ],
+                          capture_output=True,
+                          text=True,
+                          timeout=45,
+                      )
+
+                      if result.returncode == 0:
+                          try:
+                              info = json.loads(
+                                  result.stdout
+                              )
+
+                              print("YT-DLP: SUCCESS")
+                              print(
+                                  "TITLE:",
+                                  info.get("title")
+                              )
+                              print(
+                                  "DURATION:",
+                                  info.get("duration")
+                              )
+                              print(
+                                  "EXT:",
+                                  info.get("ext")
+                              )
+
+                          except Exception:
+                              print(
+                                  "YT-DLP returned success "
+                                  "but JSON parsing failed."
+                              )
+                      else:
+                          print("YT-DLP: FAIL")
+                          print(
+                              (
+                                  result.stderr
+                                  or result.stdout
+                              )[-1000:]
+                          )
+
+                  except subprocess.TimeoutExpired:
+                      print("YT-DLP: TIMEOUT")
+
+          print()
+          print("============================================================")
+          print("DISCOVERY TEST COMPLETE")
+          print("============================================================")
+          PY
+
+      - name: Upload diagnostic data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mastodon-lemmy-discovery-results
+          path: |
+            mastodon_raw.json
+            lemmy_raw.json
+            mastodon_video_urls.txt
+            lemmy_video_urls.txt
+          if-no-files-found: ignore
