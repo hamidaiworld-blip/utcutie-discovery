@@ -1,0 +1,766 @@
+name: UTCutie External Search → X Discovery
+
+on:
+  workflow_dispatch:
+
+jobs:
+  discover-x-videos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install yt-dlp
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -U yt-dlp
+
+      - name: Run external search and X validation
+        run: |
+          cat > external_x_discovery.py <<'PY'
+          import html
+          import json
+          import re
+          import subprocess
+          import time
+          import urllib.parse
+          import urllib.request
+          from datetime import datetime, timezone
+
+          # ============================================================
+          # CONFIGURATION
+          # ============================================================
+
+          MAX_DISCOVERED = 100
+          MAX_VALIDATE = 10
+
+          MIN_DURATION = 15
+          MAX_DURATION = 180
+
+          SEARCH_QUERIES = [
+              'site:x.com/*/status/ "funny dog"',
+              'site:x.com/*/status/ "cute dog"',
+              'site:x.com/*/status/ "funny cat"',
+              'site:x.com/*/status/ "cute cat"',
+              'site:x.com/*/status/ puppy funny',
+              'site:x.com/*/status/ kitten funny',
+              'site:x.com/*/status/ funny pets',
+              'site:x.com/*/status/ cute pets',
+              'site:x.com/*/status/ funny animals',
+              'site:x.com/*/status/ cute animals',
+              'site:x.com/*/status/ wholesome animals',
+              'site:x.com/*/status/ animal friendship',
+              'site:x.com/*/status/ dog video',
+              'site:x.com/*/status/ cat video',
+              'site:x.com/*/status/ pets video',
+          ]
+
+          ENGINES = {
+              "BING": "https://www.bing.com/search?q={query}&count=50",
+              "GOOGLE": "https://www.google.com/search?q={query}&num=50",
+              "DUCKDUCKGO": "https://html.duckduckgo.com/html/?q={query}",
+              "YAHOO": "https://search.yahoo.com/search?p={query}&n=50",
+              "BRAVE": "https://search.brave.com/search?q={query}&source=web",
+              "MOJEEK": "https://www.mojeek.com/search?q={query}",
+          }
+
+          USER_AGENT = (
+              "Mozilla/5.0 (X11; Linux x86_64) "
+              "AppleWebKit/537.36 "
+              "(KHTML, like Gecko) "
+              "Chrome/140.0 Safari/537.36"
+          )
+
+          # ============================================================
+          # HELPERS
+          # ============================================================
+
+          def fetch(url, timeout=20):
+              request = urllib.request.Request(
+                  url,
+                  headers={
+                      "User-Agent": USER_AGENT,
+                      "Accept": (
+                          "text/html,application/xhtml+xml,"
+                          "application/xml;q=0.9,*/*;q=0.8"
+                      ),
+                      "Accept-Language": "en-US,en;q=0.9",
+                  },
+              )
+
+              try:
+                  with urllib.request.urlopen(
+                      request,
+                      timeout=timeout
+                  ) as response:
+                      body = response.read()
+                      charset = response.headers.get_content_charset() or "utf-8"
+
+                      try:
+                          text = body.decode(charset, errors="replace")
+                      except Exception:
+                          text = body.decode("utf-8", errors="replace")
+
+                      return {
+                          "status": response.status,
+                          "url": response.geturl(),
+                          "text": text,
+                          "error": None,
+                      }
+
+              except Exception as e:
+                  return {
+                      "status": None,
+                      "url": url,
+                      "text": "",
+                      "error": str(e),
+                  }
+
+
+          def clean_url(url):
+              url = html.unescape(url)
+
+              # Remove common tracking/query parameters where possible.
+              url = url.split("&utm_", 1)[0]
+
+              # Decode common search-engine wrapping.
+              if "url=" in url:
+                  try:
+                      parsed = urllib.parse.urlparse(url)
+                      query = urllib.parse.parse_qs(parsed.query)
+
+                      for key in ("url", "u", "uddg", "target"):
+                          if key in query and query[key]:
+                              url = query[key][0]
+                              break
+                  except Exception:
+                      pass
+
+              url = urllib.parse.unquote(url)
+
+              # Remove fragments.
+              url = url.split("#", 1)[0]
+
+              return url
+
+
+          def extract_x_status_urls(page):
+              """
+              Extract X/Twitter status URLs from raw search-engine HTML.
+              We deliberately only accept /status/<numeric-id>.
+              """
+
+              patterns = [
+                  r'https?://(?:www\.)?x\.com/[A-Za-z0-9_./%-]+/status/\d+',
+                  r'https?://(?:mobile\.)?x\.com/[A-Za-z0-9_./%-]+/status/\d+',
+                  r'https?://(?:www\.)?twitter\.com/[A-Za-z0-9_./%-]+/status/\d+',
+              ]
+
+              found = set()
+
+              for pattern in patterns:
+                  for match in re.findall(pattern, page, flags=re.I):
+                      url = clean_url(match)
+
+                      # Normalize twitter.com to x.com.
+                      url = re.sub(
+                          r'^https?://(?:www\.)?twitter\.com',
+                          'https://x.com',
+                          url,
+                          flags=re.I
+                      )
+
+                      # Remove trailing punctuation.
+                      url = url.rstrip('.,;:!?\'")]}')
+
+                      if re.match(
+                          r'^https://x\.com/[^/]+/status/\d+$',
+                          url,
+                          flags=re.I
+                      ):
+                          found.add(url)
+
+              return found
+
+
+          def canonical_status_id(url):
+              match = re.search(
+                  r'/status/(\d+)',
+                  url,
+                  flags=re.I
+              )
+
+              return match.group(1) if match else None
+
+
+          # ============================================================
+          # DISCOVERY
+          # ============================================================
+
+          discovered = {}
+          engine_stats = {}
+
+          print("=" * 72)
+          print("UTCUTIE EXTERNAL SEARCH → X DISCOVERY")
+          print("=" * 72)
+          print(f"Queries: {len(SEARCH_QUERIES)}")
+          print(f"Search engines: {len(ENGINES)}")
+          print(f"Maximum discovered: {MAX_DISCOVERED}")
+          print(f"Maximum validation: {MAX_VALIDATE}")
+          print()
+
+          for engine_name, template in ENGINES.items():
+              engine_found = set()
+              successful_requests = 0
+              failed_requests = 0
+
+              print("-" * 72)
+              print(f"ENGINE: {engine_name}")
+              print("-" * 72)
+
+              for query in SEARCH_QUERIES:
+                  encoded_query = urllib.parse.quote_plus(query)
+                  search_url = template.format(query=encoded_query)
+
+                  result = fetch(search_url)
+
+                  if result["status"] == 200:
+                      successful_requests += 1
+                  else:
+                      failed_requests += 1
+
+                  urls = extract_x_status_urls(result["text"])
+
+                  for url in urls:
+                      engine_found.add(url)
+
+                      status_id = canonical_status_id(url)
+
+                      if status_id:
+                          discovered.setdefault(
+                              status_id,
+                              {
+                                  "url": url,
+                                  "status_id": status_id,
+                                  "engines": set(),
+                                  "queries": set(),
+                              }
+                          )
+
+                          discovered[status_id]["engines"].add(
+                              engine_name
+                          )
+
+                          discovered[status_id]["queries"].add(
+                              query
+                          )
+
+                  print(
+                      f"{query[:48]:48} "
+                      f"HTTP={result['status']} "
+                      f"X_URLS={len(urls)}"
+                  )
+
+                  time.sleep(0.7)
+
+              engine_stats[engine_name] = {
+                  "successful_requests": successful_requests,
+                  "failed_requests": failed_requests,
+                  "unique_x_urls": len(engine_found),
+              }
+
+              print(
+                  f"{engine_name}: "
+                  f"{len(engine_found)} unique X URLs"
+              )
+
+          # ============================================================
+          # PREPARE CANDIDATES
+          # ============================================================
+
+          candidates = []
+
+          for status_id, item in discovered.items():
+              candidates.append(
+                  {
+                      "url": item["url"],
+                      "status_id": status_id,
+                      "engines": sorted(item["engines"]),
+                      "queries": sorted(item["queries"]),
+                  }
+              )
+
+          candidates.sort(
+              key=lambda x: (
+                  -len(x["engines"]),
+                  x["status_id"]
+              )
+          )
+
+          candidates = candidates[:MAX_DISCOVERED]
+
+          print()
+          print("=" * 72)
+          print("DISCOVERY SUMMARY")
+          print("=" * 72)
+          print(f"Total unique X posts discovered: {len(candidates)}")
+          print()
+
+          if not candidates:
+              print("NO X STATUS URLS WERE DISCOVERED.")
+              print()
+              print("This means external search engines are not")
+              print("currently exposing usable X status URLs to")
+              print("GitHub Actions with these public endpoints.")
+          else:
+              for index, candidate in enumerate(candidates, 1):
+                  print(
+                      f"{index:03d}. "
+                      f"{candidate['url']} "
+                      f"[engines={','.join(candidate['engines'])}]"
+                  )
+
+          # ============================================================
+          # VALIDATION
+          # ============================================================
+
+          validation_results = []
+
+          print()
+          print("=" * 72)
+          print("X VIDEO VALIDATION")
+          print("=" * 72)
+
+          validation_candidates = candidates[:MAX_VALIDATE]
+
+          if not validation_candidates:
+              print("Nothing to validate.")
+          else:
+              for index, candidate in enumerate(
+                  validation_candidates,
+                  1
+              ):
+                  url = candidate["url"]
+
+                  print()
+                  print("-" * 72)
+                  print(
+                      f"VALIDATING {index}/{len(validation_candidates)}"
+                  )
+                  print(url)
+                  print("-" * 72)
+
+                  command = [
+                      "yt-dlp",
+                      "--dump-single-json",
+                      "--skip-download",
+                      "--no-warnings",
+                      "--no-playlist",
+                      url,
+                  ]
+
+                  try:
+                      process = subprocess.run(
+                          command,
+                          capture_output=True,
+                          text=True,
+                          timeout=60,
+                      )
+
+                      if process.returncode != 0:
+                          error_text = (
+                              process.stderr.strip()
+                              or process.stdout.strip()
+                              or "Unknown yt-dlp error"
+                          )
+
+                          print("EXTRACTION: FAIL")
+                          print(error_text[-1500:])
+
+                          validation_results.append(
+                              {
+                                  **candidate,
+                                  "usable": False,
+                                  "extraction": False,
+                                  "error": error_text[-1500:],
+                              }
+                          )
+
+                          continue
+
+                      try:
+                          info = json.loads(process.stdout)
+                      except json.JSONDecodeError:
+                          print("EXTRACTION: FAIL")
+                          print("yt-dlp returned invalid JSON.")
+
+                          validation_results.append(
+                              {
+                                  **candidate,
+                                  "usable": False,
+                                  "extraction": False,
+                                  "error": "Invalid JSON from yt-dlp",
+                              }
+                          )
+
+                          continue
+
+                      title = info.get("title") or ""
+                      uploader = (
+                          info.get("uploader")
+                          or info.get("channel")
+                          or ""
+                      )
+
+                      duration = info.get("duration")
+                      view_count = info.get("view_count")
+                      like_count = info.get("like_count")
+                      comment_count = info.get("comment_count")
+                      repost_count = info.get("repost_count")
+
+                      formats = info.get("formats") or []
+
+                      video_formats = [
+                          f for f in formats
+                          if f.get("vcodec")
+                          and f.get("vcodec") != "none"
+                      ]
+
+                      duration_pass = (
+                          isinstance(duration, (int, float))
+                          and MIN_DURATION <= duration <= MAX_DURATION
+                      )
+
+                      video_access = len(video_formats) > 0
+
+                      text_for_relevance = (
+                          f"{title} {uploader}"
+                      ).lower()
+
+                      # Word-based matching avoids false positives
+                      # such as "at" matching unrelated words.
+                      animal_patterns = [
+                          r"\bdog\b",
+                          r"\bdogs\b",
+                          r"\bpuppy\b",
+                          r"\bpuppies\b",
+                          r"\bcat\b",
+                          r"\bcats\b",
+                          r"\bkitten\b",
+                          r"\bkittens\b",
+                          r"\bpet\b",
+                          r"\bpets\b",
+                          r"\banimal\b",
+                          r"\banimals\b",
+                          r"\bdoggo\b",
+                          r"\bdoggos\b",
+                          r"\bpuppo\b",
+                          r"\bkitty\b",
+                          r"\bkitties\b",
+                          r"\bpuppy\b",
+                          r"\bcatto\b",
+                      ]
+
+                      animal_matches = []
+
+                      for pattern in animal_patterns:
+                          if re.search(
+                              pattern,
+                              text_for_relevance,
+                              flags=re.I
+                          ):
+                              animal_matches.append(
+                                  pattern.replace("\\b", "")
+                              )
+
+                      # Also recognize common Persian terms.
+                      persian_terms = [
+                          "سگ",
+                          "گربه",
+                          "بچه گربه",
+                          "بچه‌گربه",
+                          "توله سگ",
+                          "توله‌سگ",
+                          "حیوان",
+                          "حیوانات",
+                          "پت",
+                      ]
+
+                      for term in persian_terms:
+                          if term in text_for_relevance:
+                              animal_matches.append(term)
+
+                      relevance_pass = len(animal_matches) > 0
+
+                      usable = (
+                          duration_pass
+                          and video_access
+                          and relevance_pass
+                      )
+
+                      print(f"TITLE: {title}")
+                      print(f"UPLOADER: {uploader}")
+                      print(f"DURATION: {duration}")
+                      print(f"VIEWS: {view_count}")
+                      print(f"LIKES: {like_count}")
+                      print(f"COMMENTS: {comment_count}")
+                      print(f"REPOSTS: {repost_count}")
+                      print(f"VIDEO FORMATS: {len(video_formats)}")
+                      print(
+                          f"DURATION PASS: "
+                          f"{duration_pass}"
+                      )
+                      print(
+                          f"VIDEO ACCESS PASS: "
+                          f"{video_access}"
+                      )
+                      print(
+                          f"ANIMAL MATCHES: "
+                          f"{animal_matches}"
+                      )
+                      print(
+                          f"ANIMAL RELEVANCE PASS: "
+                          f"{relevance_pass}"
+                      )
+                      print(f"USABLE: {usable}")
+
+                      validation_results.append(
+                          {
+                              **candidate,
+                              "usable": usable,
+                              "extraction": True,
+                              "title": title,
+                              "uploader": uploader,
+                              "duration": duration,
+                              "view_count": view_count,
+                              "like_count": like_count,
+                              "comment_count": comment_count,
+                              "repost_count": repost_count,
+                              "video_format_count": len(video_formats),
+                              "duration_pass": duration_pass,
+                              "video_access": video_access,
+                              "animal_matches": animal_matches,
+                          }
+                      )
+
+                  except subprocess.TimeoutExpired:
+                      print("EXTRACTION: TIMEOUT")
+
+                      validation_results.append(
+                          {
+                              **candidate,
+                              "usable": False,
+                              "extraction": False,
+                              "error": "yt-dlp timeout",
+                          }
+                      )
+
+                  except Exception as e:
+                      print(f"EXTRACTION: ERROR: {e}")
+
+                      validation_results.append(
+                          {
+                              **candidate,
+                              "usable": False,
+                              "extraction": False,
+                              "error": str(e),
+                          }
+                      )
+
+                  time.sleep(1)
+
+          # ============================================================
+          # FINAL REPORT
+          # ============================================================
+
+          usable = [
+              item
+              for item in validation_results
+              if item.get("usable")
+          ]
+
+          extracted = [
+              item
+              for item in validation_results
+              if item.get("extraction")
+          ]
+
+          print()
+          print("=" * 72)
+          print("FINAL REPORT")
+          print("=" * 72)
+
+          print(
+              f"Discovered X posts: "
+              f"{len(candidates)}"
+          )
+
+          print(
+              f"Validated: "
+              f"{len(validation_results)}"
+          )
+
+          print(
+              f"Metadata extraction success: "
+              f"{len(extracted)}"
+          )
+
+          print(
+              f"Usable videos: "
+              f"{len(usable)}"
+          )
+
+          print()
+
+          print("SEARCH ENGINE RESULTS")
+          print("-" * 72)
+
+          for engine, stats in engine_stats.items():
+              print(
+                  f"{engine:12} "
+                  f"HTTP_OK={stats['successful_requests']:2d} "
+                  f"HTTP_FAIL={stats['failed_requests']:2d} "
+                  f"X_URLS={stats['unique_x_urls']:3d}"
+              )
+
+          print()
+          print("USABLE VIDEOS")
+          print("-" * 72)
+
+          for index, item in enumerate(usable, 1):
+              print(
+                  f"{index:02d}. "
+                  f"{item.get('title', '')}"
+              )
+              print(
+                  f"    URL: {item['url']}"
+              )
+              print(
+                  f"    Duration: {item.get('duration')}"
+              )
+              print(
+                  f"    Views: {item.get('view_count')}"
+              )
+              print(
+                  f"    Likes: {item.get('like_count')}"
+              )
+              print(
+                  f"    Animal matches: "
+                  f"{item.get('animal_matches')}"
+              )
+
+          # ============================================================
+          # SAVE ARTIFACTS
+          # ============================================================
+
+          serializable_discovery = []
+
+          for item in candidates:
+              serializable_discovery.append(item)
+
+          with open(
+              "external_x_candidates.json",
+              "w",
+              encoding="utf-8"
+          ) as f:
+              json.dump(
+                  serializable_discovery,
+                  f,
+                  ensure_ascii=False,
+                  indent=2
+              )
+
+          with open(
+              "external_x_validation.json",
+              "w",
+              encoding="utf-8"
+          ) as f:
+              json.dump(
+                  validation_results,
+                  f,
+                  ensure_ascii=False,
+                  indent=2
+              )
+
+          with open(
+              "external_x_usable.json",
+              "w",
+              encoding="utf-8"
+          ) as f:
+              json.dump(
+                  usable,
+                  f,
+                  ensure_ascii=False,
+                  indent=2
+              )
+
+          report = {
+              "timestamp_utc": datetime.now(
+                  timezone.utc
+              ).isoformat(),
+              "discovered": len(candidates),
+              "validated": len(validation_results),
+              "extracted": len(extracted),
+              "usable": len(usable),
+              "engine_stats": engine_stats,
+          }
+
+          with open(
+              "external_x_report.json",
+              "w",
+              encoding="utf-8"
+          ) as f:
+              json.dump(
+                  report,
+                  f,
+                  ensure_ascii=False,
+                  indent=2
+              )
+
+          print()
+          print("=" * 72)
+          print("ARTIFACTS CREATED")
+          print("=" * 72)
+          print("external_x_candidates.json")
+          print("external_x_validation.json")
+          print("external_x_usable.json")
+          print("external_x_report.json")
+          print()
+
+          if usable:
+              print(
+                  "SUCCESS: External discovery produced "
+                  "usable X video candidates."
+              )
+          elif candidates:
+              print(
+                  "PARTIAL SUCCESS: External search found X posts, "
+                  "but validation rejected them."
+              )
+          else:
+              print(
+                  "NO DISCOVERY: Search engines did not expose "
+                  "usable X status URLs."
+              )
+          PY
+
+          python external_x_discovery.py
+
+      - name: Upload discovery results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-x-discovery-results
+          path: |
+            external_x_candidates.json
+            external_x_validation.json
+            external_x_usable.json
+            external_x_report.json
+          if-no-files-found: ignore
