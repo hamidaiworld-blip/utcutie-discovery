@@ -4,8 +4,7 @@ on:
   workflow_dispatch:
 
   # GitHub Actions cron uses UTC.
-  # These two triggers cover 10:00 Tehran time across
-  # the current Asia/Tehran UTC offset.
+  # These two triggers cover the 10:00 Tehran window.
   schedule:
     - cron: "30 6 * * *"
     - cron: "30 7 * * *"
@@ -36,15 +35,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests
 
-      - name: Check Tehran local time
+      - name: Determine trigger type and Tehran time
         id: time_check
         run: |
           python - <<'PY'
+          import os
           from datetime import datetime
           from zoneinfo import ZoneInfo
 
           tehran = ZoneInfo("Asia/Tehran")
           now = datetime.now(tehran)
+
+          event = os.environ.get("GITHUB_EVENT_NAME", "")
 
           print("Current Tehran time:")
           print(now.isoformat())
@@ -52,23 +54,40 @@ jobs:
           print("Tehran UTC offset:")
           print(now.utcoffset())
 
-          if now.hour == 10:
-              print("It is 10:00 hour in Tehran.")
+          print("GitHub event:")
+          print(event)
+
+          if event == "workflow_dispatch":
+              print("Manual run detected.")
+              print("Manual runs are allowed at any time.")
+
+          elif now.hour == 10:
+              print("Scheduled run is inside the 10:00 Tehran window.")
+
           else:
-              print("This is not the 10:00 Tehran trigger.")
+              print("Scheduled run is outside the 10:00 Tehran window.")
           PY
 
-          TEHRAN_HOUR=$(TZ=Asia/Tehran date +%H)
+          EVENT_NAME="${GITHUB_EVENT_NAME}"
 
-          if [ "$TEHRAN_HOUR" = "10" ]; then
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             echo "run_now=true" >> "$GITHUB_OUTPUT"
-            echo "It is 10:00 in Tehran. Continuing."
+            echo "Manual run: continuing immediately."
+
           else
-            echo "run_now=false" >> "$GITHUB_OUTPUT"
-            echo "Not 10:00 Tehran. Stopping safely."
+            TEHRAN_HOUR=$(TZ=Asia/Tehran date +%H)
+
+            if [ "$TEHRAN_HOUR" = "10" ]; then
+              echo "run_now=true" >> "$GITHUB_OUTPUT"
+              echo "Scheduled run: it is 10:00 Tehran."
+
+            else
+              echo "run_now=false" >> "$GITHUB_OUTPUT"
+              echo "Scheduled run: not 10:00 Tehran."
+            fi
           fi
 
-      - name: Stop if this is not the Tehran 10 AM trigger
+      - name: Stop if scheduled trigger is not 10 AM Tehran
         if: steps.time_check.outputs.run_now != 'true'
         run: |
           echo "No queue preparation needed at this trigger."
@@ -109,7 +128,7 @@ jobs:
                   "ERROR: selected_candidates.json is not a list."
               )
 
-          # Never schedule more than 20 videos.
+          # Maximum daily selection.
           candidates = candidates[:20]
 
           queue = []
@@ -120,7 +139,7 @@ jobs:
 
           else:
               # Tehran publishing window:
-              # 11:00 AM → 11:00 PM
+              # 11:00 → 23:00
               start_time = datetime(
                   today.year,
                   today.month,
@@ -179,8 +198,6 @@ jobs:
 
                   # mastodon_test.py already removes hashtags
                   # and cleans the source caption.
-                  #
-                  # We only add the channel handle here.
                   if source_caption:
                       final_caption = (
                           f"{source_caption}\n\n@utcutie"
@@ -228,8 +245,7 @@ jobs:
               "timezone_display": "Tehran",
               "target_channel": "@utcutie",
 
-              # Keep test destination until the complete
-              # scheduled system has been verified.
+              # Test destination remains unchanged.
               "test_chat_id": "333331538",
 
               "max_items": 20,
@@ -256,6 +272,7 @@ jobs:
           print("UTCUTIE DAILY QUEUE CREATED")
           print("=" * 70)
           print(f"Date: {today.isoformat()}")
+          print(f"Created at: {now.isoformat()}")
           print("Timezone: Asia/Tehran")
           print(f"Selected videos: {len(queue)}")
           print("Publishing window: 11:00 → 23:00 Tehran")
