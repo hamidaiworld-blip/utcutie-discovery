@@ -1,0 +1,14 @@
+{
+  "created_at": "2026-10-04T23:48:32.371671+03:30",
+  "timezone": "Asia/Tehran",
+  "timezone_display": "Tehran",
+  "target_channel": "@utcutie",
+  "test_chat_id": "333331538",
+  "max_items": 20,
+  "selected_count": 0,
+  "publishing_window": {
+    "start": "11:00",
+    "end": "23:00"
+  },
+  "queue": []
+}
