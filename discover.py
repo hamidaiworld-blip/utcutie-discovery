@@ -1,120 +1,175 @@
-import html
-import re
-import time
-from urllib.parse import quote_plus, unquote
-
-import requests
+import json
+import subprocess
+import sys
+from pathlib import Path
 
 
 SEARCH_QUERIES = [
-    'funny dog x.com',
-    'cute dog x.com',
-    'funny cat x.com',
-    'cute cat x.com',
-    'funny pet video x.com',
-    'cute pet video x.com',
-    'funny animal video x.com',
-    'wholesome animal x.com',
-    'heartwarming animal x.com',
-    'animal friendship x.com',
-    'funny puppy video x.com',
-    'funny kitten video x.com',
+    "funny dog video",
+    "cute dog video",
+    "funny cat video",
+    "cute cat video",
+    "funny pet video",
+    "cute pet video",
+    "funny animal video",
+    "wholesome animal",
+    "heartwarming animal",
+    "animal friendship",
 ]
 
 
-X_STATUS_PATTERN = re.compile(
-    r'https?://(?:www\.)?x\.com/[^"\s<>?&]+/status/\d+',
-    re.IGNORECASE
-)
+def install_fetcher():
+    print("Installing x-tweet-fetcher...")
 
-X_STATUS_PATTERN_ENCODED = re.compile(
-    r'https?%3A%2F%2F(?:www\.)?x\.com%2F[^&"\s<>?]+%2Fstatus%2F\d+',
-    re.IGNORECASE
-)
-
-
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/140.0.0.0 Safari/537.36"
-    ),
-    "Accept-Language": "en-US,en;q=0.9",
-}
-
-
-def search_duckduckgo(query):
-    url = (
-        "https://html.duckduckgo.com/html/?q="
-        + quote_plus(query)
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "x-tweet-fetcher"
+        ],
+        capture_output=True,
+        text=True
     )
 
-    response = requests.get(
-        url,
-        headers=HEADERS,
-        timeout=30
+    if result.returncode != 0:
+        print(result.stdout)
+        print(result.stderr)
+        raise RuntimeError(
+            "Could not install x-tweet-fetcher."
+        )
+
+
+def search_x(query):
+    print(f"\nSearching X: {query}")
+
+    result = subprocess.run(
+        [
+            "xtf",
+            "--search",
+            query,
+            "--limit",
+            "20"
+        ],
+        capture_output=True,
+        text=True,
+        timeout=120
     )
 
-    response.raise_for_status()
+    if result.returncode != 0:
+        print("Search failed:")
+        print(result.stderr)
 
-    return response.text
+        return []
+
+    output = result.stdout.strip()
+
+    if not output:
+        return []
+
+    try:
+        data = json.loads(output)
+
+        if isinstance(data, list):
+            return data
+
+        if isinstance(data, dict):
+            for key in ("tweets", "results", "data"):
+                if isinstance(data.get(key), list):
+                    return data[key]
+
+    except json.JSONDecodeError:
+        print("Could not parse JSON output.")
+
+    return []
 
 
-def extract_x_urls(page):
-    page = html.unescape(page)
+def extract_url(tweet):
+    if not isinstance(tweet, dict):
+        return None
 
-    urls = []
+    possible_fields = [
+        "url",
+        "tweet_url",
+        "link",
+        "status_url"
+    ]
 
-    encoded_matches = X_STATUS_PATTERN_ENCODED.findall(page)
+    for field in possible_fields:
+        value = tweet.get(field)
 
-    for url in encoded_matches:
-        url = unquote(url)
+        if isinstance(value, str):
+            if "x.com/" in value and "/status/" in value:
+                return value
 
-        match = X_STATUS_PATTERN.search(url)
+            if "twitter.com/" in value and "/status/" in value:
+                return value
 
-        if match:
-            clean_url = match.group(0)
+    tweet_id = (
+        tweet.get("id")
+        or tweet.get("tweet_id")
+        or tweet.get("id_str")
+    )
 
-            if clean_url not in urls:
-                urls.append(clean_url)
+    author = tweet.get("author")
 
-    normal_matches = X_STATUS_PATTERN.findall(page)
+    if isinstance(author, dict):
+        username = (
+            author.get("username")
+            or author.get("screen_name")
+            or author.get("handle")
+        )
 
-    for url in normal_matches:
-        if url not in urls:
-            urls.append(url)
+        if username and tweet_id:
+            return f"https://x.com/{username}/status/{tweet_id}"
 
-    return urls
+    username = (
+        tweet.get("username")
+        or tweet.get("screen_name")
+    )
+
+    if username and tweet_id:
+        return f"https://x.com/{username}/status/{tweet_id}"
+
+    return None
 
 
 def main():
+    install_fetcher()
+
     all_urls = []
 
     for query in SEARCH_QUERIES:
-        print(f"\nSearching: {query}")
-
         try:
-            page = search_duckduckgo(query)
+            tweets = search_x(query)
 
-            urls = extract_x_urls(page)
+            print(f"Returned {len(tweets)} results")
 
-            print(f"Found {len(urls)} X URLs")
+            for tweet in tweets:
+                url = extract_url(tweet)
 
-            for url in urls:
-                if url not in all_urls:
+                if url and url not in all_urls:
                     all_urls.append(url)
 
         except Exception as error:
-            print(f"Search failed: {error}")
-
-        time.sleep(2)
+            print(f"Search error: {error}")
 
     print("\n" + "=" * 60)
     print(f"TOTAL UNIQUE X POSTS: {len(all_urls)}")
     print("=" * 60)
 
+    output_file = Path("candidate_urls.txt")
+
+    output_file.write_text(
+        "\n".join(all_urls),
+        encoding="utf-8"
+    )
+
     for index, url in enumerate(all_urls, start=1):
         print(f"{index}. {url}")
+
+    print("\nSaved candidates to candidate_urls.txt")
 
 
 if __name__ == "__main__":
