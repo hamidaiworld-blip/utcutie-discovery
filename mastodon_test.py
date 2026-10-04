@@ -1,4 +1,5 @@
 import hashlib
+import html
 import json
 import re
 import subprocess
@@ -38,9 +39,14 @@ MIN_DURATION = 15
 MAX_DURATION = 180
 
 MAX_FILE_SIZE = 48 * 1024 * 1024
+
 MAX_SELECTED = 20
 
 REQUEST_TIMEOUT = 30
+
+# Telegram video captions have a 1024-character limit.
+# We keep a safety margin for the final @utcutie line.
+MAX_CAPTION_LENGTH = 900
 
 HISTORY_FILE = Path("history.json")
 CANDIDATES_FILE = Path("mastodon_candidates.json")
@@ -87,7 +93,6 @@ ANIMAL_KEYWORDS = {
     "bunnies": 5,
 
     "guinea": 4,
-
     "pig": 3,
     "pigs": 3,
 
@@ -132,18 +137,127 @@ ANIMAL_KEYWORDS = {
 # ============================================================
 
 def now_iso():
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(
+        timezone.utc
+    ).isoformat()
+
+
+def clean_caption(raw_caption):
+    """
+    Convert Mastodon HTML into clean plain text.
+
+    Example:
+        <p><a href="...">#Dog</a></p>
+        <p>Sunday afternoon</p>
+
+    becomes:
+
+        #Dog
+
+        Sunday afternoon
+    """
+
+    if not raw_caption:
+        return ""
+
+    text = str(raw_caption)
+
+    # Remove script/style blocks completely.
+    text = re.sub(
+        r"<(script|style)\b[^>]*>.*?</\1>",
+        " ",
+        text,
+        flags=re.IGNORECASE | re.DOTALL
+    )
+
+    # Convert common block-level HTML into line breaks.
+    text = re.sub(
+        r"</?(p|div|br|li|blockquote|h[1-6])\b[^>]*>",
+        "\n",
+        text,
+        flags=re.IGNORECASE
+    )
+
+    # Remove remaining HTML tags.
+    text = re.sub(
+        r"<[^>]+>",
+        " ",
+        text
+    )
+
+    # Decode HTML entities.
+    text = html.unescape(text)
+
+    # Remove URLs.
+    text = re.sub(
+        r"https?://\S+",
+        "",
+        text,
+        flags=re.IGNORECASE
+    )
+
+    # Normalize whitespace while preserving paragraphs.
+    lines = []
+
+    for line in text.splitlines():
+
+        line = re.sub(
+            r"[ \t]+",
+            " ",
+            line
+        ).strip()
+
+        if line:
+            lines.append(line)
+
+    text = "\n".join(lines)
+
+    # Collapse excessive blank lines.
+    text = re.sub(
+        r"\n{3,}",
+        "\n\n",
+        text
+    )
+
+    return text.strip()
+
+
+def telegram_caption(raw_caption):
+    """
+    Produce the final Telegram-ready caption.
+
+    The discovery output contains only the clean source caption.
+    @utcutie is appended later by the publishing workflow.
+    """
+
+    text = clean_caption(raw_caption)
+
+    if not text:
+        return ""
+
+    if len(text) <= MAX_CAPTION_LENGTH:
+        return text
+
+    # Prefer cutting at a natural boundary.
+    shortened = text[:MAX_CAPTION_LENGTH]
+
+    last_space = shortened.rfind(" ")
+
+    if last_space >= int(
+        MAX_CAPTION_LENGTH * 0.75
+    ):
+        shortened = shortened[:last_space]
+
+    return shortened.rstrip()
 
 
 def normalize_text(text):
     if not text:
         return ""
 
-    text = re.sub(r"<[^>]+>", " ", text)
-    text = text.lower()
-    text = re.sub(r"\s+", " ", text)
+    text = clean_caption(text)
 
-    return text.strip()
+    return text.lower()
 
 
 def tokenize(text):
@@ -161,6 +275,7 @@ def animal_relevance(text):
     score = 0
 
     for keyword, value in ANIMAL_KEYWORDS.items():
+
         if keyword in tokens:
             score += value
 
@@ -204,14 +319,19 @@ def engagement_score(
         replies ** 0.5
     )
 
-    return round(score, 3)
+    return round(
+        score,
+        3
+    )
 
 
 def recency_score(created_at):
+
     if not created_at:
         return 0.0
 
     try:
+
         created = datetime.fromisoformat(
             created_at.replace(
                 "Z",
@@ -220,12 +340,15 @@ def recency_score(created_at):
         )
 
         age_hours = (
-            datetime.now(timezone.utc)
-            - created
+            datetime.now(
+                timezone.utc
+            ) - created
         ).total_seconds() / 3600
 
-        if age_hours < 0:
-            age_hours = 0
+        age_hours = max(
+            0,
+            age_hours
+        )
 
         if age_hours <= 6:
             return 30.0
@@ -248,11 +371,22 @@ def recency_score(created_at):
         return 0.0
 
 
-def quality_score(width, height):
+def quality_score(
+    width,
+    height
+):
     try:
-        width = int(width or 0)
-        height = int(height or 0)
+
+        width = int(
+            width or 0
+        )
+
+        height = int(
+            height or 0
+        )
+
     except Exception:
+
         return 0.0
 
     pixels = width * height
@@ -275,26 +409,36 @@ def quality_score(width, height):
     return 0.0
 
 
-def load_json(path, default):
+def load_json(
+    path,
+    default
+):
     if not path.exists():
         return default
 
     try:
+
         with path.open(
             "r",
             encoding="utf-8"
         ) as f:
+
             return json.load(f)
 
     except Exception:
+
         return default
 
 
-def save_json(path, data):
+def save_json(
+    path,
+    data
+):
     with path.open(
         "w",
         encoding="utf-8"
     ) as f:
+
         json.dump(
             data,
             f,
@@ -308,24 +452,25 @@ def save_json(path, data):
 # ============================================================
 
 def discover_candidates():
+
     candidates = []
 
     session = requests.Session()
 
-    session.headers.update(
-        {
-            "User-Agent": (
-                "Mozilla/5.0 "
-                "UTCutie-Mastodon-Discovery/1.0"
-            )
-        }
-    )
+    session.headers.update({
+        "User-Agent": (
+            "Mozilla/5.0 "
+            "UTCutie-Mastodon-Discovery/2.0"
+        )
+    })
 
     for instance in INSTANCES:
 
         print()
         print("=" * 70)
-        print(f"INSTANCE: {instance}")
+        print(
+            f"INSTANCE: {instance}"
+        )
         print("=" * 70)
 
         for hashtag in HASHTAGS:
@@ -342,6 +487,7 @@ def discover_candidates():
             }
 
             try:
+
                 response = session.get(
                     url,
                     params=params,
@@ -432,58 +578,80 @@ def discover_candidates():
                         ):
                             original = {}
 
+                        raw_caption = status.get(
+                            "content",
+                            ""
+                        )
+
+                        clean = telegram_caption(
+                            raw_caption
+                        )
+
                         candidate = {
+
                             "status_id": status.get(
                                 "id"
                             ),
+
                             "status_url": status.get(
                                 "url"
                             ),
+
                             "instance": instance,
+
                             "created_at": status.get(
                                 "created_at"
                             ),
-                            "caption": status.get(
-                                "content",
-                                ""
-                            ),
+
+                            "caption": clean,
+
                             "account": account.get(
                                 "acct"
                             ),
+
                             "account_display_name": (
                                 account.get(
                                     "display_name"
                                 )
                             ),
+
                             "media_url": media_url,
+
                             "media_preview_url": (
                                 attachment.get(
                                     "preview_url"
                                 )
                             ),
+
                             "media_type": (
                                 attachment.get(
                                     "type"
                                 )
                             ),
+
                             "width": original.get(
                                 "width"
                             ),
+
                             "height": original.get(
                                 "height"
                             ),
+
                             "favourites": status.get(
                                 "favourites_count",
                                 0
                             ),
+
                             "reblogs": status.get(
                                 "reblogs_count",
                                 0
                             ),
+
                             "replies": status.get(
                                 "replies_count",
                                 0
                             ),
+
                             "hashtag": hashtag,
                         }
 
@@ -492,6 +660,7 @@ def discover_candidates():
                         )
 
             except Exception as exc:
+
                 print(
                     f"ERROR {instance} "
                     f"#{hashtag}: "
@@ -506,9 +675,12 @@ def discover_candidates():
 # URL DEDUPLICATION
 # ============================================================
 
-def deduplicate_candidates(candidates):
+def deduplicate_candidates(
+    candidates
+):
 
     unique = []
+
     seen = set()
 
     for candidate in candidates:
@@ -532,8 +704,13 @@ def deduplicate_candidates(candidates):
         if key in seen:
             continue
 
-        seen.add(key)
-        unique.append(candidate)
+        seen.add(
+            key
+        )
+
+        unique.append(
+            candidate
+        )
 
     return unique
 
@@ -542,7 +719,9 @@ def deduplicate_candidates(candidates):
 # VIDEO VALIDATION
 # ============================================================
 
-def download_and_validate(candidate):
+def download_and_validate(
+    candidate
+):
 
     media_url = candidate.get(
         "media_url"
@@ -579,9 +758,9 @@ def download_and_validate(candidate):
             headers={
                 "User-Agent": (
                     "Mozilla/5.0 "
-                    "UTCutie-Mastodon-Discovery/1.0"
+                    "UTCutie-Mastodon-Discovery/2.0"
                 )
-            },
+            }
         )
 
         if response.status_code != 200:
@@ -604,7 +783,8 @@ def download_and_validate(candidate):
 
         if (
             "video" not in content_type
-            and "octet-stream" not in content_type
+            and "octet-stream"
+            not in content_type
         ):
 
             print(
@@ -650,12 +830,11 @@ def download_and_validate(candidate):
                 if not chunk:
                     continue
 
-                total_bytes += len(chunk)
+                total_bytes += len(
+                    chunk
+                )
 
-                if (
-                    total_bytes
-                    > MAX_FILE_SIZE
-                ):
+                if total_bytes > MAX_FILE_SIZE:
 
                     print(
                         "  File exceeded 48 MB."
@@ -663,7 +842,9 @@ def download_and_validate(candidate):
 
                     return None
 
-                output.write(chunk)
+                output.write(
+                    chunk
+                )
 
         if total_bytes == 0:
 
@@ -871,6 +1052,15 @@ def download_and_validate(candidate):
         result["height"] = height
         result["sha256"] = sha256
 
+        # Make absolutely sure the final caption
+        # remains clean after validation.
+        result["caption"] = telegram_caption(
+            result.get(
+                "caption",
+                ""
+            )
+        )
+
         return result
 
     except requests.RequestException as exc:
@@ -916,9 +1106,17 @@ def download_and_validate(candidate):
 
 # ============================================================
 # HISTORY
+#
+# IMPORTANT:
+# This file is READ ONLY by discovery.
+#
+# Successful publication is recorded by the publishing
+# workflow AFTER Telegram confirms success.
 # ============================================================
 
-def history_keys(history):
+def history_keys(
+    history
+):
 
     keys = set()
 
@@ -961,18 +1159,21 @@ def already_seen(
 ):
 
     checks = [
+
         (
             "sha256",
             candidate.get(
                 "sha256"
             )
         ),
+
         (
             "media_url",
             candidate.get(
                 "media_url"
             )
         ),
+
         (
             "status_url",
             candidate.get(
@@ -1002,6 +1203,7 @@ def deduplicate_by_sha256(
 ):
 
     unique = []
+
     seen_hashes = set()
 
     for candidate in candidates:
@@ -1049,19 +1251,25 @@ def score_candidate(
             ""
         )
         + " "
-        + candidate.get(
-            "account_display_name",
-            ""
+        + str(
+            candidate.get(
+                "account_display_name",
+                ""
+            )
         )
         + " "
-        + candidate.get(
-            "account",
-            ""
+        + str(
+            candidate.get(
+                "account",
+                ""
+            )
         )
         + " "
-        + candidate.get(
-            "hashtag",
-            ""
+        + str(
+            candidate.get(
+                "hashtag",
+                ""
+            )
         )
     )
 
@@ -1216,9 +1424,7 @@ def main():
     )
 
     # --------------------------------------------------------
-    # IMPORTANT:
-    # Deduplicate actual media BEFORE history filtering
-    # and BEFORE selecting the top 20.
+    # Actual media deduplication
     # --------------------------------------------------------
 
     print()
@@ -1234,6 +1440,13 @@ def main():
         f"UNIQUE VALIDATED VIDEOS: "
         f"{len(validated)}"
     )
+
+    # --------------------------------------------------------
+    # Publication history
+    #
+    # history.json contains ONLY successfully published
+    # videos. This script never modifies it.
+    # --------------------------------------------------------
 
     history = load_json(
         HISTORY_FILE,
@@ -1336,11 +1549,9 @@ def main():
 
         print(
             "   Caption:",
-            normalize_text(
-                candidate.get(
-                    "caption",
-                    ""
-                )
+            candidate.get(
+                "caption",
+                ""
             )[:200]
         )
 
@@ -1350,43 +1561,18 @@ def main():
     )
 
     # --------------------------------------------------------
-    # HISTORY
-    # Only genuinely selected unique videos are recorded.
+    # IMPORTANT:
+    #
+    # DO NOT write selected candidates into history here.
+    #
+    # Publication history is now owned by the sender.
+    # A candidate enters history ONLY after Telegram confirms
+    # successful publication.
     # --------------------------------------------------------
 
-    history_entries = list(
-        history
-    )
-
-    for candidate in selected:
-
-        history_entries.append(
-            {
-                "selected_at": now_iso(),
-                "sha256": candidate.get(
-                    "sha256"
-                ),
-                "media_url": candidate.get(
-                    "media_url"
-                ),
-                "status_url": candidate.get(
-                    "status_url"
-                ),
-                "duration": candidate.get(
-                    "duration"
-                ),
-                "file_size": candidate.get(
-                    "file_size"
-                ),
-                "total_score": candidate.get(
-                    "total_score"
-                ),
-            }
-        )
-
-    save_json(
-        HISTORY_FILE,
-        history_entries
+    print()
+    print(
+        "Publication history was NOT modified."
     )
 
     print()
@@ -1403,7 +1589,7 @@ def main():
 
     print(
         f"Validated videos: "
-        f"{len(load_json(VALIDATED_FILE, []))}"
+        f"{len(validated)}"
     )
 
     print(
@@ -1422,8 +1608,8 @@ def main():
     )
 
     print(
-        f"History entries: "
-        f"{len(history_entries)}"
+        f"Published-history entries: "
+        f"{len(history)}"
     )
 
 
