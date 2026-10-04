@@ -178,5 +178,176 @@
     "duration": 15.3,
     "file_size": 6052187,
     "total_score": 60.0
+  },
+  {
+    "selected_at": "2026-10-04T17:27:04.687187+00:00",
+    "sha256": "f6a544410ba648d45e0a0c4e8a836283de5daf6ab901e1d3344c4ca7999b2ea4",
+    "media_url": "https://s3.eu-central-2.wasabisys.com/mastodonworld/cache/media_attachments/files/117/378/826/703/904/127/original/9363e4d68f2d5ce5.mp4",
+    "status_url": "https://kolektiva.social/@jamesjoelrussell/117378826586319800",
+    "duration": 37.2,
+    "file_size": 31017723,
+    "total_score": 60.0
+  },
+  {
+    "selected_at": "2026-10-04T17:27:04.687204+00:00",
+    "sha256": "b1cb77f1532dea451c43a30b4ccda3527eb71ef3f472abd47f2773baa3f21f11",
+    "media_url": "https://files.mastodon.social/media_attachments/files/117/383/050/526/565/853/original/018f2c96f7942d62.mp4",
+    "status_url": "https://mastodon.social/@CAPETOK/117383050762469565",
+    "duration": 54.428,
+    "file_size": 5185000,
+    "total_score": 59.236
+  },
+  {
+    "selected_at": "2026-10-04T17:27:04.687208+00:00",
+    "sha256": "099c00bb5d9af3ee25a9faefd8e9e1c1add3566bd2854174a0b498f984ff6405",
+    "media_url": "https://s3.eu-central-2.wasabisys.com/mastodonworld/cache/media_attachments/files/117/383/050/917/069/782/original/fb4c4760106a25c3.mp4",
+    "status_url": "https://mastodon.social/@CAPETOK/117383050762469565",
+    "duration": 54.428,
+    "file_size": 5185000,
+    "total_score": 57.0
+  },
+  {
+    "selected_at": "2026-10-04T17:27:04.687210+00:00",
+    "sha256": "0395d0063889baced7c6990a3052ae3c60a701aa36a98b225f50a0ba9f400d5b",
+    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/336/530/839/799/222/original/0d025962c820b9bd.mp4",
+    "status_url": "https://fed.brid.gy/r/https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mwfwgi7oxf2d",
+    "duration": 15.467,
+    "file_size": 5638324,
+    "total_score": 54.5
+  },
+  {
+    "selected_at": "2026-10-04T17:27:04.687213+00:00",
+    "sha256": "612b0a8d436515ce3bbc7a39b6ec3f3a1deb078e62630b6b1101f1e4af7bb444",
+    "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/336/530/863/354/613/original/6e81854d6f7f4df3.mp4",
+    "status_url": "https://fed.brid.gy/r/https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mwfwgi7oxf2d",
+    "duration": 15.467,
+    "file_size": 5638324,
+    "total_score": 54.5
+  },
+  {
+    "selected_at": "2026-10-04T17:27:04.687215+00:00",
+    "sha256": "515ea4d50e5c82c77ca3b1028cb7cd653061774d3bcabfd8c9beff0e21596cdc",
+    "media_url": "https://files.mastodon.online/cache/media_attachments/files/116/982/184/984/613/516/original/4f6fcd442017410f.mp4",
+    "status_url": "https://mastodon.social/@inkican/116982184934512331",
+    "duration": 20.3,
+    "file_size": 3540504,
+    "total_score": 53.073
+  },
+  {
+    "selected_at": "2026-10-04T17:27:04.687217+00:00",
+    "sha256": "e66f28d2d68f80b896a8b5518150ed034372d2f5ae2495d02e6fab3f0a64d9da",
+    "media_url": "https://files.mastodon.social/cache/media_attachments/files/116/380/075/677/263/205/original/db752284670bb3be.mp4",
+    "status_url": "https://fed.brid.gy/r/https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mj56eyt2t42z",
+    "duration": 51.1,
+    "file_size": 19278433,
+    "total_score": 52.0
+  },
+  {
+    "selected_at": "2026-10-04T17:27:04.687220+00:00",
+    "sha256": "d7d836c9c52fdf2b66125d34c7753de1b3b244a848ef6f17ee948f8e18e6bd62",
+    "media_url": "https://s3.eu-central-2.wasabisys.com/mastodonworld/cache/media_attachments/files/116/380/075/801/015/941/original/3e070d6be018ea12.mp4",
+    "status_url": "https://fed.brid.gy/r/https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mj56eyt2t42z",
+    "duration": 51.1,
+    "file_size": 19278433,
+    "total_score": 52.0
+  },
+  {
+    "selected_at": "2026-10-04T17:27:04.687222+00:00",
+    "sha256": "fccf146937e94258e88852f8939c642c118f1cc99c07f2a58da922a92e521128",
+    "media_url": "https://files.mastodon.social/media_attachments/files/117/382/782/224/055/071/original/67d0a13b0775ca17.mp4",
+    "status_url": "https://mastodon.social/@CAPETOK/117382783567832671",
+    "duration": 24.009,
+    "file_size": 1222458,
+    "total_score": 51.732
+  },
+  {
+    "selected_at": "2026-10-04T17:27:04.687224+00:00",
+    "sha256": "570d63ce838cef867a4dac6191e3a668964625cc1d36de4248251e24c8cb0548",
+    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/360/372/326/121/504/original/a3b504170549ce92.mp4",
+    "status_url": "https://fed.brid.gy/r/https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mwqja7r4742p",
+    "duration": 30.1,
+    "file_size": 11564884,
+    "total_score": 51.0
+  },
+  {
+    "selected_at": "2026-10-04T17:27:04.687226+00:00",
+    "sha256": "75a5693b1d1eaa3e1a75b6a14f55f910c77e785eab8254dbb7848ae263e9ee66",
+    "media_url": "https://s3.eu-central-2.wasabisys.com/mastodonworld/cache/media_attachments/files/117/360/372/150/608/901/original/c75ffd8bbd3ef624.mp4",
+    "status_url": "https://fed.brid.gy/r/https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mwqja7r4742p",
+    "duration": 30.1,
+    "file_size": 11564884,
+    "total_score": 51.0
+  },
+  {
+    "selected_at": "2026-10-04T17:27:04.687228+00:00",
+    "sha256": "d2db47d1fdbb714b3c3b3228dbf87c95b9798ef6d55b568e0b36ffa84abac649",
+    "media_url": "https://s3.eu-central-2.wasabisys.com/mastodonworld/cache/media_attachments/files/117/382/783/707/163/515/original/5c06a245692385b2.mp4",
+    "status_url": "https://mastodon.social/@CAPETOK/117382783567832671",
+    "duration": 24.009,
+    "file_size": 1222458,
+    "total_score": 50.0
+  },
+  {
+    "selected_at": "2026-10-04T17:27:04.687231+00:00",
+    "sha256": "7642280b40d244bda7dd6e121f8f6ce632c30f0dff42426be3af5e913c9ce2ee",
+    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/379/177/450/088/447/original/69236ea70f37344a.mp4",
+    "status_url": "https://mstdn.party/@Crystal_Fish_Caves/117379177396337434",
+    "duration": 76.076,
+    "file_size": 11987161,
+    "total_score": 48.994
+  },
+  {
+    "selected_at": "2026-10-04T17:27:04.687233+00:00",
+    "sha256": "438f43f89a573deb1fbbe2becbb4748ebbf4f5da9e02f741ad9af49a007a474d",
+    "media_url": "https://files.mastodon.social/media_attachments/files/117/379/909/884/159/743/original/239b6806261387e4.mp4",
+    "status_url": "https://mastodon.social/@CAPETOK/117379910191906756",
+    "duration": 15.023,
+    "file_size": 376792,
+    "total_score": 48.212
+  },
+  {
+    "selected_at": "2026-10-04T17:27:04.687235+00:00",
+    "sha256": "830c254162db0126ec7a86728065260f028ba8bc80e8376b16428788e60e11b1",
+    "media_url": "https://s3.eu-central-2.wasabisys.com/mastodonworld/cache/media_attachments/files/117/379/910/448/061/486/original/cc933fd1e2617d7c.mp4",
+    "status_url": "https://mastodon.social/@CAPETOK/117379910191906756",
+    "duration": 15.023,
+    "file_size": 376792,
+    "total_score": 44.853
+  },
+  {
+    "selected_at": "2026-10-04T17:27:04.687237+00:00",
+    "sha256": "a0cf9bfd8509ad23fff77ee1a867ae32e67ad7945d5ea9cde7647c89467829a7",
+    "media_url": "https://s3.eu-central-2.wasabisys.com/mastodonworld/cache/media_attachments/files/117/379/177/513/568/527/original/87cd1883c4deaf91.mp4",
+    "status_url": "https://mstdn.party/@Crystal_Fish_Caves/117379177396337434",
+    "duration": 76.076,
+    "file_size": 11987161,
+    "total_score": 44.5
+  },
+  {
+    "selected_at": "2026-10-04T17:27:04.687240+00:00",
+    "sha256": "76a50441848ec477054eaf10a64aaea746cf7e370ca9de568bc833ff0cf9ad23",
+    "media_url": "https://files.mastodon.social/media_attachments/files/117/303/496/058/010/411/original/751b6b20aaace6c3.mp4",
+    "status_url": "https://mastodon.social/@cyprnews/117303498213231503",
+    "duration": 23.0,
+    "file_size": 8816282,
+    "total_score": 44.0
+  },
+  {
+    "selected_at": "2026-10-04T17:27:04.687242+00:00",
+    "sha256": "598a35ff4da6f26a196fff4ab6e5b3360f64be6de734a59dbf307266bad7f273",
+    "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/303/500/560/663/413/original/819041a4eb889d91.mp4",
+    "status_url": "https://mastodon.social/@cyprnews/117303498213231503",
+    "duration": 23.0,
+    "file_size": 8816282,
+    "total_score": 44.0
+  },
+  {
+    "selected_at": "2026-10-04T17:27:04.687244+00:00",
+    "sha256": "c252be7688b175852ab1ae475f518afa3a3c0c518cd41d8365db3d9660e663c5",
+    "media_url": "https://s3.eu-central-2.wasabisys.com/mastodonworld/cache/media_attachments/files/115/870/921/565/181/870/original/f0e1c7f03e389a9e.mp4",
+    "status_url": "https://mastodon.social/@GiggleBox_Official/115870920754841679",
+    "duration": 15.1,
+    "file_size": 6208683,
+    "total_score": 35.0
   }
 ]
