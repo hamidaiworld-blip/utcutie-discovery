@@ -1,0 +1,261 @@
+name: YouTube Discovery Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install yt-dlp
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -U yt-dlp
+
+      - name: Verify yt-dlp
+        run: |
+          python -m yt_dlp --version
+
+      - name: Test YouTube discovery
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+
+          queries = [
+              "funny dog",
+              "funny cat",
+              "cute puppy",
+              "cute kitten",
+              "funny pets",
+              "wholesome animals",
+              "animal friendship",
+              "animals being funny",
+          ]
+
+          all_results = []
+
+          print("=" * 70)
+          print("UTCUTIE YOUTUBE DISCOVERY TEST")
+          print("=" * 70)
+
+          for query in queries:
+
+              print()
+              print("-" * 70)
+              print("QUERY:", query)
+              print("-" * 70)
+
+              command = [
+                  "python",
+                  "-m",
+                  "yt_dlp",
+                  "--flat-playlist",
+                  "--dump-single-json",
+                  "--no-warnings",
+                  f"ytsearch10:{query}",
+              ]
+
+              try:
+
+                  result = subprocess.run(
+                      command,
+                      capture_output=True,
+                      text=True,
+                      timeout=90,
+                  )
+
+                  if result.returncode != 0:
+
+                      print(
+                          "SEARCH FAILED"
+                      )
+
+                      print(
+                          result.stderr[-2000:]
+                      )
+
+                      continue
+
+                  data = json.loads(
+                      result.stdout
+                  )
+
+                  entries = (
+                      data.get("entries")
+                      or []
+                  )
+
+                  print(
+                      "Results:",
+                      len(entries)
+                  )
+
+                  for entry in entries:
+
+                      if not entry:
+                          continue
+
+                      video_id = entry.get(
+                          "id"
+                      )
+
+                      title = entry.get(
+                          "title"
+                      )
+
+                      uploader = entry.get(
+                          "uploader"
+                      )
+
+                      duration = entry.get(
+                          "duration"
+                      )
+
+                      url = entry.get(
+                          "webpage_url"
+                      )
+
+                      if not url and video_id:
+                          url = (
+                              "https://www.youtube.com/watch?v="
+                              + video_id
+                          )
+
+                      item = {
+                          "query": query,
+                          "id": video_id,
+                          "title": title,
+                          "uploader": uploader,
+                          "duration": duration,
+                          "url": url,
+                      }
+
+                      all_results.append(
+                          item
+                      )
+
+                      print()
+                      print(
+                          "TITLE:",
+                          title
+                      )
+                      print(
+                          "UPLOADER:",
+                          uploader
+                      )
+                      print(
+                          "DURATION:",
+                          duration
+                      )
+                      print(
+                          "URL:",
+                          url
+                      )
+
+              except subprocess.TimeoutExpired:
+
+                  print(
+                      "SEARCH TIMED OUT"
+                  )
+
+              except Exception as e:
+
+                  print(
+                      "ERROR:",
+                      repr(e)
+                  )
+
+          # Deduplicate by video ID.
+          unique = {}
+
+          for item in all_results:
+
+              video_id = item.get("id")
+
+              if video_id:
+                  unique[video_id] = item
+
+          print()
+          print("=" * 70)
+          print("FINAL DISCOVERY RESULT")
+          print("=" * 70)
+
+          print(
+              "Raw results:",
+              len(all_results)
+          )
+
+          print(
+              "Unique videos:",
+              len(unique)
+          )
+
+          with open(
+              "youtube_candidates.json",
+              "w",
+              encoding="utf-8"
+          ) as f:
+
+              json.dump(
+                  list(unique.values()),
+                  f,
+                  ensure_ascii=False,
+                  indent=2
+              )
+
+          with open(
+              "youtube_candidates.txt",
+              "w",
+              encoding="utf-8"
+          ) as f:
+
+              for item in unique.values():
+
+                  url = item.get("url")
+
+                  if url:
+                      f.write(
+                          url + "\n"
+                      )
+
+          print()
+          print(
+              "Saved: youtube_candidates.json"
+          )
+
+          print(
+              "Saved: youtube_candidates.txt"
+          )
+
+          if unique:
+
+              print()
+              print(
+                  "YOUTUBE DISCOVERY: YES"
+              )
+
+          else:
+
+              print()
+              print(
+                  "YOUTUBE DISCOVERY: NO"
+              )
+
+          PY
+
+      - name: Upload discovery results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: youtube-discovery-test
+          path: |
+            youtube_candidates.json
+            youtube_candidates.txt
+          if-no-files-found: ignore
