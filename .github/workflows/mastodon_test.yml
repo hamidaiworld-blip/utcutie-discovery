@@ -7,7 +7,7 @@ permissions:
   contents: write
 
 jobs:
-  discover:
+  discover-and-send:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,6 +26,175 @@ jobs:
 
       - name: Run Mastodon discovery
         run: python mastodon_test.py
+
+      - name: Send selected videos to Render
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import sys
+          import time
+          import requests
+
+          RENDER_URL = (
+              "https://x-video-downloader-api.onrender.com"
+              "/send-media-and-send"
+          )
+
+          API_KEY = os.environ["RENDER_API_KEY"]
+
+          with open(
+              "selected_candidates.json",
+              "r",
+              encoding="utf-8"
+          ) as f:
+              candidates = json.load(f)
+
+          print(
+              f"Selected candidates: {len(candidates)}"
+          )
+
+          sent = 0
+          failed = 0
+
+          for index, candidate in enumerate(
+              candidates,
+              start=1
+          ):
+
+              media_url = candidate.get(
+                  "media_url"
+              )
+
+              caption = candidate.get(
+                  "caption",
+                  ""
+              ).strip()
+
+              if not media_url:
+                  print(
+                      f"[{index}] SKIP: "
+                      "missing media_url"
+                  )
+                  failed += 1
+                  continue
+
+              if caption:
+                  final_caption = (
+                      caption
+                      + "\n\n"
+                      + "@utcutie"
+                  )
+              else:
+                  final_caption = "@utcutie"
+
+              print(
+                  f"[{index}] Sending:"
+              )
+              print(
+                  f"  URL: {media_url}"
+              )
+              print(
+                  f"  Caption: {final_caption}"
+              )
+
+              try:
+
+                  response = requests.get(
+                      RENDER_URL,
+                      params={
+                          "media_url": media_url,
+                          "caption": final_caption
+                      },
+                      headers={
+                          "x-api-key": API_KEY
+                      },
+                      timeout=360
+                  )
+
+                  print(
+                      f"  HTTP: "
+                      f"{response.status_code}"
+                  )
+
+                  print(
+                      f"  Response: "
+                      f"{response.text}"
+                  )
+
+                  if response.ok:
+
+                      data = response.json()
+
+                      if data.get(
+                          "telegram_sent"
+                      ):
+
+                          sent += 1
+
+                          print(
+                              f"  SUCCESS "
+                              f"Telegram message "
+                              f"{data.get('telegram_message_id')}"
+                          )
+
+                      else:
+
+                          failed += 1
+
+                          print(
+                              "  FAILED: "
+                              "Telegram was not confirmed"
+                          )
+
+                  else:
+
+                      failed += 1
+
+                      print(
+                          "  FAILED: "
+                          "Render returned an error"
+                      )
+
+              except Exception as exc:
+
+                  failed += 1
+
+                  print(
+                      f"  EXCEPTION: {exc}"
+                  )
+
+              if index < len(candidates):
+
+                  print(
+                      "  Waiting 5 seconds..."
+                  )
+
+                  time.sleep(5)
+
+          print("")
+          print("==============================")
+          print("SEND SUMMARY")
+          print("==============================")
+          print(
+              f"Selected: {len(candidates)}"
+          )
+          print(
+              f"Sent: {sent}"
+          )
+          print(
+              f"Failed: {failed}"
+          )
+
+          if sent == 0:
+              print(
+                  "No videos were successfully sent."
+              )
+              sys.exit(1)
+
+          PY
 
       - name: Save discovery results
         run: |
