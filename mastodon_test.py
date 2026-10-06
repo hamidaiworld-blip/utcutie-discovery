@@ -1093,7 +1093,11 @@ def download_and_validate(
 
         print()
         print(
-            "Downloading:",
+            "Downloading media:",
+            media_url
+        )
+        print(
+            "Source post:",
             candidate.get(
                 "status_url"
             )
@@ -1603,6 +1607,35 @@ def deduplicate_by_sha256(
 # ============================================================
 # ============================================================
 # SCORING
+
+
+def freshness_days(created_at):
+    if not created_at:
+        return 9999.0
+    try:
+        created = datetime.fromisoformat(
+            str(created_at).replace("Z", "+00:00")
+        )
+        if created.tzinfo is None:
+            created = created.replace(tzinfo=timezone.utc)
+        age_seconds = (
+            datetime.now(timezone.utc) - created
+        ).total_seconds()
+        return max(0.0, age_seconds / 86400.0)
+    except Exception:
+        return 9999.0
+
+
+def freshness_tier(days):
+    if days <= PRIMARY_DAYS:
+        return "primary"
+    if days <= SECONDARY_DAYS:
+        return "secondary"
+    if days <= EMERGENCY_DAYS:
+        return "emergency"
+    return "reject"
+
+
 # ============================================================
 
 def score_candidate(candidate):
