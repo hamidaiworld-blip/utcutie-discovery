@@ -1,11 +1,11 @@
 {
-  "created_at": "2026-10-06T10:28:54.396186+03:30",
+  "created_at": "2026-10-06T16:03:38.367094+03:30",
   "timezone": "Asia/Tehran",
   "timezone_display": "Tehran",
   "target_channel": "@utcutie",
   "test_chat_id": "333331538",
   "max_items": 20,
-  "selected_count": 14,
+  "selected_count": 12,
   "publishing_window": {
     "start": "11:00",
     "end": "23:00"
@@ -14,19 +14,6 @@
     {
       "queue_id": 1,
       "scheduled_at": "2026-10-06T11:00:00+03:30",
-      "status": "pending",
-      "media_url": "https://files.mastodon.social/media_attachments/files/117/388/566/376/048/142/original/681db9ba1a38fd20.mp4",
-      "caption": "A short video of our old dog Bertha ❤️❤️\n# doglife # animals # goodlife # wildlife # love\n\n@utcutie",
-      "source_url": "https://mastodon.social/@kaersvang/117388577022747422",
-      "duration": 21.525,
-      "file_size": 46452762,
-      "score": null,
-      "instance": "https://mastodon.social",
-      "account": "kaersvang"
-    },
-    {
-      "queue_id": 2,
-      "scheduled_at": "2026-10-06T11:55:23.076923+03:30",
       "status": "pending",
       "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/388/577/319/647/646/original/8597b401289eab23.mp4",
       "caption": "A short video of our old dog Bertha ❤️❤️\n# doglife # animals # goodlife # wildlife # love\n\n@utcutie",
@@ -38,8 +25,8 @@
       "account": "kaersvang@mastodon.social"
     },
     {
-      "queue_id": 3,
-      "scheduled_at": "2026-10-06T12:50:46.153846+03:30",
+      "queue_id": 2,
+      "scheduled_at": "2026-10-06T12:05:27.272727+03:30",
       "status": "pending",
       "media_url": "https://s3.eu-central-2.wasabisys.com/mastodonworld/cache/media_attachments/files/117/388/577/083/990/265/original/3776308f22efbb66.mp4",
       "caption": "A short video of our old dog Bertha ❤️❤️\n# doglife # animals # goodlife # wildlife # love\n\n@utcutie",
@@ -51,8 +38,8 @@
       "account": "kaersvang@mastodon.social"
     },
     {
-      "queue_id": 4,
-      "scheduled_at": "2026-10-06T13:46:09.230769+03:30",
+      "queue_id": 3,
+      "scheduled_at": "2026-10-06T13:10:54.545455+03:30",
       "status": "pending",
       "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/388/718/103/391/136/original/cbca48fe751bae72.mp4",
       "caption": "“Come little Hazel, I'll take thee away, into a land of enchantment...\" Sometimes we catch the Scribe singing to the dogs…. # Dog # Chihuahua\n\n@utcutie",
@@ -64,21 +51,8 @@
       "account": "pughollow@mastodon.social"
     },
     {
-      "queue_id": 5,
-      "scheduled_at": "2026-10-06T14:41:32.307692+03:30",
-      "status": "pending",
-      "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/388/666/591/091/473/original/8fc614ccaa00c67b.mp4",
-      "caption": "✨ A Sprinkle of JoyousJoyness ✨\nAwwww!\nHave a JoyousJoyfulJoyness day!\n# happy # cat # cute # joyousjoyness # repost\n\n@utcutie",
-      "source_url": "https://mastodon.social/@joyousjoyness/117388666416216041",
-      "duration": 15.333,
-      "file_size": 3129111,
-      "score": null,
-      "instance": "https://mastodon.online",
-      "account": "joyousjoyness@mastodon.social"
-    },
-    {
-      "queue_id": 6,
-      "scheduled_at": "2026-10-06T15:36:55.384615+03:30",
+      "queue_id": 4,
+      "scheduled_at": "2026-10-06T14:16:21.818182+03:30",
       "status": "pending",
       "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/391/020/884/459/854/original/3a6d9f146e47a83e.mp4",
       "caption": "stew the raccoon:)) # raccoon # critter # raccoonfamily # backyardwildlife # cuteanimals\n\n@utcutie",
@@ -90,8 +64,8 @@
       "account": "crittersnackstation@mastodon.social"
     },
     {
-      "queue_id": 7,
-      "scheduled_at": "2026-10-06T16:32:18.461538+03:30",
+      "queue_id": 5,
+      "scheduled_at": "2026-10-06T15:21:49.090909+03:30",
       "status": "pending",
       "media_url": "https://files.mastodon.social/media_attachments/files/117/391/019/909/315/771/original/d11cffea42d9219e.mp4",
       "caption": "stew the raccoon:)) # raccoon # critter # raccoonfamily # backyardwildlife # cuteanimals\n\n@utcutie",
@@ -103,8 +77,8 @@
       "account": "crittersnackstation"
     },
     {
-      "queue_id": 8,
-      "scheduled_at": "2026-10-06T17:27:41.538462+03:30",
+      "queue_id": 6,
+      "scheduled_at": "2026-10-06T16:27:16.363636+03:30",
       "status": "pending",
       "media_url": "https://s3.eu-central-2.wasabisys.com/mastodonworld/cache/media_attachments/files/117/391/020/858/029/439/original/ccc3b57b0b3a230f.mp4",
       "caption": "stew the raccoon:)) # raccoon # critter # raccoonfamily # backyardwildlife # cuteanimals\n\n@utcutie",
@@ -116,8 +90,8 @@
       "account": "crittersnackstation@mastodon.social"
     },
     {
-      "queue_id": 9,
-      "scheduled_at": "2026-10-06T18:23:04.615385+03:30",
+      "queue_id": 7,
+      "scheduled_at": "2026-10-06T17:32:43.636364+03:30",
       "status": "pending",
       "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/389/151/556/158/573/original/79ce6e131fd42779.mp4",
       "caption": "Buddy was born blind on a meat farm, but he was rescued before his life was taken from him. 🐐🥺\nNow, he’s surrounded by the care, safety and cuddles he deserves. 🤗💚\nKeep up with Buddy and his friends at austinfarmsanctuary on Instagram 💜\n\n@utcutie",
@@ -129,8 +103,8 @@
       "account": "veganftaofficial.bsky.social@bsky.brid.gy"
     },
     {
-      "queue_id": 10,
-      "scheduled_at": "2026-10-06T19:18:27.692308+03:30",
+      "queue_id": 8,
+      "scheduled_at": "2026-10-06T18:38:10.909091+03:30",
       "status": "pending",
       "media_url": "https://s3.eu-central-2.wasabisys.com/mastodonworld/cache/media_attachments/files/117/389/151/642/158/111/original/aa10094b029e32d2.mp4",
       "caption": "Buddy was born blind on a meat farm, but he was rescued before his life was taken from him. 🐐🥺\nNow, he’s surrounded by the care, safety and cuddles he deserves. 🤗💚\nKeep up with Buddy and his friends at austinfarmsanctuary on Instagram 💜\n\n@utcutie",
@@ -142,21 +116,21 @@
       "account": "veganftaofficial.bsky.social@bsky.brid.gy"
     },
     {
-      "queue_id": 11,
-      "scheduled_at": "2026-10-06T20:13:50.769231+03:30",
+      "queue_id": 9,
+      "scheduled_at": "2026-10-06T19:43:38.181818+03:30",
       "status": "pending",
-      "media_url": "https://files.mastodon.social/media_attachments/files/117/385/494/740/651/094/original/e688c73c8007f183.mp4",
+      "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/385/495/552/300/109/original/59dd3c550b2ea647.mp4",
       "caption": "Am I calm and am I the calmest person in the room? is a better question than any org chart will ever give you.\nThe hierarchy trap isn't just about sociopaths , it's that means you also stop auditing yourself against everyone else's scoreboard, and that audit is where the anxiety lives.\n# Food # Pets # Cooking\nDiscuss.\n\n@utcutie",
       "source_url": "https://mastodon.social/@social_stelle/117385495187632650",
       "duration": 35.993,
       "file_size": 13105056,
       "score": null,
-      "instance": "https://mastodon.social",
-      "account": "social_stelle"
+      "instance": "https://mastodon.online",
+      "account": "social_stelle@mastodon.social"
     },
     {
-      "queue_id": 12,
-      "scheduled_at": "2026-10-06T21:09:13.846154+03:30",
+      "queue_id": 10,
+      "scheduled_at": "2026-10-06T20:49:05.454545+03:30",
       "status": "pending",
       "media_url": "https://s3.eu-central-2.wasabisys.com/mastodonworld/cache/media_attachments/files/117/385/495/950/502/554/original/a2296b4ff7b05b41.mp4",
       "caption": "Am I calm and am I the calmest person in the room? is a better question than any org chart will ever give you.\nThe hierarchy trap isn't just about sociopaths , it's that means you also stop auditing yourself against everyone else's scoreboard, and that audit is where the anxiety lives.\n# Food # Pets # Cooking\nDiscuss.\n\n@utcutie",
@@ -168,8 +142,8 @@
       "account": "social_stelle@mastodon.social"
     },
     {
-      "queue_id": 13,
-      "scheduled_at": "2026-10-06T22:04:36.923077+03:30",
+      "queue_id": 11,
+      "scheduled_at": "2026-10-06T21:54:32.727273+03:30",
       "status": "pending",
       "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/388/148/349/730/362/original/e3098f707acfc7cb.mp4",
       "caption": "An oldie but goodie‼️☺️🪿🐯\n# tigers # ducks # animals # hideandseek # justforlaughs\n\n@utcutie",
@@ -181,7 +155,7 @@
       "account": "AfroIsReborn@mastodon.social"
     },
     {
-      "queue_id": 14,
+      "queue_id": 12,
       "scheduled_at": "2026-10-06T23:00:00+03:30",
       "status": "pending",
       "media_url": "https://s3.eu-central-2.wasabisys.com/mastodonworld/cache/media_attachments/files/117/388/148/337/637/105/original/2b9351e7bdb5210f.mp4",
