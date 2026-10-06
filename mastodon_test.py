@@ -1009,7 +1009,10 @@ def content_gate(candidate):
         if x
     }
 
-    caption_tokens = text_tokens(caption)
+    # Hashtags are discovery metadata, not semantic evidence.
+    # Remove hashtag tokens before evaluating caption animal evidence.
+    caption_without_hashtags = re.sub(r"(?u)(?<!\w)#\s*\w+", " ", caption)
+    caption_tokens = text_tokens(caption_without_hashtags)
 
     # Hashtags/tags are discovery signals, never sufficient animal evidence.
     # Generic tags such as pets/animals are especially weak and cannot qualify.
@@ -1051,6 +1054,17 @@ def content_gate(candidate):
 
     if "meat farm" in text or "animal rights" in text:
         return False, 0, "advocacy campaign content"
+
+    advocacy_context_hits = {
+        term for term in {
+            "sanctuary", "animal sanctuary", "farm sanctuary",
+            "vegan", "vegetarian", "animal welfare",
+            "animal activism", "activism", "campaign"
+        }
+        if contains_phrase(text, term)
+    }
+    if advocacy_context_hits:
+        return False, 0, "advocacy/sanctuary content"
 
     # Explicit non-animal subject matter is rejected before scoring.
     if irrelevant_hits and not caption_animal_hits:
