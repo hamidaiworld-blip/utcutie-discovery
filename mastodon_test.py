@@ -1003,25 +1003,38 @@ def contains_phrase(text, phrase):
 
 def content_gate(candidate):
     caption = str(candidate.get("caption") or "")
-    display_name = str(candidate.get("account_display_name") or "")
     actual_tags = {
         str(x).lower().strip()
         for x in (candidate.get("status_tags") or [])
         if x
     }
 
-    text = f"{caption} {display_name}".lower()
-    tokens = text_tokens(text)
+    caption_tokens = text_tokens(caption)
 
-    animal_hits = {
+    # Hashtags/tags are discovery signals, never sufficient animal evidence.
+    # Generic tags such as pets/animals are especially weak and cannot qualify.
+    generic_animal_tags = {
+        "pet", "pets", "animal", "animals", "cuteanimals",
+        "funnyanimals", "petsofthefediverse"
+    }
+
+    caption_animal_hits = {
         term for term in ANIMAL_TERMS
-        if term in tokens or term in actual_tags
+        if term in caption_tokens
     }
 
-    context_hits = {
-        term for term in CONTEXT_TERMS
-        if term in tokens or term in actual_tags
+    specific_tag_animal_hits = {
+        term for term in ANIMAL_TERMS
+        if term not in generic_animal_tags
+        and term in actual_tags
     }
+
+    caption_context_hits = {
+        term for term in CONTEXT_TERMS
+        if term in caption_tokens
+    }
+
+    text = caption.lower()
 
     advocacy_hits = {
         term for term in ADVOCACY_TERMS
@@ -1039,33 +1052,27 @@ def content_gate(candidate):
     if "meat farm" in text or "animal rights" in text:
         return False, 0, "advocacy campaign content"
 
-    if irrelevant_hits and not animal_hits:
+    # Explicit non-animal subject matter is rejected before scoring.
+    if irrelevant_hits and not caption_animal_hits:
         return False, 0, "irrelevant non-animal content"
 
-    if not animal_hits:
-        return False, 0, "no animal evidence"
+    # Primary rule: the caption itself must identify an animal.
+    # A specific animal hashtag may supplement a caption that clearly describes
+    # an animal/pet context, but tags alone can never pass the gate.
+    if not caption_animal_hits:
+        if not specific_tag_animal_hits or not caption_context_hits:
+            return False, 0, "no animal evidence"
 
+    animal_hits = caption_animal_hits | specific_tag_animal_hits
     score = min(60, len(animal_hits) * 18)
 
-    if context_hits:
-        score += min(25, len(context_hits) * 5)
-
-    caption_tokens = text_tokens(caption)
-    caption_animal_hits = {
-        term for term in ANIMAL_TERMS
-        if term in caption_tokens
-    }
+    if caption_context_hits:
+        score += min(25, len(caption_context_hits) * 5)
 
     if caption_animal_hits:
         score += 15
 
-    if advocacy_hits and not context_hits:
-        return False, score, "advocacy without entertainment context"
-
-    return True, min(score, 100), ""
-
-# VIDEO VALIDATION
-# ============================================================
+    return True, min(100, score), "passed"
 
 def download_and_validate(
     candidate
