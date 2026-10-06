@@ -42,6 +42,16 @@ MAX_FILE_SIZE = 48 * 1024 * 1024
 
 MAX_SELECTED = 20
 
+# Freshness policy.
+PRIMARY_DAYS = 14
+SECONDARY_DAYS = 30
+EMERGENCY_DAYS = 60
+
+# Minimum quality/relevance gates.
+MIN_CONTENT_VALUE = 30
+EMERGENCY_MIN_CONTENT_VALUE = 55
+EMERGENCY_MIN_SCORE = 75
+
 REQUEST_TIMEOUT = 30
 
 # Telegram video captions have a 1024-character limit.
@@ -243,7 +253,7 @@ def clean_caption(raw_caption):
     #
     # #Dog
     # #DogsOfMastodon
-    # #گربه
+    # #Ú¯Ø±Ø¨Ù
     # --------------------------------------------------------
 
     text = re.sub(
@@ -831,6 +841,16 @@ def discover_candidates():
                             ),
 
                             "hashtag": hashtag,
+
+                            # These are the post's ACTUAL Mastodon tags.
+                            # The discovery hashtag is deliberately kept
+                            # separate and is never treated as evidence.
+                            "status_tags": [
+                                str(tag.get("name", "")).strip().lower()
+                                for tag in (status.get("tags") or [])
+                                if isinstance(tag, dict)
+                                and tag.get("name")
+                            ],
                         }
 
                         candidates.append(
@@ -850,50 +870,200 @@ def discover_candidates():
 
 
 # ============================================================
-# URL DEDUPLICATION
+# ============================================================
+# CANONICAL POST DEDUPLICATION
 # ============================================================
 
-def deduplicate_candidates(
-    candidates
-):
+def normalize_status_url(url):
+    if not url:
+        return ""
 
-    unique = []
+    value = str(url).strip()
 
-    seen = set()
+    # brid.gy mirrors: keep the underlying source post URL.
+    if "/r/https://" in value:
+        value = value.split("/r/", 1)[1]
+
+    value = value.split("?", 1)[0].split("#", 1)[0].rstrip("/")
+
+    return value
+
+
+def canonical_status_key(candidate):
+    status_url = normalize_status_url(
+        candidate.get("status_url")
+    )
+
+    if status_url:
+        return f"status:{status_url}"
+
+    media_url = str(
+        candidate.get("media_url") or ""
+    ).split("?", 1)[0]
+
+    if media_url:
+        return f"media:{media_url}"
+
+    return ""
+
+
+def candidate_quality_key(candidate):
+    width = int(candidate.get("width") or 0)
+    height = int(candidate.get("height") or 0)
+    pixels = width * height
+
+    # Prefer higher resolution, then smaller files when resolution is equal.
+    file_size = int(candidate.get("file_size") or 0)
+
+    return (
+        pixels,
+        -file_size,
+        float(candidate.get("favourites") or 0),
+        float(candidate.get("reblogs") or 0),
+    )
+
+
+def deduplicate_candidates(candidates):
+    best = {}
 
     for candidate in candidates:
-
-        media_url = candidate.get(
-            "media_url"
-        )
-
-        status_url = candidate.get(
-            "status_url"
-        )
-
-        key = (
-            media_url
-            or status_url
-        )
+        key = canonical_status_key(candidate)
 
         if not key:
             continue
 
-        if key in seen:
+        current = best.get(key)
+
+        if current is None:
+            best[key] = candidate
             continue
 
-        seen.add(
-            key
-        )
+        if candidate_quality_key(candidate) > candidate_quality_key(current):
+            best[key] = candidate
 
-        unique.append(
-            candidate
-        )
+    unique = list(best.values())
 
     return unique
 
 
 # ============================================================
+# CONTENT / RELEVANCE GATE
+# ============================================================
+
+ANIMAL_TERMS = {
+    "cat", "cats", "kitten", "kittens", "kitty", "kitties",
+    "feline", "dog", "dogs", "puppy", "puppies", "pup", "canine",
+    "pet", "pets", "animal", "animals",
+    "bird", "birds", "parrot", "parrots", "parakeet", "cockatiel",
+    "duck", "ducks", "goose", "geese", "chicken", "chickens",
+    "rabbit", "rabbits", "bunny", "bunnies", "hamster", "hamsters",
+    "raccoon", "raccoons", "tiger", "tigers", "lion", "lions",
+    "guinea", "horse", "horses", "pony", "ponies",
+    "cow", "cows", "calf", "sheep", "goat", "goats",
+    "deer", "fox", "foxes", "wolf", "wolves", "bear", "bears",
+    "panda", "monkey", "monkeys", "otter", "seal", "dolphin",
+    "turtle", "turtles", "snake", "snakes", "lizard", "frog",
+    "frogs", "hedgehog", "hedgehogs", "chihuahua", "labrador",
+    "retriever", "husky", "corgi", "poodle", "wildlife",
+}
+
+CONTEXT_TERMS = {
+    "pet", "pets", "paw", "paws", "tail", "whiskers", "zoomies",
+    "play", "playing", "playtime", "sleeping", "sleepy",
+    "cuddle", "cuddling", "hug", "hugging", "kiss", "kissing",
+    "treat", "toy", "toys", "fetch", "leash", "walk", "walking",
+    "run", "running", "funny", "hilarious", "cute", "adorable",
+    "aww", "silly", "goofy", "laugh", "laughing", "meme",
+    "reaction", "unexpected", "chaos", "derp", "wholesome",
+    "sweet", "heartwarming", "playful", "surprise", "happy",
+    "joy", "love", "friendship", "hideandseek", "justforlaughs",
+}
+
+ADVOCACY_TERMS = {
+    "rescue", "rescued", "rescuing", "adopt", "adopted", "adoption",
+    "shelter", "foster", "fostering", "animal rights",
+    "animal-rights", "meat farm", "meatfarm", "slaughter",
+    "campaign", "donate", "donation", "fundraiser", "fundraising",
+    "sanctuary", "save animals", "save the animals",
+}
+
+IRRELEVANT_TERMS = {
+    "org chart", "orgchart", "hierarchy", "sociopath", "leadership",
+    "management", "manager", "workplace", "corporate", "company",
+    "career", "linkedin", "audit", "business strategy",
+    "football", "soccer", "basketball", "baseball", "hockey",
+    "politics", "election", "government",
+}
+
+def text_tokens(text):
+    return set(re.findall(r"[a-z0-9]+", str(text or "").lower()))
+
+def contains_phrase(text, phrase):
+    return phrase.lower() in str(text or "").lower()
+
+def content_gate(candidate):
+    caption = str(candidate.get("caption") or "")
+    display_name = str(candidate.get("account_display_name") or "")
+    actual_tags = {
+        str(x).lower().strip()
+        for x in (candidate.get("status_tags") or [])
+        if x
+    }
+
+    text = f"{caption} {display_name}".lower()
+    tokens = text_tokens(text)
+
+    animal_hits = {
+        term for term in ANIMAL_TERMS
+        if term in tokens or term in actual_tags
+    }
+
+    context_hits = {
+        term for term in CONTEXT_TERMS
+        if term in tokens or term in actual_tags
+    }
+
+    advocacy_hits = {
+        term for term in ADVOCACY_TERMS
+        if contains_phrase(text, term)
+    }
+
+    irrelevant_hits = {
+        term for term in IRRELEVANT_TERMS
+        if contains_phrase(text, term)
+    }
+
+    if len(advocacy_hits) >= 2:
+        return False, 0, "rescue/advocacy content"
+
+    if "meat farm" in text or "animal rights" in text:
+        return False, 0, "advocacy campaign content"
+
+    if irrelevant_hits and not animal_hits:
+        return False, 0, "irrelevant non-animal content"
+
+    if not animal_hits:
+        return False, 0, "no animal evidence"
+
+    score = min(60, len(animal_hits) * 18)
+
+    if context_hits:
+        score += min(25, len(context_hits) * 5)
+
+    caption_tokens = text_tokens(caption)
+    caption_animal_hits = {
+        term for term in ANIMAL_TERMS
+        if term in caption_tokens
+    }
+
+    if caption_animal_hits:
+        score += 15
+
+    if advocacy_hits and not context_hits:
+        return False, score, "advocacy without entertainment context"
+
+    return True, min(score, 100), ""
+
 # VIDEO VALIDATION
 # ============================================================
 
@@ -1336,6 +1506,9 @@ def history_keys(
 
             if value:
 
+                if field == "status_url":
+                    value = normalize_status_url(value)
+
                 keys.add(
                     f"{field}:{value}"
                 )
@@ -1428,128 +1601,145 @@ def deduplicate_by_sha256(
 
 
 # ============================================================
+# ============================================================
 # SCORING
 # ============================================================
 
-def score_candidate(
-    candidate
-):
+def score_candidate(candidate):
+    caption = str(candidate.get("caption") or "")
+    tags = " ".join(candidate.get("status_tags") or [])
 
-    text = (
-        str(
-            candidate.get(
-                "caption",
-                ""
-            )
-        )
-        + " "
-        + str(
-            candidate.get(
-                "account_display_name",
-                ""
-            )
-        )
-        + " "
-        + str(
-            candidate.get(
-                "account",
-                ""
-            )
-        )
-        + " "
-        + str(
-            candidate.get(
-                "hashtag",
-                ""
-            )
-        )
-    )
+    relevance_text = f"{caption} {tags}"
 
-    relevance = animal_relevance(
-        text
-    )
+    relevance = animal_relevance(relevance_text)
 
     engagement = engagement_score(
-        candidate.get(
-            "favourites",
-            0
-        ),
-        candidate.get(
-            "reblogs",
-            0
-        ),
-        candidate.get(
-            "replies",
-            0
-        ),
+        candidate.get("favourites", 0),
+        candidate.get("reblogs", 0),
+        candidate.get("replies", 0),
     )
 
     recency = recency_score(
-        candidate.get(
-            "created_at"
-        )
+        candidate.get("created_at")
     )
 
     quality = quality_score(
-        candidate.get(
-            "width"
-        ),
-        candidate.get(
-            "height"
-        ),
+        candidate.get("width"),
+        candidate.get("height"),
     )
 
     caption_quality = caption_quality_score(
-        candidate.get(
-            "caption",
-            ""
-        )
+        caption
     )
 
-    # Relevance remains the strongest signal.
-    # Engagement and recency help prioritize attractive
-    # and fresh content.
+    days = freshness_days(
+        candidate.get("created_at")
+    )
+
+    tier = freshness_tier(days)
+
+    # Penalize inefficient huge files without rejecting them.
+    file_size_mb = float(
+        candidate.get("file_size_mb") or 0
+    )
+    duration = float(
+        candidate.get("duration") or 0
+    )
+
+    efficiency_penalty = 0
+
+    if duration > 0 and file_size_mb > 35 and duration < 30:
+        efficiency_penalty = 4
+
+    # Relevance is dominant; fresh content gets a meaningful bonus.
     total = (
-        relevance * 2
-        + engagement
-        + recency
-        + quality
+        relevance * 3.0
+        + engagement * 0.9
+        + recency * 1.2
+        + quality * 1.0
         + caption_quality
+        - efficiency_penalty
     )
 
-    result = dict(
-        candidate
-    )
+    result = dict(candidate)
 
-    result["animal_relevance"] = (
-        relevance
-    )
-
-    result["engagement_score"] = (
-        engagement
-    )
-
-    result["recency_score"] = (
-        recency
-    )
-
-    result["quality_score"] = (
-        quality
-    )
-
-    result["caption_quality_score"] = (
-        caption_quality
-    )
-
-    result["total_score"] = round(
-        total,
-        3
-    )
+    result["animal_relevance"] = round(relevance, 3)
+    result["engagement_score"] = round(engagement, 3)
+    result["recency_score"] = round(recency, 3)
+    result["quality_score"] = round(quality, 3)
+    result["caption_quality_score"] = round(caption_quality, 3)
+    result["freshness_days"] = round(days, 3)
+    result["freshness_tier"] = tier
+    result["total_score"] = round(total, 3)
 
     return result
 
 
 # ============================================================
+# DIVERSE FINAL SELECTION
+# ============================================================
+
+def select_diverse_candidates(candidates):
+    selected = []
+    account_counts = {}
+    instance_counts = {}
+    seen_keys = set()
+
+    for candidate in candidates:
+        if len(selected) >= MAX_SELECTED:
+            break
+
+        key = canonical_status_key(candidate)
+
+        if not key or key in seen_keys:
+            continue
+
+        account = (
+            candidate.get("account")
+            or candidate.get("account_display_name")
+            or "unknown-account"
+        )
+
+        instance = (
+            candidate.get("instance")
+            or "unknown-instance"
+        )
+
+        if account_counts.get(account, 0) >= MAX_VIDEOS_PER_ACCOUNT:
+            continue
+
+        if instance_counts.get(instance, 0) >= MAX_VIDEOS_PER_INSTANCE:
+            continue
+
+        selected.append(candidate)
+        seen_keys.add(key)
+
+        account_counts[account] = (
+            account_counts.get(account, 0) + 1
+        )
+
+        instance_counts[instance] = (
+            instance_counts.get(instance, 0) + 1
+        )
+
+    # Diversity is a preference. If the pool is smaller, use all remaining
+    # unique candidates rather than manufacturing a quota.
+    if len(selected) < MAX_SELECTED:
+        for candidate in candidates:
+            if len(selected) >= MAX_SELECTED:
+                break
+
+            key = canonical_status_key(candidate)
+
+            if not key or key in seen_keys:
+                continue
+
+            selected.append(candidate)
+            seen_keys.add(key)
+
+    return selected
+
+
 # DIVERSE FINAL SELECTION
 # ============================================================
 
@@ -1672,41 +1862,22 @@ def select_diverse_candidates(
 # ============================================================
 
 def main():
-
     print("=" * 70)
-
-    print(
-        "UTCutie Mastodon Video Discovery"
-    )
-
+    print("UTCutie Mastodon Video Discovery")
     print("=" * 70)
-
     print()
 
-    print(
-        "Starting discovery..."
-    )
-
-    candidates = discover_candidates()
+    print("Starting discovery...")
+    raw_candidates = discover_candidates()
 
     print()
+    print(f"RAW VIDEO CANDIDATES: {len(raw_candidates)}")
+
+    # Canonical post dedup happens BEFORE expensive media validation.
+    candidates = deduplicate_candidates(raw_candidates)
 
     print(
-        f"RAW VIDEO CANDIDATES: "
-        f"{len(candidates)}"
-    )
-
-    # --------------------------------------------------------
-    # URL-level deduplication.
-    # --------------------------------------------------------
-
-    candidates = deduplicate_candidates(
-        candidates
-    )
-
-    print(
-        f"UNIQUE VIDEO CANDIDATES: "
-        f"{len(candidates)}"
+        f"UNIQUE CANONICAL POST CANDIDATES: {len(candidates)}"
     )
 
     save_json(
@@ -1714,25 +1885,50 @@ def main():
         candidates
     )
 
-    # --------------------------------------------------------
-    # Actual media validation.
-    # --------------------------------------------------------
+    # Content gate before download: this removes false positives such as
+    # business/workplace posts and rescue campaigns without wasting bandwidth.
+    gated = []
+    rejected_reasons = {}
+
+    for candidate in candidates:
+        accepted, content_value, reason = content_gate(candidate)
+
+        candidate = dict(candidate)
+        candidate["content_value"] = content_value
+
+        if not accepted:
+            rejected_reasons[reason] = (
+                rejected_reasons.get(reason, 0) + 1
+            )
+            continue
+
+        gated.append(candidate)
 
     print()
-
     print(
-        "Starting media validation..."
+        f"CONTENT-GATE PASSED: {len(gated)}"
     )
+
+    if rejected_reasons:
+        print("CONTENT-GATE REJECTIONS:")
+        for reason, count in sorted(
+            rejected_reasons.items(),
+            key=lambda item: item[1],
+            reverse=True
+        ):
+            print(f"  {reason}: {count}")
+
+    print()
+    print("Starting media validation...")
 
     validated = []
 
     for index, candidate in enumerate(
-        candidates,
+        gated,
         start=1
     ):
-
         print(
-            f"[{index}/{len(candidates)}]"
+            f"[{index}/{len(gated)}]"
         )
 
         result = download_and_validate(
@@ -1746,241 +1942,292 @@ def main():
             result
         )
 
-        validated.append(
+        # Re-run the content gate after caption cleanup/media validation.
+        accepted, content_value, reason = content_gate(
             scored
         )
 
-    print()
+        if not accepted:
+            print(
+                "  Rejected after validation:",
+                reason
+            )
+            continue
 
+        scored["content_value"] = content_value
+
+        days = scored.get(
+            "freshness_days",
+            9999
+        )
+
+        tier = scored.get(
+            "freshness_tier",
+            "reject"
+        )
+
+        if tier == "reject":
+            print("  Too old.")
+            continue
+
+        if tier == "emergency":
+            if (
+                content_value < EMERGENCY_MIN_CONTENT_VALUE
+                or scored.get("total_score", 0) < EMERGENCY_MIN_SCORE
+            ):
+                print(
+                    "  Emergency-age candidate is not strong enough."
+                )
+                continue
+
+        elif content_value < MIN_CONTENT_VALUE:
+            print(
+                "  Content value too low."
+            )
+            continue
+
+        validated.append(scored)
+
+    print()
     print(
-        f"VALIDATED VIDEOS: "
-        f"{len(validated)}"
+        f"VALIDATED VIDEOS: {len(validated)}"
     )
+
+    # Final canonical post dedup after validation. If different media copies
+    # of the same post survived, retain the best one only.
+    best_by_key = {}
+
+    for candidate in validated:
+        key = canonical_status_key(candidate)
+
+        if not key:
+            continue
+
+        current = best_by_key.get(key)
+
+        if current is None:
+            best_by_key[key] = candidate
+            continue
+
+        candidate_rank = (
+            candidate.get("quality_score", 0),
+            candidate.get("content_value", 0),
+            candidate.get("total_score", 0),
+            -candidate.get("file_size", 10**18),
+        )
+
+        current_rank = (
+            current.get("quality_score", 0),
+            current.get("content_value", 0),
+            current.get("total_score", 0),
+            -current.get("file_size", 10**18),
+        )
+
+        if candidate_rank > current_rank:
+            best_by_key[key] = candidate
+
+    validated = list(best_by_key.values())
 
     save_json(
         VALIDATED_FILE,
         validated
     )
 
-    # --------------------------------------------------------
-    # Actual media deduplication.
-    # --------------------------------------------------------
-
-    print()
-
     print(
-        "Removing duplicate video files..."
+        f"UNIQUE VALIDATED VIDEOS: {len(validated)}"
     )
-
-    validated = deduplicate_by_sha256(
-        validated
-    )
-
-    print(
-        f"UNIQUE VALIDATED VIDEOS: "
-        f"{len(validated)}"
-    )
-
-    # --------------------------------------------------------
-    # Publication history.
-    # --------------------------------------------------------
 
     history = load_json(
         HISTORY_FILE,
         []
     )
 
-    if not isinstance(
-        history,
-        list
-    ):
-
+    if not isinstance(history, list):
         history = []
 
-    seen_keys = history_keys(
-        history
-    )
+    seen_keys = history_keys(history)
+
+    # Also compare normalized canonical status URLs against history.
+    historical_statuses = {
+        normalize_status_url(item.get("status_url"))
+        for item in history
+        if isinstance(item, dict)
+        and item.get("status_url")
+    }
 
     fresh = []
 
     for candidate in validated:
-
-        if already_seen(
-            candidate,
-            seen_keys
-        ):
+        if already_seen(candidate, seen_keys):
             continue
 
-        fresh.append(
-            candidate
+        canonical = normalize_status_url(
+            candidate.get("status_url")
         )
 
+        if canonical and canonical in historical_statuses:
+            continue
+
+        fresh.append(candidate)
+
     print(
-        f"FRESH VIDEOS AFTER HISTORY "
-        f"FILTER: {len(fresh)}"
+        f"FRESH VIDEOS AFTER HISTORY FILTER: {len(fresh)}"
     )
 
-    # --------------------------------------------------------
-    # Final ranking.
-    # --------------------------------------------------------
-
-    fresh.sort(
-        key=lambda item: (
-            item.get(
-                "total_score",
-                0
-            ),
-            item.get(
-                "animal_relevance",
-                0
-            ),
-            item.get(
-                "engagement_score",
-                0
-            ),
-            item.get(
-                "recency_score",
-                0
-            ),
-            item.get(
-                "quality_score",
-                0
-            ),
-            item.get(
-                "caption_quality_score",
-                0
-            ),
+    # Rank freshness tiers separately. We never let an old mediocre video
+    # outrank a fresh good one merely because it has more engagement.
+    primary = sorted(
+        [
+            x for x in fresh
+            if x.get("freshness_tier") == "primary"
+        ],
+        key=lambda x: (
+            x.get("total_score", 0),
+            x.get("content_value", 0),
+            x.get("quality_score", 0),
+            x.get("engagement_score", 0),
         ),
-        reverse=True
+        reverse=True,
     )
 
-    # --------------------------------------------------------
-    # Diverse selection.
-    # --------------------------------------------------------
+    secondary = sorted(
+        [
+            x for x in fresh
+            if x.get("freshness_tier") == "secondary"
+        ],
+        key=lambda x: (
+            x.get("total_score", 0),
+            x.get("content_value", 0),
+            x.get("quality_score", 0),
+            x.get("engagement_score", 0),
+        ),
+        reverse=True,
+    )
+
+    emergency = sorted(
+        [
+            x for x in fresh
+            if x.get("freshness_tier") == "emergency"
+        ],
+        key=lambda x: (
+            x.get("total_score", 0),
+            x.get("content_value", 0),
+            x.get("quality_score", 0),
+            x.get("engagement_score", 0),
+        ),
+        reverse=True,
+    )
+
+    print(
+        f"PRIMARY (0-{PRIMARY_DAYS} days): {len(primary)}"
+    )
+    print(
+        f"SECONDARY ({PRIMARY_DAYS + 1}-{SECONDARY_DAYS} days): {len(secondary)}"
+    )
+    print(
+        f"EMERGENCY ({SECONDARY_DAYS + 1}-{EMERGENCY_DAYS} days): {len(emergency)}"
+    )
 
     selected = select_diverse_candidates(
-        fresh
+        primary + secondary + emergency
+    )
+
+    # One last absolute canonical-status guarantee.
+    final_selected = []
+    final_keys = set()
+
+    for candidate in selected:
+        key = canonical_status_key(candidate)
+
+        if not key or key in final_keys:
+            continue
+
+        final_keys.add(key)
+        final_selected.append(candidate)
+
+        if len(final_selected) >= MAX_SELECTED:
+            break
+
+    save_json(
+        SELECTED_FILE,
+        final_selected
     )
 
     print()
-
     print("=" * 70)
-
     print(
-        f"SELECTED UNIQUE VIDEOS: "
-        f"{len(selected)}"
+        f"SELECTED UNIQUE VIDEOS: {len(final_selected)}"
     )
-
     print("=" * 70)
 
     for index, candidate in enumerate(
-        selected,
+        final_selected,
         start=1
     ):
-
         print()
-
         print(
             f"{index}. "
             f"score={candidate.get('total_score')} "
+            f"content={candidate.get('content_value')} "
+            f"age={candidate.get('freshness_days')}d "
             f"duration={candidate.get('duration')}s "
             f"size={candidate.get('file_size_mb')}MB"
         )
 
         print(
             "   Account:",
-            candidate.get(
-                "account"
-            )
+            candidate.get("account")
         )
 
         print(
             "   Instance:",
-            candidate.get(
-                "instance"
-            )
+            candidate.get("instance")
         )
 
         print(
             "   URL:",
-            candidate.get(
-                "status_url"
-            )
+            candidate.get("status_url")
         )
 
         print(
             "   SHA256:",
-            candidate.get(
-                "sha256"
-            )
+            candidate.get("sha256")
         )
 
         print(
             "   Caption:",
-            candidate.get(
-                "caption",
-                ""
-            )[:200]
+            candidate.get("caption", "")[:300]
         )
 
-    save_json(
-        SELECTED_FILE,
-        selected
-    )
-
-    # --------------------------------------------------------
-    # IMPORTANT:
-    #
-    # Discovery NEVER writes to history.json.
-    #
-    # Only the publishing workflow adds an item to history
-    # after Telegram confirms successful publication.
-    # --------------------------------------------------------
-
     print()
-
     print(
         "Publication history was NOT modified."
     )
 
     print()
-
     print("=" * 70)
-
-    print(
-        "DISCOVERY COMPLETE"
-    )
-
+    print("DISCOVERY COMPLETE")
     print("=" * 70)
-
     print(
-        f"Raw candidates: "
-        f"{len(candidates)}"
+        f"Raw candidates: {len(raw_candidates)}"
     )
-
     print(
-        f"Validated videos: "
-        f"{len(validated)}"
+        f"Canonical candidates: {len(candidates)}"
     )
-
     print(
-        f"Unique validated videos: "
-        f"{len(validated)}"
+        f"Content-gate passed: {len(gated)}"
     )
-
     print(
-        f"Fresh videos: "
-        f"{len(fresh)}"
+        f"Validated videos: {len(validated)}"
     )
-
     print(
-        f"Selected unique videos: "
-        f"{len(selected)}"
+        f"Fresh videos: {len(fresh)}"
     )
-
     print(
-        f"Published-history entries: "
-        f"{len(history)}"
+        f"Selected unique videos: {len(final_selected)}"
+    )
+    print(
+        f"Published-history entries: {len(history)}"
     )
 
 
