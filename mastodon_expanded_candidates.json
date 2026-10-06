@@ -159,7 +159,7 @@
     "media_url": "https://files.mastodon.social/media_attachments/files/117/389/741/774/305/165/original/9249a83f368a1f13.mp4",
     "preview_url": "https://files.mastodon.social/media_attachments/files/117/389/741/774/305/165/small/9249a83f368a1f13.png",
     "media_type": "video",
-    "favourites": 48,
+    "favourites": 49,
     "reblogs": 15,
     "replies": 2
   },
@@ -181,7 +181,7 @@
     "preview_url": "https://files.mastodon.social/cache/media_attachments/files/117/389/487/861/068/008/small/d7fd00c584ada44f.png",
     "media_type": "video",
     "favourites": 1,
-    "reblogs": 5,
+    "reblogs": 6,
     "replies": 0
   },
   {
@@ -205,8 +205,8 @@
     "media_url": "https://files.mastodon.social/media_attachments/files/117/391/031/416/896/113/original/46cee7ef268bcb28.mp4",
     "preview_url": "https://files.mastodon.social/media_attachments/thumbnails/117/391/031/416/896/113/original/da44070b288b2690.jpg",
     "media_type": "video",
-    "favourites": 20,
-    "reblogs": 6,
+    "favourites": 22,
+    "reblogs": 8,
     "replies": 0
   },
   {
@@ -2091,7 +2091,7 @@
     "preview_url": "https://files.mastodon.online/cache/media_attachments/files/117/389/487/556/951/489/small/b941f1a9b0b2b9e2.png",
     "media_type": "video",
     "favourites": 0,
-    "reblogs": 2,
+    "reblogs": 3,
     "replies": 0
   },
   {
@@ -2116,7 +2116,7 @@
     "preview_url": "https://files.mastodon.online/cache/media_attachments/thumbnails/117/391/032/784/064/978/original/27b542dfa0eec514.jpg",
     "media_type": "video",
     "favourites": 0,
-    "reblogs": 5,
+    "reblogs": 7,
     "replies": 0
   },
   {
@@ -2416,30 +2416,6 @@
     "media_type": "video",
     "favourites": 0,
     "reblogs": 0,
-    "replies": 0
-  },
-  {
-    "instance": "mastodon.online",
-    "discovery_tag": "animals",
-    "status_id": "117388899151226135",
-    "status_url": "https://mastodon.social/@DamirAkhmadi/117388899158596992",
-    "canonical_status_url": "https://mastodon.social/@DamirAkhmadi/117388899158596992",
-    "account": "DamirAkhmadi@mastodon.social",
-    "created_at": "2026-10-05T15:00:50.000Z",
-    "caption": "Прекратите это",
-    "caption_raw": "<p>Прекратите это <a href=\"https://mastodon.social/tags/humor\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>humor</span></a> <a href=\"https://mastodon.social/tags/music\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>music</span></a> <a href=\"https://mastodon.social/tags/animals\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>animals</span></a> <a href=\"https://mastodon.social/tags/story\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>story</span></a> <a href=\"https://mastodon.social/tags/shorts\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>shorts</span></a></p>",
-    "tags": [
-      "humor",
-      "music",
-      "animals",
-      "story",
-      "shorts"
-    ],
-    "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/388/901/916/199/802/original/8bb15aa8d2a4409f.mp4",
-    "preview_url": "https://files.mastodon.online/cache/media_attachments/files/117/388/901/916/199/802/small/8bb15aa8d2a4409f.png",
-    "media_type": "video",
-    "favourites": 0,
-    "reblogs": 1,
     "replies": 0
   },
   {
@@ -4792,7 +4768,7 @@
     "preview_url": "https://s3.eu-central-2.wasabisys.com/mastodonworld/cache/media_attachments/files/117/389/488/215/675/660/small/d67675b536d13994.png",
     "media_type": "video",
     "favourites": 0,
-    "reblogs": 2,
+    "reblogs": 3,
     "replies": 0
   },
   {
@@ -4817,7 +4793,7 @@
     "preview_url": "https://s3.eu-central-2.wasabisys.com/mastodonworld/cache/media_attachments/thumbnails/117/391/032/793/003/072/original/da986e29bc238a28.jpg",
     "media_type": "video",
     "favourites": 0,
-    "reblogs": 4,
+    "reblogs": 6,
     "replies": 0
   },
   {
@@ -7053,7 +7029,7 @@
     "preview_url": "https://files.mstdn.party/cache/media_attachments/files/117/389/499/466/223/508/small/b2bd35ecb6ee5a12.png",
     "media_type": "video",
     "favourites": 0,
-    "reblogs": 3,
+    "reblogs": 4,
     "replies": 0
   },
   {
@@ -9311,8 +9287,8 @@
       "tigers",
       "ecotourism"
     ],
-    "media_url": "https://mstdn.party/media_proxy/115345715633013805/original",
-    "preview_url": "https://mstdn.party/media_proxy/115345715633013805/small",
+    "media_url": "https://files.mstdn.party/cache/media_attachments/files/115/345/715/633/013/805/original/8bd5ab231644e337.mp4",
+    "preview_url": "https://files.mstdn.party/cache/media_attachments/files/115/345/715/633/013/805/small/8bd5ab231644e337.png",
     "media_type": "video",
     "favourites": 0,
     "reblogs": 0,
@@ -9637,8 +9613,8 @@
       "cute",
       "play"
     ],
-    "media_url": "https://mstdn.party/media_proxy/115316389629013876/original",
-    "preview_url": "https://mstdn.party/media_proxy/115316389629013876/small",
+    "media_url": "https://files.mstdn.party/cache/media_attachments/files/115/316/389/629/013/876/original/35596877a9b47b6f.mp4",
+    "preview_url": "https://files.mstdn.party/cache/media_attachments/files/115/316/389/629/013/876/small/35596877a9b47b6f.png",
     "media_type": "video",
     "favourites": 1,
     "reblogs": 3,
@@ -9935,7 +9911,7 @@
     "preview_url": "https://media.mastodon.cloud/cache/media_attachments/files/117/389/496/819/345/667/small/dd957d0acb9694f0.png",
     "media_type": "video",
     "favourites": 1,
-    "reblogs": 2,
+    "reblogs": 3,
     "replies": 0
   },
   {
@@ -11649,8 +11625,8 @@
       "clingy",
       "adorable"
     ],
-    "media_url": "https://mastodon.cloud/media_proxy/117189843480444276/original",
-    "preview_url": "https://mastodon.cloud/media_proxy/117189843480444276/small",
+    "media_url": "https://media.mastodon.cloud/cache/media_attachments/files/117/189/843/480/444/276/original/163cfe14959fd5b0.mp4",
+    "preview_url": "https://media.mastodon.cloud/cache/media_attachments/files/117/189/843/480/444/276/small/163cfe14959fd5b0.png",
     "media_type": "video",
     "favourites": 1,
     "reblogs": 5,
@@ -12025,7 +12001,7 @@
     "preview_url": "https://media.mastodon.scot/cache/media_attachments/files/117/389/487/658/120/145/small/037ab20c1eea25d6.png",
     "media_type": "video",
     "favourites": 0,
-    "reblogs": 3,
+    "reblogs": 4,
     "replies": 0
   },
   {
@@ -14632,8 +14608,8 @@
       "kittens",
       "greece"
     ],
-    "media_url": "https://cdn.masto.host/mastodonie/cache/media_attachments/files/117/348/073/368/597/710/original/b21779e0bdbb4fab.mp4",
-    "preview_url": "https://cdn.masto.host/mastodonie/cache/media_attachments/files/117/348/073/368/597/710/small/b21779e0bdbb4fab.png",
+    "media_url": "https://mastodon.ie/media_proxy/117348073368597710/original",
+    "preview_url": "https://mastodon.ie/media_proxy/117348073368597710/small",
     "media_type": "video",
     "favourites": 2,
     "reblogs": 4,
@@ -14727,7 +14703,7 @@
     "preview_url": "https://cdn.masto.host/mastodonie/cache/media_attachments/files/117/389/486/527/848/601/small/ac3739fbe968935d.png",
     "media_type": "video",
     "favourites": 0,
-    "reblogs": 2,
+    "reblogs": 3,
     "replies": 0
   },
   {
@@ -16490,7 +16466,7 @@
     "preview_url": "https://6-28.mastodon.xyz/cache/media_attachments/files/117/389/488/336/384/509/small/dd77341a0600fecf.png",
     "media_type": "video",
     "favourites": 0,
-    "reblogs": 1,
+    "reblogs": 2,
     "replies": 0
   },
   {
@@ -17370,8 +17346,8 @@
       "funnyanimals",
       "fyp"
     ],
-    "media_url": "https://mastodon.xyz/media_proxy/115226776113746019/original",
-    "preview_url": "https://mastodon.xyz/media_proxy/115226776113746019/small",
+    "media_url": "https://6-28.mastodon.xyz/cache/media_attachments/files/115/226/776/113/746/019/original/29f34f3377b02611.mp4",
+    "preview_url": "https://6-28.mastodon.xyz/cache/media_attachments/files/115/226/776/113/746/019/small/29f34f3377b02611.png",
     "media_type": "video",
     "favourites": 0,
     "reblogs": 0,
@@ -17417,8 +17393,8 @@
       "chocolate",
       "fyp"
     ],
-    "media_url": "https://mastodon.xyz/media_proxy/115215323406046602/original",
-    "preview_url": "https://mastodon.xyz/media_proxy/115215323406046602/small",
+    "media_url": "https://6-28.mastodon.xyz/cache/media_attachments/files/115/215/323/406/046/602/original/d8a24d9259c2d76a.mp4",
+    "preview_url": "https://6-28.mastodon.xyz/cache/media_attachments/files/115/215/323/406/046/602/small/d8a24d9259c2d76a.png",
     "media_type": "video",
     "favourites": 0,
     "reblogs": 0,
@@ -18596,7 +18572,7 @@
     "preview_url": "https://cdn.masto.host/mastodongamedevplace/cache/media_attachments/files/117/389/486/280/143/044/small/4e21423029667b11.png",
     "media_type": "video",
     "favourites": 0,
-    "reblogs": 2,
+    "reblogs": 3,
     "replies": 0
   },
   {
@@ -18880,7 +18856,7 @@
     "canonical_status_url": "https://retro-gaiden.com/@VilmaTheKitty/117375538531296618",
     "account": "VilmaTheKitty@retro-gaiden.com",
     "created_at": "2026-10-03T06:23:03.000Z",
-    "caption": "Hello Mastodon! Here's an old video of me trying to steal Vilma's shark toy.\n\"Rainbows\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License",
+    "caption": "Hello Mastodon! Here's an old video of me trying to steal Vilma's shark toy.",
     "caption_raw": "<p>Hello Mastodon! Here's an old video of me trying to steal Vilma's shark toy.</p><p>\"Rainbows\" Kevin MacLeod (incompetech.com)<br>Licensed under Creative Commons: By Attribution 4.0 License<br><a href=\"http://creativecommons.org/licenses/by/4.0/\" rel=\"nofollow noopener\" translate=\"no\" target=\"_blank\"><span class=\"invisible\">http://</span><span class=\"ellipsis\">creativecommons.org/licenses/b</span><span class=\"invisible\">y/4.0/</span></a></p><p><a href=\"https://retro-gaiden.com/tags/cat\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>cat</span></a> <a href=\"https://retro-gaiden.com/tags/cats\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>cats</span></a> <a href=\"https://retro-gaiden.com/tags/catsofmastodon\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>catsofmastodon</span></a> <a href=\"https://retro-gaiden.com/tags/catsoffediverse\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>catsoffediverse</span></a> <a href=\"https://retro-gaiden.com/tags/pets\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>pets</span></a> <a href=\"https://retro-gaiden.com/tags/animals\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>animals</span></a> <a href=\"https://retro-gaiden.com/tags/cute\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>cute</span></a> <a href=\"https://retro-gaiden.com/tags/felines\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>felines</span></a> <a href=\"https://retro-gaiden.com/tags/caturday\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>caturday</span></a> <a href=\"https://retro-gaiden.com/tags/funny\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>funny</span></a></p>",
     "tags": [
       "cat",
