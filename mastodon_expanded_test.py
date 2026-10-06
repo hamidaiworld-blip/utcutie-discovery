@@ -22,23 +22,31 @@ MIN_DURATION = 15
 MAX_DURATION = 180
 MAX_FILE_SIZE = 48 * 1024 * 1024
 
+# Freshness policy:
+# 0-14 days = preferred
+# 15-30 days = fallback
+# >30 days = reject
 PREFERRED_DAYS = 14
-FRESH_DAYS = 30
-FALLBACK_DAYS = 90
+FALLBACK_DAYS = 30
 
 MAX_VIDEOS_PER_ACCOUNT = 2
 MAX_VIDEOS_PER_INSTANCE = 8
 
 REQUEST_TIMEOUT = 25
 
+# Minimum overall content value required after validation.
+MIN_CONTENT_VALUE = 45
+
 HISTORY_FILE = Path("history.json")
 
 OUTPUT_CANDIDATES = Path(
     "mastodon_expanded_candidates.json"
 )
+
 OUTPUT_VALIDATED = Path(
     "mastodon_expanded_validated.json"
 )
+
 OUTPUT_SELECTED = Path(
     "mastodon_expanded_selected_candidates.json"
 )
@@ -88,118 +96,431 @@ TAGS = [
 # ============================================================
 
 ANIMAL_TERMS = {
-    "cat", "cats", "kitten", "kittens", "kitty", "kitties",
-    "dog", "dogs", "puppy", "puppies", "pup",
-    "pet", "pets", "animal", "animals",
-    "bird", "birds", "parrot", "parrots", "parakeet",
-    "cockatiel", "duck", "ducks", "goose", "geese",
-    "chicken", "chickens", "rabbit", "rabbits", "bunny",
-    "bunnies", "hamster", "hamsters", "guinea pig",
-    "guinea pigs", "mouse", "mice", "rat", "rats",
-    "horse", "horses", "pony", "ponies", "cow", "cows",
-    "calf", "sheep", "goat", "goats", "foal", "deer",
-    "fox", "wolf", "wolves", "bear", "panda",
-    "monkey", "monkeys", "otter", "seal", "dolphin",
-    "turtle", "turtles", "tortoise", "snake", "snakes",
-    "lizard", "frog", "frogs", "hedgehog", "hedgehogs",
-    "chihuahua", "labrador", "retriever", "husky",
-    "corgi", "poodle", "felines",
+    "cat",
+    "cats",
+    "kitten",
+    "kittens",
+    "kitty",
+    "kitties",
+    "dog",
+    "dogs",
+    "puppy",
+    "puppies",
+    "pup",
+    "pet",
+    "pets",
+    "animal",
+    "animals",
+    "bird",
+    "birds",
+    "parrot",
+    "parrots",
+    "parakeet",
+    "cockatiel",
+    "duck",
+    "ducks",
+    "goose",
+    "geese",
+    "chicken",
+    "chickens",
+    "rabbit",
+    "rabbits",
+    "bunny",
+    "bunnies",
+    "hamster",
+    "hamsters",
+    "guinea pig",
+    "guinea pigs",
+    "mouse",
+    "mice",
+    "rat",
+    "rats",
+    "horse",
+    "horses",
+    "pony",
+    "ponies",
+    "cow",
+    "cows",
+    "calf",
+    "sheep",
+    "goat",
+    "goats",
+    "foal",
+    "deer",
+    "fox",
+    "wolf",
+    "wolves",
+    "bear",
+    "panda",
+    "monkey",
+    "monkeys",
+    "otter",
+    "seal",
+    "dolphin",
+    "turtle",
+    "turtles",
+    "tortoise",
+    "snake",
+    "snakes",
+    "lizard",
+    "frog",
+    "frogs",
+    "hedgehog",
+    "hedgehogs",
+    "chihuahua",
+    "labrador",
+    "retriever",
+    "husky",
+    "corgi",
+    "poodle",
+    "felines",
 }
 
 
 PET_CONTEXT_TERMS = {
-    "pet", "pets", "petlife", "petlover", "petlove",
-    "furry", "fluffy", "paw", "paws", "tail",
-    "whiskers", "zoomies", "walk", "walking",
-    "play", "playing", "playtime", "sleeping",
-    "sleepy", "cuddle", "cuddling", "hug", "hugging",
-    "kiss", "kissing", "belly rub", "treat", "toy",
-    "toys", "fetch", "leash", "puppy", "kitten",
+    "pet",
+    "pets",
+    "petlife",
+    "petlover",
+    "petlove",
+    "furry",
+    "fluffy",
+    "paw",
+    "paws",
+    "tail",
+    "whiskers",
+    "zoomies",
+    "walk",
+    "walking",
+    "play",
+    "playing",
+    "playtime",
+    "sleeping",
+    "sleepy",
+    "cuddle",
+    "cuddling",
+    "hug",
+    "hugging",
+    "kiss",
+    "kissing",
+    "belly rub",
+    "treat",
+    "toys",
+    "toy",
+    "fetch",
+    "leash",
+    "puppy",
+    "kitten",
 }
 
 
 ENTERTAINMENT_TERMS = {
-    "funny", "hilarious", "lol", "lmao", "laugh",
-    "laughing", "cute", "adorable", "aww", "amazing",
-    "silly", "goofy", "fun", "funniest", "comedy",
-    "meme", "memes", "fail", "fails", "reaction",
-    "reacts", "unexpected", "watch", "zoomies",
-    "chaos", "derp", "wholesome", "sweet",
-    "heartwarming", "playful", "play", "playing",
-    "surprise", "surprised", "happy", "joy",
-    "lovely", "love", "friendship",
+    "funny",
+    "hilarious",
+    "lol",
+    "lmao",
+    "laugh",
+    "laughing",
+    "cute",
+    "adorable",
+    "aww",
+    "amazing",
+    "silly",
+    "goofy",
+    "fun",
+    "funniest",
+    "comedy",
+    "meme",
+    "memes",
+    "fail",
+    "fails",
+    "reaction",
+    "reacts",
+    "unexpected",
+    "watch",
+    "zoomies",
+    "chaos",
+    "derp",
+    "wholesome",
+    "sweet",
+    "heartwarming",
+    "playful",
+    "play",
+    "playing",
+    "surprise",
+    "surprised",
+    "happy",
+    "joy",
+    "lovely",
+    "love",
+    "friendship",
 }
 
 
-# These are strong signals that the post is NOT suitable
-# for the UTCutie entertainment feed.
+ACTIVITY_TERMS = {
+    "play",
+    "playing",
+    "playtime",
+    "toy",
+    "toys",
+    "chase",
+    "chasing",
+    "zoomies",
+    "sleep",
+    "sleeping",
+    "sleepy",
+    "cuddle",
+    "cuddling",
+    "hug",
+    "hugging",
+    "kiss",
+    "kissing",
+    "walk",
+    "walking",
+    "run",
+    "running",
+    "fetch",
+    "eat",
+    "eating",
+    "dinner",
+    "breakfast",
+    "bath",
+    "bathing",
+    "jump",
+    "jumping",
+    "dance",
+    "dancing",
+    "sing",
+    "singing",
+    "talk",
+    "talking",
+    "lick",
+    "licking",
+    "steal",
+    "stole",
+    "friend",
+    "friends",
+    "family",
+}
+
+
+HEARTWARMING_TERMS = {
+    "love",
+    "lovely",
+    "sweet",
+    "wholesome",
+    "heartwarming",
+    "precious",
+    "adorable",
+    "happy",
+    "joy",
+    "friend",
+    "friends",
+    "family",
+    "best friend",
+    "old dog",
+    "old cat",
+    "beautiful",
+}
+
+
 HARD_NEGATIVE_TERMS = {
-    "politics", "political", "election", "government",
-    "senate", "congress", "president", "minister",
-    "war", "military", "army", "weapon", "weapons",
-    "soldier", "soldiers", "armed", "battle", "conflict",
-    "bomb", "bombing", "missile", "terror", "terrorism",
-
-    "religion", "religious", "islam", "christian",
-    "christianity", "church", "mosque",
-
-    "campaign", "activism", "activist", "protest",
-    "protests", "ngo", "organization", "awareness",
-
-    "climate", "climatechange", "environmental",
-    "slaughter", "factory farming", "farming policy",
-
-    "research", "study", "university", "academic",
-    "lecture", "conference", "seminar",
-
-    "sports", "football", "soccer", "basketball",
-    "baseball", "hockey", "tennis", "formula 1", "f1",
-
-    "business", "marketing", "finance", "crypto",
-    "stock", "stocks", "investment", "job", "jobs",
+    "politics",
+    "political",
+    "election",
+    "government",
+    "senate",
+    "congress",
+    "president",
+    "minister",
+    "war",
+    "military",
+    "army",
+    "weapon",
+    "weapons",
+    "soldier",
+    "soldiers",
+    "armed",
+    "battle",
+    "conflict",
+    "bomb",
+    "bombing",
+    "missile",
+    "terror",
+    "terrorism",
+    "religion",
+    "religious",
+    "islam",
+    "christian",
+    "christianity",
+    "church",
+    "mosque",
+    "campaign",
+    "activism",
+    "activist",
+    "protest",
+    "protests",
+    "ngo",
+    "organization",
+    "awareness",
+    "climate",
+    "climatechange",
+    "environmental",
+    "slaughter",
+    "factory farming",
+    "farming policy",
+    "research",
+    "study",
+    "university",
+    "academic",
+    "lecture",
+    "conference",
+    "seminar",
+    "infographic",
+    "diagram",
+    "chart",
+    "tutorial",
+    "course",
+    "webinar",
+    "podcast",
+    "sports",
+    "football",
+    "soccer",
+    "basketball",
+    "baseball",
+    "hockey",
+    "tennis",
+    "formula 1",
+    "f1",
+    "business",
+    "marketing",
+    "finance",
+    "crypto",
+    "stock",
+    "stocks",
+    "investment",
+    "job",
+    "jobs",
     "career",
-
-    "anxiety", "depression", "therapy", "mental health",
-
-    "infographic", "diagram", "chart", "tutorial",
-    "course", "webinar", "podcast",
+    "anxiety",
+    "depression",
+    "therapy",
+    "mental health",
 }
 
 
 PROMOTIONAL_TERMS = {
-    "buy now", "shop now", "order now", "discount",
-    "sale", "offer", "promo", "promotion", "sponsor",
-    "sponsored", "affiliate", "affiliate link",
-    "link in bio", "wishlist", "subscribe",
-    "follow us", "follow me", "check out my",
-    "visit our", "visit my", "donate", "donation",
-    "donations", "fundraiser", "fundraising",
-    "support our", "support us", "go fund me",
-    "gofundme", "patreon",
+    "buy now",
+    "shop now",
+    "order now",
+    "discount",
+    "sale",
+    "offer",
+    "promo",
+    "promotion",
+    "sponsor",
+    "sponsored",
+    "affiliate",
+    "affiliate link",
+    "link in bio",
+    "wishlist",
+    "subscribe",
+    "follow us",
+    "follow me",
+    "check out my",
+    "visit our",
+    "visit my",
+    "donate",
+    "donation",
+    "donations",
+    "fundraiser",
+    "fundraising",
+    "support our",
+    "support us",
+    "go fund me",
+    "gofundme",
+    "patreon",
+    "venmo",
+    "paypal",
+    "cashapp",
 }
 
 
 RESCUE_CAMPAIGN_TERMS = {
-    "rescue", "rescued", "animal rescue",
-    "cat rescue", "dog rescue", "pet rescue",
-    "foster", "fostered", "adoption", "adopt",
-    "adoptable", "shelter", "shelter dog",
-    "shelter cat", "rehoming", "rehomed",
-    "fundraiser", "fundraising", "donate",
-    "donation", "donations", "wishlist",
-    "supplies", "volunteer", "volunteers",
-    "nonprofit", "non-profit", "501c3",
+    "rescue",
+    "rescued",
+    "animal rescue",
+    "cat rescue",
+    "dog rescue",
+    "pet rescue",
+    "foster",
+    "fostered",
+    "adoption",
+    "adopt",
+    "adoptable",
+    "shelter",
+    "shelter dog",
+    "shelter cat",
+    "rehoming",
+    "rehomed",
+    "fundraiser",
+    "fundraising",
+    "donate",
+    "donation",
+    "donations",
+    "wishlist",
+    "volunteer",
+    "volunteers",
+    "nonprofit",
+    "non-profit",
+    "501c3",
 }
 
 
 ART_PRODUCT_TERMS = {
-    "art", "artist", "artwork", "portrait",
-    "painting", "painted", "drawing", "illustration",
-    "illustrated", "commission", "custom",
-    "customized", "print", "prints", "poster",
-    "merch", "merchandise", "shirt", "t-shirt",
-    "mug", "sticker", "stickers", "shop",
-    "store", "etsy", "gallery", "design",
+    "art",
+    "artist",
+    "artwork",
+    "portrait",
+    "painting",
+    "painted",
+    "drawing",
+    "illustration",
+    "illustrated",
+    "sketch",
+    "commission",
+    "custom",
+    "customized",
+    "foiled",
+    "foil",
+    "print",
+    "prints",
+    "poster",
+    "posters",
+    "sticker",
+    "stickers",
+    "merch",
+    "merchandise",
+    "shirt",
+    "t-shirt",
+    "mug",
+    "calendar",
+    "book",
+    "etsy",
+    "gallery",
+    "design",
+    "designer",
+    "craft",
+    "crafts",
+    "product",
+    "products",
+    "store",
+    "shop",
+    "unboxing",
+    "unbox",
+    "package",
+    "packaging",
+    "haul",
 }
 
 
@@ -212,7 +533,12 @@ def normalize_text(value):
         return ""
 
     value = html.unescape(str(value))
-    value = re.sub(r"\s+", " ", value)
+
+    value = re.sub(
+        r"\s+",
+        " ",
+        value,
+    )
 
     return value.strip().lower()
 
@@ -250,6 +576,7 @@ def clean_caption(raw_html):
 
     text = str(raw_html)
 
+    # Remove scripts/styles.
     text = re.sub(
         r"<(script|style)[^>]*>.*?</\1>",
         "",
@@ -257,6 +584,7 @@ def clean_caption(raw_html):
         flags=re.I | re.S,
     )
 
+    # Preserve logical line breaks.
     text = re.sub(
         r"</?(p|div|br|li|blockquote|h[1-6])[^>]*>",
         "\n",
@@ -264,10 +592,16 @@ def clean_caption(raw_html):
         flags=re.I,
     )
 
-    text = re.sub(r"<[^>]+>", "", text)
+    # Remove remaining HTML.
+    text = re.sub(
+        r"<[^>]+>",
+        "",
+        text,
+    )
 
     text = html.unescape(text)
 
+    # Remove URLs.
     text = re.sub(
         r"https?://\S+|www\.\S+",
         "",
@@ -275,7 +609,7 @@ def clean_caption(raw_html):
         flags=re.I,
     )
 
-    # Remove hashtags but preserve actual caption text.
+    # Remove hashtags.
     text = re.sub(
         r"(?<!\w)#[\w\u0080-\uffff]+",
         "",
@@ -290,14 +624,38 @@ def clean_caption(raw_html):
         text,
     )
 
-    # Remove obvious promotional lines/fragments.
-    for pattern in [
+    # Remove common social/promo fragments.
+    promo_patterns = [
         r"\bwishlist\b.*",
         r"\blink\s+in\s+bio\b.*",
         r"\bsubscribe\b.*",
         r"\bfollow\s+us\b.*",
         r"\bfollow\s+me\b.*",
-    ]:
+    ]
+
+    for pattern in promo_patterns:
+        text = re.sub(
+            pattern,
+            "",
+            text,
+            flags=re.I,
+        )
+
+    # Remove music licensing boilerplate.
+    music_patterns = [
+        r'["“”]rainbows["“”]\s+kevin\s+macleod.*',
+        r"\bkevin\s+macleod\b.*",
+        r"\bincompetech\.com\b.*",
+        r"\blicensed under creative commons\b.*",
+        r"\bcreative commons\b.*",
+        r"\bcreativecommons\.org\b.*",
+        r"\bmusic by\b.*",
+        r"\bsong by\b.*",
+        r"\bmusic:\s*.*",
+        r"\baudio:\s*.*",
+    ]
+
+    for pattern in music_patterns:
         text = re.sub(
             pattern,
             "",
@@ -317,17 +675,22 @@ def clean_caption(raw_html):
         if line:
             lines.append(line)
 
+    # Remove duplicate consecutive lines.
     cleaned = []
 
     for line in lines:
         if not cleaned or line != cleaned[-1]:
             cleaned.append(line)
 
+    # Maximum three consecutive logical lines are enough for
+    # a Telegram pet caption in this system.
     return "\n".join(cleaned).strip()
 
 
 def telegram_caption(source_caption):
-    text = clean_caption(source_caption)
+    text = clean_caption(
+        source_caption
+    )
 
     if not text:
         return ""
@@ -349,7 +712,9 @@ def telegram_caption(source_caption):
         if space >= 400:
             text = text[:space]
 
-    return text.rstrip(" .,-:;") + "…"
+    return text.rstrip(
+        " .,-:;"
+    ) + "…"
 
 
 def normalize_status_url(url):
@@ -385,7 +750,11 @@ def normalize_status_url(url):
 def sha256_file(path):
     digest = hashlib.sha256()
 
-    with open(path, "rb") as handle:
+    with open(
+        path,
+        "rb",
+    ) as handle:
+
         while True:
             chunk = handle.read(
                 1024 * 1024
@@ -433,19 +802,27 @@ def run_ffprobe(path):
     except Exception:
         return None
 
-    streams = data.get("streams") or []
+    streams = (
+        data.get("streams")
+        or []
+    )
 
     if not streams:
         return None
 
     stream = streams[0]
 
-    if stream.get("codec_type") != "video":
+    if stream.get(
+        "codec_type"
+    ) != "video":
         return None
 
     try:
         duration = float(
-            stream.get("duration") or 0
+            stream.get(
+                "duration"
+            )
+            or 0
         )
     except Exception:
         return None
@@ -455,8 +832,12 @@ def run_ffprobe(path):
 
     return {
         "duration": duration,
-        "width": stream.get("width"),
-        "height": stream.get("height"),
+        "width": stream.get(
+            "width"
+        ),
+        "height": stream.get(
+            "height"
+        ),
     }
 
 
@@ -469,7 +850,10 @@ def mastodon_get(
     endpoint,
     params,
 ):
-    url = f"https://{instance}{endpoint}"
+    url = (
+        f"https://{instance}"
+        f"{endpoint}"
+    )
 
     try:
         response = requests.get(
@@ -516,7 +900,9 @@ def extract_media_candidates(
     tag,
 ):
     attachments = (
-        status.get("media_attachments")
+        status.get(
+            "media_attachments"
+        )
         or []
     )
 
@@ -561,12 +947,16 @@ def extract_media_candidates(
 
     for media in attachments:
 
-        if media.get("type") != "video":
+        if media.get(
+            "type"
+        ) != "video":
             continue
 
         media_url = (
             media.get("url")
-            or media.get("remote_url")
+            or media.get(
+                "remote_url"
+            )
             or ""
         )
 
@@ -583,7 +973,10 @@ def extract_media_candidates(
                 "instance": instance,
                 "discovery_tag": tag,
                 "status_id": str(
-                    status.get("id") or ""
+                    status.get(
+                        "id"
+                    )
+                    or ""
                 ),
                 "status_url": status_url,
                 "canonical_status_url":
@@ -594,7 +987,8 @@ def extract_media_candidates(
                 "created_at":
                     status.get(
                         "created_at"
-                    ) or "",
+                    )
+                    or "",
                 "caption": caption,
                 "caption_raw":
                     caption_raw,
@@ -603,22 +997,26 @@ def extract_media_candidates(
                 "preview_url":
                     media.get(
                         "preview_url"
-                    ) or "",
+                    )
+                    or "",
                 "media_type": "video",
                 "favourites": int(
                     status.get(
                         "favourites_count"
-                    ) or 0
+                    )
+                    or 0
                 ),
                 "reblogs": int(
                     status.get(
                         "reblogs_count"
-                    ) or 0
+                    )
+                    or 0
                 ),
                 "replies": int(
                     status.get(
                         "replies_count"
-                    ) or 0
+                    )
+                    or 0
                 ),
             }
         )
@@ -627,42 +1025,65 @@ def extract_media_candidates(
 
 
 # ============================================================
-# STRICT CONTENT ANALYSIS
+# CONTENT ANALYSIS
 # ============================================================
 
 def content_analysis(candidate):
     caption = normalize_text(
-        candidate.get("caption")
+        candidate.get(
+            "caption"
+        )
+        or ""
+    )
+
+    raw_caption = normalize_text(
+        candidate.get(
+            "caption_raw"
+        )
         or ""
     )
 
     tags = [
         normalize_text(tag)
         for tag in (
-            candidate.get("tags")
+            candidate.get(
+                "tags"
+            )
             or []
         )
     ]
 
     tag_text = " ".join(tags)
 
-    # Caption is deliberately treated separately.
-    #
-    # Hashtags alone are NOT enough to make a post
-    # entertainment content.
-    caption_animal_hits = word_hits(
-        caption,
-        ANIMAL_TERMS,
+    caption_animal_hits = (
+        word_hits(
+            caption,
+            ANIMAL_TERMS,
+        )
     )
 
-    caption_pet_hits = word_hits(
-        caption,
-        PET_CONTEXT_TERMS,
+    caption_pet_hits = (
+        word_hits(
+            caption,
+            PET_CONTEXT_TERMS,
+        )
     )
 
-    caption_entertainment_hits = word_hits(
+    caption_entertainment_hits = (
+        word_hits(
+            caption,
+            ENTERTAINMENT_TERMS,
+        )
+    )
+
+    activity_hits = word_hits(
         caption,
-        ENTERTAINMENT_TERMS,
+        ACTIVITY_TERMS,
+    )
+
+    heartwarming_hits = word_hits(
+        caption,
+        HEARTWARMING_TERMS,
     )
 
     tag_animal_hits = word_hits(
@@ -675,9 +1096,11 @@ def content_analysis(candidate):
         PET_CONTEXT_TERMS,
     )
 
-    tag_entertainment_hits = word_hits(
-        tag_text,
-        ENTERTAINMENT_TERMS,
+    tag_entertainment_hits = (
+        word_hits(
+            tag_text,
+            ENTERTAINMENT_TERMS,
+        )
     )
 
     negative_hits = word_hits(
@@ -691,12 +1114,12 @@ def content_analysis(candidate):
     )
 
     promotional_hits = word_hits(
-        caption,
+        raw_caption,
         PROMOTIONAL_TERMS,
     )
 
     rescue_hits = word_hits(
-        caption,
+        raw_caption,
         RESCUE_CAMPAIGN_TERMS,
     )
 
@@ -706,7 +1129,7 @@ def content_analysis(candidate):
     )
 
     art_hits = word_hits(
-        caption,
+        raw_caption,
         ART_PRODUCT_TERMS,
     )
 
@@ -715,94 +1138,63 @@ def content_analysis(candidate):
         ART_PRODUCT_TERMS,
     )
 
-    # --------------------------------------------------------
-    # Animal relevance
-    #
-    # Caption evidence is much stronger than hashtags.
-    # --------------------------------------------------------
-
+    # Hashtags alone can never produce 100 relevance.
     animal_relevance = 0
 
     animal_relevance += min(
-        60,
+        55,
         len(caption_animal_hits) * 25,
     )
 
     animal_relevance += min(
-        25,
+        20,
         len(caption_pet_hits) * 10,
     )
 
-    # Tags provide supporting evidence only.
-    if tag_animal_hits:
-        animal_relevance += min(
-            20,
-            len(tag_animal_hits) * 5,
-        )
+    animal_relevance += min(
+        15,
+        len(tag_animal_hits) * 5,
+    )
 
-    if tag_pet_hits:
-        animal_relevance += min(
-            10,
-            len(tag_pet_hits) * 5,
-        )
+    animal_relevance += min(
+        10,
+        len(tag_pet_hits) * 5,
+    )
 
     animal_relevance = min(
         100,
         animal_relevance,
     )
 
-    # --------------------------------------------------------
-    # Entertainment evidence
-    # --------------------------------------------------------
-
     entertainment_score = 0
 
     entertainment_score += min(
         60,
-        len(caption_entertainment_hits)
-        * 20,
+        len(
+            caption_entertainment_hits
+        ) * 20,
     )
 
     entertainment_score += min(
         20,
-        len(tag_entertainment_hits)
-        * 5,
+        len(
+            tag_entertainment_hits
+        ) * 5,
     )
 
-    if (
-        caption_animal_hits
-        and caption_entertainment_hits
-    ):
-        entertainment_score += 20
+    entertainment_score += min(
+        30,
+        len(activity_hits) * 10,
+    )
+
+    entertainment_score += min(
+        20,
+        len(heartwarming_hits) * 10,
+    )
 
     entertainment_score = min(
         100,
         entertainment_score,
-    )
-
-    # --------------------------------------------------------
-    # "Real pet-life" evidence.
-    #
-    # Useful for wholesome videos where the caption does not
-    # explicitly say funny/cute.
-    # --------------------------------------------------------
-
-    activity_hits = word_hits(
-        caption,
-        {
-            "play", "playing", "playtime",
-            "toy", "toys", "walk", "walking",
-            "running", "run", "sleeping",
-            "sleep", "cuddle", "cuddling",
-            "hug", "hugging", "kiss", "kissing",
-            "fetch", "zoomies", "chasing",
-            "chase", "eating", "eats",
-            "jumping", "jump", "dancing",
-            "dance", "singing", "sing",
-            "talking", "talk",
-            "playing", "friend",
-            "friends", "family",
-        },
     )
 
     return {
@@ -820,6 +1212,8 @@ def content_analysis(candidate):
             tag_entertainment_hits,
         "activity_hits":
             activity_hits,
+        "heartwarming_hits":
+            heartwarming_hits,
         "negative_hits":
             negative_hits,
         "negative_tag_hits":
@@ -841,7 +1235,10 @@ def content_analysis(candidate):
     }
 
 
-def is_hard_reject(analysis):
+def is_hard_reject(
+    candidate,
+    analysis,
+):
     caption_animal = analysis[
         "caption_animal_hits"
     ]
@@ -859,147 +1256,161 @@ def is_hard_reject(analysis):
     ]
 
     # --------------------------------------------------------
-    # 1. Reject strong non-entertainment topics.
+    # Non-entertainment subjects.
     # --------------------------------------------------------
 
-    strong_negative = set(
-        analysis["negative_hits"]
-    )
-
-    if strong_negative:
+    if analysis[
+        "negative_hits"
+    ]:
         return (
             True,
-            "non-entertainment category detected",
+            "non-entertainment category",
         )
 
     # --------------------------------------------------------
-    # 2. Reject rescue / fundraising / adoption campaigns.
+    # Fundraising / rescue / solicitation.
+    # --------------------------------------------------------
+
+    promotional = set(
+        analysis[
+            "promotional_hits"
+        ]
+    )
+
+    rescue = set(
+        analysis[
+            "rescue_hits"
+        ]
+    )
+
+    if (
+        "donate" in promotional
+        or "donation" in promotional
+        or "donations" in promotional
+        or "fundraiser" in promotional
+        or "fundraising" in promotional
+        or "wishlist" in promotional
+        or "gofundme" in promotional
+        or "paypal" in promotional
+        or "venmo" in promotional
+        or "cashapp" in promotional
+    ):
+        return (
+            True,
+            "fundraising/solicitation",
+        )
+
+    if (
+        rescue
+        and promotional
+    ):
+        return (
+            True,
+            "rescue solicitation",
+        )
+
+    # --------------------------------------------------------
+    # Art / product / unboxing.
+    # --------------------------------------------------------
+
+    art = set(
+        analysis[
+            "art_hits"
+        ]
+    )
+
+    art_tags = set(
+        analysis[
+            "art_tag_hits"
+        ]
+    )
+
+    product_context = (
+        art
+        | art_tags
+    )
+
+    if (
+        "unboxing" in product_context
+        or "unbox" in product_context
+        or "haul" in product_context
+        or "product" in product_context
+        or "products" in product_context
+        or "merch" in product_context
+        or "merchandise" in product_context
+    ):
+        return (
+            True,
+            "product/unboxing content",
+        )
+
+    if (
+        "portrait" in art
+        or "artwork" in art
+        or "painting" in art
+        or "illustration" in art
+        or "drawing" in art
+        or "commission" in art
+        or "foiled" in art
+    ):
+        return (
+            True,
+            "art content",
+        )
+
+    if (
+        "custom" in art
+        and (
+            "art" in art
+            or "portrait" in art
+            or "design" in art
+            or "print" in art
+        )
+    ):
+        return (
+            True,
+            "custom art/product content",
+        )
+
+    # --------------------------------------------------------
+    # Animal must appear in caption/context.
     #
-    # These are animals, but they are not suitable for the
-    # entertainment feed.
+    # Hashtag-only animal posts are not reliable enough.
     # --------------------------------------------------------
-
-    rescue_hits = set(
-        analysis["rescue_hits"]
-    )
-
-    promotional_hits = set(
-        analysis["promotional_hits"]
-    )
 
     if (
-        rescue_hits
-        and (
-            promotional_hits
-            or len(rescue_hits) >= 2
-            or "donate" in rescue_hits
-            or "donation" in rescue_hits
-            or "fundraiser" in rescue_hits
-            or "fundraising" in rescue_hits
-            or "wishlist" in rescue_hits
-            or "adoption" in rescue_hits
-            or "adopt" in rescue_hits
-        )
+        not caption_animal
+        and not caption_pet
     ):
-        return (
-            True,
-            "rescue/fundraising/promotional content",
-        )
-
-    if (
-        "donate" in promotional_hits
-        or "donation" in promotional_hits
-        or "fundraiser" in promotional_hits
-        or "fundraising" in promotional_hits
-        or "wishlist" in promotional_hits
-        or "gofundme" in promotional_hits
-    ):
-        return (
-            True,
-            "fundraising/promotional content",
-        )
-
-    # --------------------------------------------------------
-    # 3. Reject obvious art/product posts.
-    # --------------------------------------------------------
-
-    art_hits = set(
-        analysis["art_hits"]
-    )
-
-    if (
-        "portrait" in art_hits
-        or "artwork" in art_hits
-        or "painting" in art_hits
-        or "illustration" in art_hits
-        or "commission" in art_hits
-    ):
-        return (
-            True,
-            "art/product content",
-        )
-
-    if (
-        "custom" in art_hits
-        and (
-            "portrait" in art_hits
-            or "art" in art_hits
-            or "print" in art_hits
-            or "design" in art_hits
-        )
-    ):
-        return (
-            True,
-            "art/product content",
-        )
-
-    # --------------------------------------------------------
-    # 4. Animal evidence must not come ONLY from hashtags.
-    # --------------------------------------------------------
-
-    if not caption_animal and not caption_pet:
-
-        # A completely generic caption with only
-        # #dog/#cat hashtags is not sufficiently reliable.
         if (
-            not tag_animal
-            and not tag_pet
+            tag_animal
+            or tag_pet
         ):
             return (
                 True,
-                "no animal evidence",
+                "animal evidence only in hashtags",
             )
 
-        caption = normalize_text(
-            candidate_caption_placeholder(
-                analysis
-            )
-        )
-
-        # The actual caption is checked separately below
-        # through candidate-level logic.
-        #
-        # Returning this here is intentionally conservative.
         return (
             True,
-            "animal evidence only in hashtags",
+            "no animal evidence",
         )
 
     # --------------------------------------------------------
-    # 5. A caption containing animal evidence but no useful
-    # context can still be accepted if the video is clearly
-    # pet-oriented by its wording.
+    # Reject content that is technically about an animal but
+    # has no meaningful pet-life / entertainment / wholesome
+    # context.
+    #
+    # Exception: an explicit animal caption is enough if it
+    # clearly identifies the subject and the video is fresh.
+    # The final content-value gate handles the borderline cases.
     # --------------------------------------------------------
 
     return False, ""
 
 
-def candidate_caption_placeholder(analysis):
-    return ""
-
-
 # ============================================================
-# RECENCY / SCORING
+# RECENCY
 # ============================================================
 
 def recency_days(candidate):
@@ -1047,21 +1458,28 @@ def recency_days(candidate):
 def recency_score(days):
     if days <= 1:
         return 100
+
     if days <= 3:
         return 95
+
     if days <= 7:
         return 90
+
     if days <= 14:
         return 82
+
+    if days <= 21:
+        return 65
+
     if days <= 30:
-        return 68
-    if days <= 60:
         return 45
-    if days <= 90:
-        return 25
 
     return 0
 
+
+# ============================================================
+# SCORING
+# ============================================================
 
 def engagement_score(candidate):
     favourites = candidate.get(
@@ -1104,50 +1522,69 @@ def quality_score(
     media_info,
 ):
     width = (
-        media_info.get("width")
+        media_info.get(
+            "width"
+        )
         or 0
     )
 
     height = (
-        media_info.get("height")
+        media_info.get(
+            "height"
+        )
         or 0
     )
 
     duration = (
-        media_info.get("duration")
+        media_info.get(
+            "duration"
+        )
         or 0
+    )
+
+    longest_side = max(
+        width,
+        height,
+    )
+
+    shortest_side = min(
+        width,
+        height,
     )
 
     score = 0
 
-    if (
-        width >= 1080
-        or height >= 1080
-    ):
+    # Resolution quality.
+    if longest_side >= 1920:
+        score += 40
+    elif longest_side >= 1440:
         score += 35
-    elif (
-        width >= 720
-        or height >= 720
-    ):
-        score += 25
-    elif (
-        width >= 480
-        or height >= 480
-    ):
+    elif longest_side >= 1080:
+        score += 30
+    elif longest_side >= 720:
+        score += 20
+    elif longest_side >= 480:
+        score += 10
+
+    # Penalize extremely low-resolution footage.
+    if shortest_side < 480:
+        score -= 20
+
+    # Reasonable duration.
+    if 20 <= duration <= 120:
         score += 15
-
-    if duration >= 20:
-        score += 10
-
-    if duration <= 120:
-        score += 10
+    elif 15 <= duration <= 180:
+        score += 8
 
     if candidate.get(
         "preview_url"
     ):
         score += 5
 
-    return min(100, score)
+    return max(
+        0,
+        min(100, score),
+    )
 
 
 def caption_quality_score(
@@ -1155,7 +1592,9 @@ def caption_quality_score(
     analysis,
 ):
     caption = (
-        candidate.get("caption")
+        candidate.get(
+            "caption"
+        )
         or ""
     ).strip()
 
@@ -1181,18 +1620,62 @@ def caption_quality_score(
         score += 20
 
     if analysis[
+        "heartwarming_hits"
+    ]:
+        score += 15
+
+    if analysis[
         "promotional_hits"
     ]:
-        score -= 40
+        score -= 50
 
     if analysis[
         "rescue_hits"
     ]:
-        score -= 40
+        score -= 50
 
     return max(
         0,
         min(100, score),
+    )
+
+
+def content_value_score(
+    analysis,
+):
+    animal = analysis[
+        "animal_relevance"
+    ]
+
+    entertainment = analysis[
+        "entertainment_score"
+    ]
+
+    activity = min(
+        100,
+        len(
+            analysis[
+                "activity_hits"
+            ]
+        ) * 20,
+    )
+
+    heartwarming = min(
+        100,
+        len(
+            analysis[
+                "heartwarming_hits"
+            ]
+        ) * 20,
+    )
+
+    # Stronger requirement than simply "animal + hashtags".
+    return round(
+        animal * 0.45
+        + entertainment * 0.30
+        + activity * 0.15
+        + heartwarming * 0.10,
+        2,
     )
 
 
@@ -1240,48 +1723,88 @@ def score_candidate(
         ) * 10,
     )
 
-    # Much more balanced than before.
-    #
-    # Animal relevance gets priority, but an empty/generic
-    # caption can no longer dominate purely because it has
-    # many hashtags.
-    total = (
-        animal * 1.8
-        + entertainment * 1.0
-        + activity_bonus * 0.8
-        + engagement * 0.8
-        + recency * 1.2
-        + quality * 0.8
-        + caption_quality * 0.7
+    heartwarming_bonus = min(
+        20,
+        len(
+            analysis[
+                "heartwarming_hits"
+            ]
+        ) * 5,
     )
 
-    candidate["animal_relevance"] = animal
-    candidate["entertainment_score"] = (
-        entertainment
+    content_value = (
+        content_value_score(
+            analysis
+        )
     )
-    candidate["engagement_score"] = (
-        engagement
+
+    total = (
+        animal * 1.6
+        + entertainment * 1.15
+        + activity_bonus * 1.0
+        + heartwarming_bonus * 0.8
+        + engagement * 0.8
+        + recency * 1.4
+        + quality * 0.9
+        + caption_quality * 0.6
     )
-    candidate["recency_days"] = round(
+
+    # Freshness is deliberately stronger than before.
+    if days <= PREFERRED_DAYS:
+        total += 25
+
+    elif days <= FALLBACK_DAYS:
+        total -= 15
+
+    candidate[
+        "animal_relevance"
+    ] = animal
+
+    candidate[
+        "entertainment_score"
+    ] = entertainment
+
+    candidate[
+        "engagement_score"
+    ] = engagement
+
+    candidate[
+        "recency_days"
+    ] = round(
         days,
         2,
     )
-    candidate["recency_score"] = (
-        recency
-    )
-    candidate["quality_score"] = (
-        quality
-    )
-    candidate["caption_quality_score"] = (
-        caption_quality
-    )
-    candidate["total_score"] = round(
+
+    candidate[
+        "recency_score"
+    ] = recency
+
+    candidate[
+        "quality_score"
+    ] = quality
+
+    candidate[
+        "caption_quality_score"
+    ] = caption_quality
+
+    candidate[
+        "content_value_score"
+    ] = content_value
+
+    candidate[
+        "total_score"
+    ] = round(
         total,
         2,
     )
 
-    candidate["analysis"] = analysis
-    candidate["media_info"] = media_info
+    candidate[
+        "analysis"
+    ] = analysis
+
+    candidate[
+        "media_info"
+    ] = media_info
 
     return candidate
 
@@ -1398,22 +1921,26 @@ def validate_media(
         if duration > MAX_DURATION:
             return None
 
-        candidate["duration"] = round(
+        candidate[
+            "duration"
+        ] = round(
             duration,
             3,
         )
 
-        candidate["file_size"] = (
-            output_path.stat().st_size
+        candidate[
+            "file_size"
+        ] = output_path.stat().st_size
+
+        candidate[
+            "sha256"
+        ] = sha256_file(
+            output_path
         )
 
-        candidate["sha256"] = (
-            sha256_file(
-                output_path
-            )
-        )
-
-        candidate["media_info"] = info
+        candidate[
+            "media_info"
+        ] = info
 
         return candidate
 
@@ -1442,13 +1969,17 @@ def load_history():
             "r",
             encoding="utf-8",
         ) as handle:
+
             data = json.load(
                 handle
             )
 
         return (
             data
-            if isinstance(data, list)
+            if isinstance(
+                data,
+                list,
+            )
             else []
         )
 
@@ -1460,6 +1991,7 @@ def history_keys(history):
     keys = set()
 
     for item in history:
+
         if not isinstance(
             item,
             dict,
@@ -1472,7 +2004,10 @@ def history_keys(history):
             "media_url",
             "sha256",
         ):
-            value = item.get(key)
+
+            value = item.get(
+                key
+            )
 
             if value:
                 keys.add(
@@ -1505,7 +2040,9 @@ def is_in_history(
     values.discard("")
 
     return bool(
-        values.intersection(keys)
+        values.intersection(
+            keys
+        )
     )
 
 
@@ -1605,7 +2142,7 @@ def select_with_diversity(
 
     selected = []
 
-    # First pass: diversity preferred.
+    # First pass: respect diversity limits.
     for candidate in candidates:
 
         if len(selected) >= max_items:
@@ -1663,8 +2200,8 @@ def select_with_diversity(
             + 1
         )
 
-    # Second pass: if diversity limits prevented 20,
-    # fill remaining slots with the best remaining videos.
+    # Second pass only fills remaining slots with candidates
+    # that were not already selected.
     if len(selected) < max_items:
 
         selected_keys = {
@@ -1700,7 +2237,9 @@ def select_with_diversity(
                 candidate
             )
 
-            selected_keys.add(key)
+            selected_keys.add(
+                key
+            )
 
     return selected[:max_items]
 
@@ -1718,6 +2257,7 @@ def write_json(
         "w",
         encoding="utf-8",
     ) as handle:
+
         json.dump(
             data,
             handle,
@@ -1863,10 +2403,11 @@ def main():
             candidate
         )
 
-        # IMPORTANT:
-        # Reject based on caption/content, not just hashtags.
-        rejected, reason = is_hard_reject(
-            analysis
+        rejected, reason = (
+            is_hard_reject(
+                candidate,
+                analysis,
+            )
         )
 
         if rejected:
@@ -1881,9 +2422,9 @@ def main():
 
             continue
 
-        candidate["analysis"] = (
-            analysis
-        )
+        candidate[
+            "analysis"
+        ] = analysis
 
         gated.append(
             candidate
@@ -1912,6 +2453,8 @@ def main():
 
     validated = []
 
+    validation_rejections = {}
+
     with tempfile.TemporaryDirectory() as temp_dir:
 
         for candidate in gated:
@@ -1922,6 +2465,17 @@ def main():
             )
 
             if not checked:
+
+                validation_rejections[
+                    "invalid media"
+                ] = (
+                    validation_rejections.get(
+                        "invalid media",
+                        0,
+                    )
+                    + 1
+                )
+
                 continue
 
             analysis = checked.get(
@@ -1939,9 +2493,48 @@ def main():
                 or {},
             )
 
+            # ------------------------------------------------
+            # Content-value gate.
+            #
+            # Prevents technically valid but weak animal
+            # posts from entering the selection pool.
+            # ------------------------------------------------
+
+            if (
+                checked.get(
+                    "content_value_score",
+                    0,
+                )
+                < MIN_CONTENT_VALUE
+            ):
+
+                validation_rejections[
+                    "weak content value"
+                ] = (
+                    validation_rejections.get(
+                        "weak content value",
+                        0,
+                    )
+                    + 1
+                )
+
+                continue
+
             validated.append(
                 checked
             )
+
+    print()
+    print(
+        "Post-validation rejections:"
+    )
+
+    for reason, count in (
+        validation_rejections.items()
+    ):
+        print(
+            f"  {reason}: {count}"
+        )
 
     # --------------------------------------------------------
     # FINAL DEDUP
@@ -1989,42 +2582,41 @@ def main():
     )
 
     # --------------------------------------------------------
-    # FRESHNESS
+    # HARD FRESHNESS FILTER
+    #
+    # Nothing older than 30 days is allowed into the normal
+    # selection pool.
     # --------------------------------------------------------
 
     preferred = [
-        x
-        for x in fresh
-        if x.get(
+        candidate
+        for candidate in fresh
+        if candidate.get(
             "recency_days",
             9999,
         ) <= PREFERRED_DAYS
     ]
 
-    recent_fallback = [
-        x
-        for x in fresh
+    fallback = [
+        candidate
+        for candidate in fresh
         if (
             PREFERRED_DAYS
-            < x.get(
-                "recency_days",
-                9999,
-            )
-            <= FRESH_DAYS
-        )
-    ]
-
-    old_fallback = [
-        x
-        for x in fresh
-        if (
-            FRESH_DAYS
-            < x.get(
+            < candidate.get(
                 "recency_days",
                 9999,
             )
             <= FALLBACK_DAYS
         )
+    ]
+
+    too_old = [
+        candidate
+        for candidate in fresh
+        if candidate.get(
+            "recency_days",
+            9999,
+        ) > FALLBACK_DAYS
     ]
 
     print(
@@ -2034,28 +2626,25 @@ def main():
     )
 
     print(
-        f"Recent fallback videos "
-        f"({PREFERRED_DAYS}-{FRESH_DAYS} days):",
-        len(recent_fallback),
+        f"Fallback videos "
+        f"({PREFERRED_DAYS}-{FALLBACK_DAYS} days):",
+        len(fallback),
     )
 
     print(
-        f"Old fallback videos "
-        f"({FRESH_DAYS}-{FALLBACK_DAYS} days):",
-        len(old_fallback),
+        f"Rejected as too old "
+        f"(> {FALLBACK_DAYS} days):",
+        len(too_old),
     )
 
     # --------------------------------------------------------
     # RANKING
+    #
+    # Fresh pool always beats fallback pool.
+    # Fallback is only used if fresh material is insufficient.
     # --------------------------------------------------------
 
-    ranking_pool = (
-        preferred
-        + recent_fallback
-        + old_fallback
-    )
-
-    ranking_pool.sort(
+    preferred.sort(
         key=lambda x: x.get(
             "total_score",
             0,
@@ -2063,56 +2652,82 @@ def main():
         reverse=True,
     )
 
-    selected = select_with_diversity(
-        ranking_pool,
-        MAX_VIDEOS,
+    fallback.sort(
+        key=lambda x: x.get(
+            "total_score",
+            0,
+        ),
+        reverse=True,
     )
 
-    # --------------------------------------------------------
-    # FINAL SAFETY FILTER
-    # --------------------------------------------------------
+    preferred_selected = (
+        select_with_diversity(
+            preferred,
+            MAX_VIDEOS,
+        )
+    )
 
-    final_selected = []
+    remaining_slots = (
+        MAX_VIDEOS
+        - len(
+            preferred_selected
+        )
+    )
 
-    for candidate in selected:
+    final_selected = list(
+        preferred_selected
+    )
 
-        if (
-            candidate.get(
-                "duration",
-                0,
+    if remaining_slots > 0:
+
+        selected_keys = {
+            (
+                item.get("sha256")
+                or item.get("media_url")
+                or item.get(
+                    "canonical_status_url"
+                )
             )
-            < MIN_DURATION
-        ):
-            continue
+            for item in final_selected
+        }
 
-        if (
-            candidate.get(
-                "duration",
-                0,
+        fallback_remaining = [
+            item
+            for item in fallback
+            if (
+                item.get("sha256")
+                or item.get("media_url")
+                or item.get(
+                    "canonical_status_url"
+                )
             )
-            > MAX_DURATION
-        ):
-            continue
+            not in selected_keys
+        ]
 
-        if (
-            candidate.get(
-                "recency_days",
-                9999,
+        fallback_selected = (
+            select_with_diversity(
+                fallback_remaining,
+                remaining_slots,
             )
-            > FALLBACK_DAYS
-        ):
-            continue
+        )
 
-        final_selected.append(
-            candidate
+        final_selected.extend(
+            fallback_selected
         )
 
     final_selected.sort(
-        key=lambda x: x.get(
-            "total_score",
-            0,
-        ),
-        reverse=True,
+        key=lambda x: (
+            0
+            if x.get(
+                "recency_days",
+                9999,
+            ) <= PREFERRED_DAYS
+            else 1,
+            -x.get(
+                "total_score",
+                0,
+            ),
+        )
     )
 
     final_selected = (
@@ -2132,9 +2747,12 @@ def main():
     print(
         "============================================================"
     )
+
     print(
-        "UTCUTIE EXPANDED MASTODON SELECTED CANDIDATES"
+        "UTCUTIE EXPANDED MASTODON "
+        "SELECTED CANDIDATES"
     )
+
     print(
         "============================================================"
     )
@@ -2151,7 +2769,11 @@ def main():
     print(
         "============================================================"
     )
-    print("UTCUTIE DISCOVERY COMPLETE")
+
+    print(
+        "UTCUTIE DISCOVERY COMPLETE"
+    )
+
     print(
         "============================================================"
     )
@@ -2162,6 +2784,11 @@ def main():
     )
 
     print(
+        "Passed content gate:",
+        len(gated),
+    )
+
+    print(
         "Validated videos:",
         len(validated),
     )
@@ -2169,6 +2796,21 @@ def main():
     print(
         "Fresh videos:",
         len(fresh),
+    )
+
+    print(
+        "Preferred videos:",
+        len(preferred),
+    )
+
+    print(
+        "Fallback videos:",
+        len(fallback),
+    )
+
+    print(
+        "Too-old videos rejected:",
+        len(too_old),
     )
 
     print(
