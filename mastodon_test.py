@@ -62,9 +62,9 @@ SECONDARY_DAYS = 30
 EMERGENCY_DAYS = 60
 
 MAX_SELECTED = 20
-MAX_DOWNLOAD_ATTEMPTS = 100
+MAX_DOWNLOAD_ATTEMPTS = 40
 REQUEST_TIMEOUT = 25
-VISUAL_SAMPLE_COUNT = 5
+VISUAL_SAMPLE_COUNT = 3
 VISUAL_NET = None
 VISUAL_CONFIDENCE = 0.45
 VISUAL_MODEL_DIR = Path(".visual_model")
@@ -738,7 +738,11 @@ def download_and_validate(candidate):
             candidate["height"] = int(stream.get("height") or 0)
             candidate["codec"] = stream.get("codec_name") or ""
 
-            candidate["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+            digest = hashlib.sha256()
+            with path.open("rb") as hashed:
+                for chunk in iter(lambda: hashed.read(1024 * 1024), b""):
+                    digest.update(chunk)
+            candidate["sha256"] = digest.hexdigest()
 
             visual_ok, visual_reason = visual_media_gate(path)
             if not visual_ok:
