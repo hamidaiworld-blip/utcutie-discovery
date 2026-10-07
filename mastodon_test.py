@@ -126,7 +126,10 @@ ADVOCACY_TERMS = {
     "farm sanctuary", "vegan", "vegetarian", "animal welfare",
     "animal rights", "animal activism", "activism", "campaign",
     "petition", "donate", "donation", "fundraiser", "fundraising",
-    "save the animals", "meat farm",
+    "save the animals", "meat farm", "dairy industry",
+    "discarded by the dairy", "sentient being", "not food",
+    "friends, not food", "friends not food", "trapping",
+    "trap the", "trapped", "second chances",
 }
 
 IRRELEVANT_TERMS = {
@@ -849,7 +852,14 @@ def sort_for_selection(items):
 def select_diverse(items):
     primary = [x for x in items if x.get("freshness_tier") == "primary"]
     secondary = [x for x in items if x.get("freshness_tier") == "secondary"]
-    emergency = [x for x in items if x.get("freshness_tier") == "emergency"]
+    # Emergency-age material is never used merely to reach the quota.
+    # It must be genuinely exceptional; otherwise we publish fewer videos.
+    emergency = [
+        x
+        for x in items
+        if x.get("freshness_tier") == "emergency"
+        and float(x.get("selection_score") or 0) >= 80.0
+    ]
 
     ordered = (
         sort_for_selection(primary)
