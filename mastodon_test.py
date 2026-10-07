@@ -65,6 +65,7 @@ MAX_SELECTED = 20
 MAX_DOWNLOAD_ATTEMPTS = 100
 REQUEST_TIMEOUT = 25
 VISUAL_SAMPLE_COUNT = 5
+VISUAL_NET = None
 VISUAL_CONFIDENCE = 0.45
 VISUAL_MODEL_DIR = Path(".visual_model")
 VISUAL_PROTO = VISUAL_MODEL_DIR / "deploy.prototxt"
@@ -577,50 +578,45 @@ def ensure_visual_model():
         VISUAL_WEIGHTS.write_bytes(response.content)
 
 
-def visual_media_gate(path):
-    """Reject media that has people but no detectable target animal.
+def get_visual_net():
+    global VISUAL_NET
+    if VISUAL_NET is None:
+        ensure_visual_model()
+        VISUAL_NET = cv2.dnn.readNetFromCaffe(
+            str(VISUAL_PROTO), str(VISUAL_WEIGHTS)
+        )
+    return VISUAL_NET
 
-    This is deliberately conservative: it is a relevance/safety gate, not a
-    general NSFW classifier. It prevents caption-only false positives such as
+
+def visual_media_gate(path):
+    """Reject media with a detected person but no detected target animal.
+
+    This is a conservative media-relevance gate, not a general NSFW classifier.
+    It is specifically designed to stop caption-only false positives such as
     a human pretending to be a puppy. Videos with no detected person are not
     rejected solely because this small VOC model cannot recognize every animal
-    species (e.g. raccoons/rabbits).
+    species.
     """
-    ensure_visual_model()
-    net = cv2.dnn.readNetFromCaffe(str(VISUAL_PROTO), str(VISUAL_WEIGHTS))
+    net = get_visual_net()
+    capture = cv2.VideoCapture(str(path))
+    if not capture.isOpened():
+        return False, "visual gate: cannot open video"
 
-    probe = ffprobe_video(path)
-    if not probe:
-        return False, "visual gate: invalid video"
+    try:
+        frame_count = int(capture.get(cv2.CAP_PROP_FRAME_COUNT) or 0)
+        fps = float(capture.get(cv2.CAP_PROP_FPS) or 0)
+        if frame_count <= 0 or fps <= 0:
+            return False, "visual gate: unknown frame data"
 
-    duration = float(probe.get("duration") or 0)
-    if duration <= 0:
-        return False, "visual gate: unknown duration"
+        sample_indices = np.linspace(0, max(0, frame_count - 1), VISUAL_SAMPLE_COUNT, dtype=int)
+        person_seen = False
+        animal_seen = set()
+        usable_frames = 0
 
-    times = np.linspace(0.5, max(0.5, duration - 0.5), VISUAL_SAMPLE_COUNT)
-    person_seen = False
-    animal_seen = set()
-    usable_frames = 0
-
-    with tempfile.TemporaryDirectory(prefix="utcutie_frames_") as frame_dir:
-        for index, timestamp in enumerate(times):
-            frame_path = Path(frame_dir) / f"frame_{index}.jpg"
-            command = [
-                "ffmpeg", "-hide_banner", "-loglevel", "error",
-                "-ss", f"{float(timestamp):.3f}", "-i", str(path),
-                "-frames:v", "1", "-q:v", "4", "-y", str(frame_path),
-            ]
-            try:
-                result = subprocess.run(
-                    command, capture_output=True, text=True, timeout=20
-                )
-            except subprocess.TimeoutExpired:
-                continue
-            if result.returncode != 0 or not frame_path.exists():
-                continue
-
-            frame = cv2.imread(str(frame_path))
-            if frame is None:
+        for frame_index in sorted(set(int(x) for x in sample_indices)):
+            capture.set(cv2.CAP_PROP_POS_FRAMES, frame_index)
+            ok, frame = capture.read()
+            if not ok or frame is None:
                 continue
             usable_frames += 1
 
@@ -646,13 +642,16 @@ def visual_media_gate(path):
                 elif label in VISUAL_ANIMAL_CLASSES:
                     animal_seen.add(label)
 
-    if usable_frames == 0:
-        return False, "visual gate: no readable frames"
+        if usable_frames == 0:
+            return False, "visual gate: no readable frames"
 
-    if person_seen and not animal_seen:
-        return False, "visual gate: person detected without animal"
+        if person_seen and not animal_seen:
+            return False, "visual gate: person detected without animal"
 
-    return True, ""
+        return True, ""
+    finally:
+        capture.release()
+
 
 
 def ffprobe_video(path):
