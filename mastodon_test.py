@@ -9,6 +9,8 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import requests
+import cv2
+import numpy as np
 
 
 INSTANCES = [
@@ -62,6 +64,21 @@ EMERGENCY_DAYS = 60
 MAX_SELECTED = 20
 MAX_DOWNLOAD_ATTEMPTS = 100
 REQUEST_TIMEOUT = 25
+VISUAL_SAMPLE_COUNT = 5
+VISUAL_CONFIDENCE = 0.45
+VISUAL_MODEL_DIR = Path(".visual_model")
+VISUAL_PROTO = VISUAL_MODEL_DIR / "deploy.prototxt"
+VISUAL_WEIGHTS = VISUAL_MODEL_DIR / "mobilenet_iter_73000.caffemodel"
+VISUAL_PROTO_URL = "https://raw.githubusercontent.com/chuanqi305/MobileNet-SSD/master/deploy.prototxt"
+VISUAL_WEIGHTS_URL = "https://github.com/chuanqi305/MobileNet-SSD/raw/master/mobilenet_iter_73000.caffemodel"
+
+VOC_CLASSES = [
+    "background", "aeroplane", "bicycle", "bird", "boat", "bottle",
+    "bus", "car", "cat", "chair", "cow", "diningtable", "dog",
+    "horse", "motorbike", "person", "pottedplant", "sheep", "sofa",
+    "train", "tvmonitor",
+]
+VISUAL_ANIMAL_CLASSES = {"bird", "cat", "cow", "dog", "horse", "sheep"}
 
 HISTORY_FILE = Path("history.json")
 SELECTED_FILE = Path("selected_candidates.json")
@@ -548,6 +565,96 @@ def preflight_size(candidate):
     return True, ""
 
 
+def ensure_visual_model():
+    VISUAL_MODEL_DIR.mkdir(parents=True, exist_ok=True)
+    if not VISUAL_PROTO.exists():
+        response = requests.get(VISUAL_PROTO_URL, timeout=30)
+        response.raise_for_status()
+        VISUAL_PROTO.write_bytes(response.content)
+    if not VISUAL_WEIGHTS.exists():
+        response = requests.get(VISUAL_WEIGHTS_URL, timeout=120)
+        response.raise_for_status()
+        VISUAL_WEIGHTS.write_bytes(response.content)
+
+
+def visual_media_gate(path):
+    """Reject media that has people but no detectable target animal.
+
+    This is deliberately conservative: it is a relevance/safety gate, not a
+    general NSFW classifier. It prevents caption-only false positives such as
+    a human pretending to be a puppy. Videos with no detected person are not
+    rejected solely because this small VOC model cannot recognize every animal
+    species (e.g. raccoons/rabbits).
+    """
+    ensure_visual_model()
+    net = cv2.dnn.readNetFromCaffe(str(VISUAL_PROTO), str(VISUAL_WEIGHTS))
+
+    probe = ffprobe_video(path)
+    if not probe:
+        return False, "visual gate: invalid video"
+
+    duration = float(probe.get("duration") or 0)
+    if duration <= 0:
+        return False, "visual gate: unknown duration"
+
+    times = np.linspace(0.5, max(0.5, duration - 0.5), VISUAL_SAMPLE_COUNT)
+    person_seen = False
+    animal_seen = set()
+    usable_frames = 0
+
+    with tempfile.TemporaryDirectory(prefix="utcutie_frames_") as frame_dir:
+        for index, timestamp in enumerate(times):
+            frame_path = Path(frame_dir) / f"frame_{index}.jpg"
+            command = [
+                "ffmpeg", "-hide_banner", "-loglevel", "error",
+                "-ss", f"{float(timestamp):.3f}", "-i", str(path),
+                "-frames:v", "1", "-q:v", "4", "-y", str(frame_path),
+            ]
+            try:
+                result = subprocess.run(
+                    command, capture_output=True, text=True, timeout=20
+                )
+            except subprocess.TimeoutExpired:
+                continue
+            if result.returncode != 0 or not frame_path.exists():
+                continue
+
+            frame = cv2.imread(str(frame_path))
+            if frame is None:
+                continue
+            usable_frames += 1
+
+            blob = cv2.dnn.blobFromImage(
+                cv2.resize(frame, (300, 300)),
+                0.007843,
+                (300, 300),
+                127.5,
+            )
+            net.setInput(blob)
+            detections = net.forward()
+
+            for detection in detections[0, 0, :, :]:
+                confidence = float(detection[2])
+                if confidence < VISUAL_CONFIDENCE:
+                    continue
+                class_id = int(detection[1])
+                if not 0 <= class_id < len(VOC_CLASSES):
+                    continue
+                label = VOC_CLASSES[class_id]
+                if label == "person":
+                    person_seen = True
+                elif label in VISUAL_ANIMAL_CLASSES:
+                    animal_seen.add(label)
+
+    if usable_frames == 0:
+        return False, "visual gate: no readable frames"
+
+    if person_seen and not animal_seen:
+        return False, "visual gate: person detected without animal"
+
+    return True, ""
+
+
 def ffprobe_video(path):
     command = [
         "ffprobe",
@@ -633,6 +740,10 @@ def download_and_validate(candidate):
             candidate["codec"] = stream.get("codec_name") or ""
 
             candidate["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+
+            visual_ok, visual_reason = visual_media_gate(path)
+            if not visual_ok:
+                return None, visual_reason
 
             return candidate, ""
 
