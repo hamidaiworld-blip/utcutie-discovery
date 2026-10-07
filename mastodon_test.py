@@ -357,12 +357,19 @@ def get_statuses(instance, tag, max_id=None):
     if max_id:
         params["max_id"] = max_id
 
-    response = requests.get(
-        url,
-        params=params,
-        headers={"User-Agent": "UTCutieDiscovery/1.0"},
-        timeout=REQUEST_TIMEOUT,
-    )
+    try:
+        response = requests.get(
+            url,
+            params=params,
+            headers={"User-Agent": "UTCutieDiscovery/1.0"},
+            timeout=REQUEST_TIMEOUT,
+        )
+    except requests.exceptions.Timeout as exc:
+        print(f"{instance} #{tag}: request timeout; skipping this page ({exc})")
+        return []
+    except requests.exceptions.RequestException as exc:
+        print(f"{instance} #{tag}: request failed; skipping this page ({exc})")
+        return []
 
     if response.status_code != 200:
         print(f"{instance} #{tag}: HTTP {response.status_code}")
