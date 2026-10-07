@@ -33,13 +33,22 @@ HASHTAGS = [
     "cuteanimals",
     "funnyanimals",
     "petsofthefediverse",
-    "cutepets",
     "funnycats",
     "funnydogs",
     "animalvideos",
+    "catvideos",
+    "dogvideos",
+    "petvideos",
+    "cutecats",
+    "cutedogs",
+    "wholesomeanimals",
+    "animalsofmastodon",
+    "petstodon",
+    "catsofthefediverse",
+    "dogsofthefediverse",
 ]
 
-MAX_PAGES_PER_TAG = 4
+MAX_PAGES_PER_TAG = 5
 STATUSES_PER_PAGE = 40
 
 MIN_DURATION = 15.0
@@ -51,7 +60,7 @@ SECONDARY_DAYS = 30
 EMERGENCY_DAYS = 60
 
 MAX_SELECTED = 20
-MAX_DOWNLOAD_ATTEMPTS = 80
+MAX_DOWNLOAD_ATTEMPTS = 100
 REQUEST_TIMEOUT = 25
 
 HISTORY_FILE = Path("history.json")
@@ -400,6 +409,35 @@ def extract_video_candidates(statuses, instance):
     return candidates
 
 
+def candidate_copy_rank(candidate):
+    size = advertised_size(candidate)
+    if size is None:
+        size_rank = 1
+        size_value = 0
+    elif size <= MAX_FILE_SIZE:
+        size_rank = 2
+        size_value = size
+    else:
+        size_rank = 0
+        size_value = size
+
+    meta = candidate.get("media_meta") or {}
+    video_meta = meta.get("video") if isinstance(meta.get("video"), dict) else {}
+    bitrate = int(video_meta.get("bitrate") or 0)
+
+    original = meta.get("original") if isinstance(meta.get("original"), dict) else {}
+    width = int(original.get("width") or meta.get("width") or 0)
+    height = int(original.get("height") or meta.get("height") or 0)
+
+    return (
+        size_rank,
+        width * height,
+        bitrate,
+        -size_value if size_value else 0,
+        -len(str(candidate.get("media_url") or "")),
+    )
+
+
 def deduplicate_candidates(candidates):
     by_key = {}
 
@@ -411,30 +449,19 @@ def deduplicate_candidates(candidates):
 
         existing = by_key.get(key)
 
-        if existing is None:
-            by_key[key] = candidate
-            continue
-
-        # Prefer a copy with richer media metadata and then the shorter
-        # media URL. We only want one copy of a federated post.
-        old_meta = existing.get("media_meta") or {}
-        new_meta = candidate.get("media_meta") or {}
-
-        old_bitrate = (
-            old_meta.get("video", {}).get("bitrate", 0)
-            if isinstance(old_meta.get("video"), dict)
-            else 0
-        )
-        new_bitrate = (
-            new_meta.get("video", {}).get("bitrate", 0)
-            if isinstance(new_meta.get("video"), dict)
-            else 0
-        )
-
-        if new_bitrate > old_bitrate:
+        if existing is None or candidate_copy_rank(candidate) > candidate_copy_rank(existing):
             by_key[key] = candidate
 
     return list(by_key.values())
+
+
+def unique_canonical_count(candidates):
+    keys = set()
+    for candidate in candidates:
+        key = candidate.get("canonical_key") or canonical_key(candidate)
+        if key:
+            keys.add(key)
+    return len(keys)
 
 
 def advertised_size(candidate):
@@ -462,11 +489,13 @@ def preflight_size(candidate):
             return False, "file too large"
         return True, ""
 
+    headers = {"User-Agent": "UTCutieDiscovery/1.0"}
+
     try:
         response = requests.head(
             candidate["media_url"],
             allow_redirects=True,
-            headers={"User-Agent": "UTCutieDiscovery/1.0"},
+            headers=headers,
             timeout=REQUEST_TIMEOUT,
         )
 
@@ -477,7 +506,42 @@ def preflight_size(candidate):
                 candidate["advertised_file_size"] = size
                 if size > MAX_FILE_SIZE:
                     return False, "file too large"
+                return True, ""
+    except Exception:
+        pass
 
+    # Some Mastodon media hosts do not answer HEAD correctly. A one-byte
+    # range request can still reveal the complete object size via Content-Range.
+    try:
+        response = requests.get(
+            candidate["media_url"],
+            headers={**headers, "Range": "bytes=0-0"},
+            allow_redirects=True,
+            stream=True,
+            timeout=REQUEST_TIMEOUT,
+        )
+
+        content_range = response.headers.get("Content-Range", "")
+        match = re.search(r"/([0-9]+)$", content_range)
+        if match:
+            size = int(match.group(1))
+            candidate["advertised_file_size"] = size
+            if size > MAX_FILE_SIZE:
+                response.close()
+                return False, "file too large"
+            response.close()
+            return True, ""
+
+        value = response.headers.get("Content-Length")
+        if value and value.isdigit():
+            size = int(value)
+            candidate["advertised_file_size"] = size
+            response.close()
+            if size > MAX_FILE_SIZE:
+                return False, "file too large"
+            return True, ""
+
+        response.close()
     except Exception:
         pass
 
@@ -737,16 +801,16 @@ def main():
     print()
     print(f"RAW VIDEO CANDIDATES: {len(raw_candidates)}")
 
-    unique = deduplicate_candidates(raw_candidates)
+    canonical_count = unique_canonical_count(raw_candidates)
 
-    print(f"UNIQUE CANONICAL POST CANDIDATES: {len(unique)}")
-
-    write_json(DISCOVERY_FILE, unique)
+    print(f"UNIQUE CANONICAL POST CANDIDATES: {canonical_count}")
 
     passed = []
     rejection_counts = {}
 
-    for candidate in unique:
+    # Keep alternate federated copies alive until size preflight. One copy can
+    # be too large while another copy of the same post is Telegram-safe.
+    for candidate in raw_candidates:
         age = freshness_days(candidate.get("created_at"))
         candidate["age_days"] = round(age, 3)
         candidate["freshness_tier"] = freshness_tier(age)
@@ -770,8 +834,12 @@ def main():
 
         passed.append(candidate)
 
+    unique = deduplicate_candidates(passed)
+    write_json(DISCOVERY_FILE, unique)
+
     print()
     print(f"CONTENT-GATE PASSED: {len(passed)}")
+    print(f"UNIQUE SIZE-SAFE CANONICAL CANDIDATES: {len(unique)}")
     print("CONTENT-GATE / PREFLIGHT REJECTIONS:")
 
     for reason, count in sorted(rejection_counts.items()):
@@ -783,7 +851,7 @@ def main():
     fresh_for_history = []
     history_rejections = 0
 
-    for candidate in passed:
+    for candidate in unique:
         key = candidate.get("canonical_key") or canonical_key(candidate)
 
         if key in published_keys:
