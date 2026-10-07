@@ -1,178 +1,1378 @@
 [
   {
-    "status_id": "117383380911112470",
-    "status_url": "https://c.im/@fonecokid/117383380609116583",
-    "instance": "https://mastodon.online",
-    "created_at": "2026-10-04T15:37:24.000Z",
-    "caption": "# Dog # Dogs # DogsOfMastodon # DogsOfFedi # DogsOfPixelFed # Dogstodon # PetLife # MastoDogs # FediDogs # Pet # Pets # Niki # Nico # dopic\n# dogslife # Chihuahuas\nSunday afternoon niki playtime",
-    "account": "fonecokid@c.im",
-    "account_display_name": "ZZ Bottom",
-    "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/383/380/753/231/614/original/a39894bd099ccc35.mp4",
-    "media_preview_url": "https://files.mastodon.online/cache/media_attachments/files/117/383/380/753/231/614/small/a39894bd099ccc35.png",
-    "media_type": "video",
-    "width": 1280,
-    "height": 720,
-    "favourites": 0,
-    "reblogs": 2,
-    "replies": 0,
-    "hashtag": "pets",
-    "status_tags": [
-      "dog",
-      "dogs",
-      "dogsofmastodon",
-      "dogsoffedi",
-      "dogsofpixelfed",
-      "dogstodon",
-      "petlife",
-      "mastodogs",
-      "fedidogs",
-      "pet",
-      "pets",
-      "niki",
-      "nico",
-      "dopic",
-      "dogslife",
-      "chihuahuas"
-    ],
-    "content_value": 41,
-    "duration": 16.833,
-    "file_size": 6937607,
-    "file_size_mb": 6.616,
-    "sha256": "ba1a2ee550097e6697835452d4f59e9d59e6075e4b12414a456d27d7f33f125a",
-    "animal_relevance": 18,
-    "engagement_score": 2.121,
-    "recency_score": 18.0,
-    "quality_score": 22.0,
-    "caption_quality_score": 5.0,
-    "freshness_days": 2.131,
-    "freshness_tier": "primary",
-    "total_score": 104.509
-  },
-  {
-    "status_id": "117382190510991787",
-    "status_url": "https://c.im/@fonecokid/117382190250141953",
-    "instance": "https://mastodon.online",
-    "created_at": "2026-10-04T10:34:40.000Z",
-    "caption": "# Dog # Dogs # DogsOfMastodon # DogsOfFedi # DogsOfPixelFed # Dogstodon # PetLife # MastoDogs # FediDogs # Pet # Pets # Niki # Nico # dopic\n# dogslife # Chihuahuas\nHappy Banana Sunday.",
-    "account": "fonecokid@c.im",
-    "account_display_name": "ZZ Bottom",
-    "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/382/190/387/254/592/original/4905850ab0cc567b.mp4",
-    "media_preview_url": "https://files.mastodon.online/cache/media_attachments/files/117/382/190/387/254/592/small/4905850ab0cc567b.png",
-    "media_type": "video",
-    "width": 1280,
-    "height": 720,
-    "favourites": 0,
-    "reblogs": 2,
-    "replies": 0,
-    "hashtag": "pets",
-    "status_tags": [
-      "dog",
-      "dogs",
-      "dogsofmastodon",
-      "dogsoffedi",
-      "dogsofpixelfed",
-      "dogstodon",
-      "petlife",
-      "mastodogs",
-      "fedidogs",
-      "pet",
-      "pets",
-      "niki",
-      "nico",
-      "dopic",
-      "dogslife",
-      "chihuahuas"
-    ],
-    "content_value": 41,
-    "duration": 30.533,
-    "file_size": 12559719,
-    "file_size_mb": 11.978,
-    "sha256": "4a0654a6b9c73dd7625348cae0e2831d729ff87b640aa6ac2ef8ec4b9415d753",
-    "animal_relevance": 18,
-    "engagement_score": 2.121,
-    "recency_score": 18.0,
-    "quality_score": 22.0,
-    "caption_quality_score": 5.0,
-    "freshness_days": 2.341,
-    "freshness_tier": "primary",
-    "total_score": 104.509
-  },
-  {
-    "status_id": "117394028161171091",
-    "status_url": "https://mas.to/@markarayner/117394028042611606",
+    "id": "117397729247105701",
+    "url": "https://bark.lgbt/@emberfox/117397729087124515",
+    "canonical_url": "https://bark.lgbt/@emberfox/117397729087124515",
+    "account": "emberfox@bark.lgbt",
     "instance": "https://mastodon.social",
-    "created_at": "2026-10-06T12:45:11.000Z",
-    "caption": "A writer's solution to the eternal problem.\n# cat # cats # castsofmastodon # humor # humour # writing # amwriting\n[video description: a cat sleeps in the sunshine while its hooman types on a keyboard resting on the cat's side.]",
-    "account": "markarayner@mas.to",
-    "account_display_name": "Mark A. Rayner",
-    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/394/028/092/173/274/original/683a2665939d09ed.mp4",
-    "media_preview_url": "https://files.mastodon.social/cache/media_attachments/files/117/394/028/092/173/274/small/683a2665939d09ed.png",
-    "media_type": "video",
-    "width": 514,
-    "height": 718,
-    "favourites": 6,
-    "reblogs": 7,
-    "replies": 0,
-    "hashtag": "cat",
-    "status_tags": [
-      "amwriting",
-      "writing",
-      "humour",
-      "humor",
-      "castsofmastodon",
-      "cats",
-      "cat"
+    "created_at": "2026-10-07T04:26:24.000Z",
+    "content": "<p>Very very very happy puppy<br><a href=\"https://bark.lgbt/tags/pup\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>pup</span></a> <a href=\"https://bark.lgbt/tags/puppy\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>puppy</span></a> <a href=\"https://bark.lgbt/tags/puppyboy\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>puppyboy</span></a> <a href=\"https://bark.lgbt/tags/dogboy\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>dogboy</span></a></p>",
+    "caption": "Very very very happy puppy",
+    "tags": [
+      {
+        "name": "pup",
+        "url": "https://mastodon.social/tags/pup"
+      },
+      {
+        "name": "puppy",
+        "url": "https://mastodon.social/tags/puppy"
+      },
+      {
+        "name": "puppyboy",
+        "url": "https://mastodon.social/tags/puppyboy"
+      },
+      {
+        "name": "dogboy",
+        "url": "https://mastodon.social/tags/dogboy"
+      }
     ],
-    "content_value": 51,
-    "duration": 63.948,
-    "file_size": 3232126,
-    "file_size_mb": 3.082,
-    "sha256": "02196ca87c4bb745e1c0af084adca7611faebca8f9b860e2d642583c6dd37b41",
-    "animal_relevance": 10,
-    "engagement_score": 6.418,
-    "recency_score": 25.0,
-    "quality_score": 10.0,
-    "caption_quality_score": 5.0,
-    "freshness_days": 0.251,
+    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/397/729/118/256/404/original/d59d8cd42dbd1ca4.mp4",
+    "media_type": "video",
+    "media_description": "Video filmed from above. I'm kneeling on a carpeted floor in a dark shirt with a colorful pattern and tan shorts. A hand reaches down and scratches my head and hair while I tip my face up, eyes closed, grinning and melting into the pets. The whole vibe is a content, blissed-out pup getting very good scritches.",
+    "media_meta": {
+      "original": {
+        "width": 720,
+        "height": 1280,
+        "frame_rate": "53190000/2190899",
+        "duration": 48.686644,
+        "bitrate": 1396448
+      },
+      "small": {
+        "width": 360,
+        "height": 640,
+        "size": "360x640",
+        "aspect": 0.5625
+      }
+    },
+    "canonical_key": "url:https://bark.lgbt/@emberfox/117397729087124515",
+    "age_days": 0.118,
     "freshness_tier": "primary",
-    "total_score": 80.776
+    "content_score": 38,
+    "advertised_file_size": 8498549,
+    "duration": 48.687,
+    "file_size": 8498549,
+    "width": 720,
+    "height": 1280,
+    "codec": "h264",
+    "sha256": "8d31ab109fbc8a7e5820686a6974cd0472d66cc60df982f293f03788b3eea3a2",
+    "quality_score": 69.0,
+    "selection_score": 93.882,
+    "telegram_caption": "Very very very happy puppy\n\n@utcutie"
   },
   {
-    "status_id": "117391021429302348",
-    "status_url": "https://mastodon.social/@crittersnackstation/117391020068196933",
-    "instance": "https://mastodon.online",
-    "created_at": "2026-10-06T00:00:13.000Z",
-    "caption": "stew the raccoon:)) # raccoon # critter # raccoonfamily # backyardwildlife # cuteanimals",
-    "account": "crittersnackstation@mastodon.social",
-    "account_display_name": "crittersnackstation",
-    "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/391/020/884/459/854/original/3a6d9f146e47a83e.mp4",
-    "media_preview_url": "https://files.mastodon.online/cache/media_attachments/files/117/391/020/884/459/854/small/3a6d9f146e47a83e.png",
+    "id": "117388711745845183",
+    "url": "https://mastodon.social/@pughollow/117388711745845183",
+    "canonical_url": "https://mastodon.social/@pughollow/117388711745845183",
+    "account": "pughollow",
+    "instance": "https://mastodon.social",
+    "created_at": "2026-10-05T14:13:10.851Z",
+    "content": "<p>“Come little Hazel, I&#39;ll take thee away, into a land of enchantment...&quot;  Sometimes we catch the Scribe singing to the dogs…. <a href=\"https://mastodon.social/tags/Dog\" class=\"mention hashtag\" rel=\"tag\">#<span>Dog</span></a> <a href=\"https://mastodon.social/tags/Chihuahua\" class=\"mention hashtag\" rel=\"tag\">#<span>Chihuahua</span></a></p>",
+    "caption": "“Come little Hazel, I'll take thee away, into a land of enchantment...\" Sometimes we catch the Scribe singing to the dogs….",
+    "tags": [
+      {
+        "name": "dog",
+        "url": "https://mastodon.social/tags/dog"
+      },
+      {
+        "name": "chihuahua",
+        "url": "https://mastodon.social/tags/chihuahua"
+      }
+    ],
+    "media_url": "https://files.mastodon.social/media_attachments/files/117/388/709/886/162/056/original/c0f7617815b69c9a.mp4",
     "media_type": "video",
+    "media_description": "A Human singing to an elderly tricolor Chihuahua. ",
+    "media_meta": {
+      "original": {
+        "width": 1080,
+        "height": 1920,
+        "frame_rate": "949000000/31633333",
+        "duration": 31.648866,
+        "bitrate": 9841840
+      },
+      "small": {
+        "width": 360,
+        "height": 640,
+        "size": "360x640",
+        "aspect": 0.5625
+      },
+      "focus": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    },
+    "canonical_key": "url:https://mastodon.social/@pughollow/117388711745845183",
+    "age_days": 1.71,
+    "freshness_tier": "primary",
+    "content_score": 39,
+    "advertised_file_size": 38935385,
+    "duration": 31.633,
+    "file_size": 38935385,
     "width": 1080,
     "height": 1920,
-    "favourites": 0,
-    "reblogs": 1,
-    "replies": 0,
-    "hashtag": "cuteanimals",
-    "status_tags": [
-      "raccoon",
-      "critter",
-      "raccoonfamily",
-      "backyardwildlife",
-      "cuteanimals"
+    "codec": "h264",
+    "sha256": "9b36e7ab18f857633824ab4758b0cb976cb238ef5d7bd019f4c74e29d0f9ae0e",
+    "quality_score": 62.0,
+    "selection_score": 85.29,
+    "telegram_caption": "“Come little Hazel, I'll take thee away, into a land of enchantment...\" Sometimes we catch the Scribe singing to the dogs….\n\n@utcutie"
+  },
+  {
+    "id": "117360372552602655",
+    "url": "https://fed.brid.gy/r/https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mwqja7r4742p",
+    "canonical_url": "https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mwqja7r4742p",
+    "account": "veganftaofficial.bsky.social@bsky.brid.gy",
+    "instance": "https://mastodon.social",
+    "created_at": "2026-09-30T14:05:54.634Z",
+    "content": "<p>Siirin and Saara are 2 very lucky pigs, who got to live a full and happy life. Most never get that opportunity. 💔<br><br>Original reel from the amazing esk_tuulispaa (IG) 🫶<br><br><a class=\"hashtag\" rel=\"nofollow noopener\" href=\"https://bsky.app/search?q=%23pigs\" target=\"_blank\">#pigs</a> <a class=\"hashtag\" rel=\"nofollow noopener\" href=\"https://bsky.app/search?q=%23sleepy\" target=\"_blank\">#sleepy</a> <a class=\"hashtag\" rel=\"nofollow noopener\" href=\"https://bsky.app/search?q=%23cuteanimals\" target=\"_blank\">#cuteanimals</a></p>",
+    "caption": "Siirin and Saara are 2 very lucky pigs, who got to live a full and happy life. Most never get that opportunity. 💔\nOriginal reel from the amazing esk_tuulispaa (IG) 🫶",
+    "tags": [
+      {
+        "name": "pigs",
+        "url": "https://mastodon.social/tags/pigs"
+      },
+      {
+        "name": "sleepy",
+        "url": "https://mastodon.social/tags/sleepy"
+      },
+      {
+        "name": "cuteanimals",
+        "url": "https://mastodon.social/tags/cuteanimals"
+      }
     ],
-    "content_value": 33,
+    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/360/372/326/121/504/original/a3b504170549ce92.mp4",
+    "media_type": "video",
+    "media_description": "",
+    "media_meta": {
+      "original": {
+        "width": 1080,
+        "height": 1920,
+        "frame_rate": "30/1",
+        "duration": 30.1,
+        "bitrate": 3073719
+      },
+      "small": {
+        "width": 360,
+        "height": 640,
+        "size": "360x640",
+        "aspect": 0.5625
+      }
+    },
+    "canonical_key": "url:https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mwqja7r4742p",
+    "age_days": 6.715,
+    "freshness_tier": "primary",
+    "content_score": 38,
+    "advertised_file_size": 11564884,
+    "duration": 30.067,
+    "file_size": 11564884,
+    "width": 1080,
+    "height": 1920,
+    "codec": "h264",
+    "sha256": "570d63ce838cef867a4dac6191e3a668964625cc1d36de4248251e24c8cb0548",
+    "quality_score": 65.0,
+    "selection_score": 83.285,
+    "telegram_caption": "Siirin and Saara are 2 very lucky pigs, who got to live a full and happy life. Most never get that opportunity. 💔\nOriginal reel from the amazing esk_tuulispaa (IG) 🫶\n\n@utcutie"
+  },
+  {
+    "id": "117382190434429531",
+    "url": "https://c.im/@fonecokid/117382190250141953",
+    "canonical_url": "https://c.im/@fonecokid/117382190250141953",
+    "account": "fonecokid@c.im",
+    "instance": "https://mastodon.social",
+    "created_at": "2026-10-04T10:34:40.000Z",
+    "content": "<p><a href=\"https://c.im/tags/Dog\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Dog</span></a> <a href=\"https://c.im/tags/Dogs\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Dogs</span></a> <a href=\"https://c.im/tags/DogsOfMastodon\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>DogsOfMastodon</span></a> <a href=\"https://c.im/tags/DogsOfFedi\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>DogsOfFedi</span></a> <a href=\"https://c.im/tags/DogsOfPixelFed\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>DogsOfPixelFed</span></a> <a href=\"https://c.im/tags/Dogstodon\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Dogstodon</span></a> <a href=\"https://c.im/tags/PetLife\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>PetLife</span></a> <a href=\"https://c.im/tags/MastoDogs\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>MastoDogs</span></a> <a href=\"https://c.im/tags/FediDogs\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>FediDogs</span></a> <a href=\"https://c.im/tags/Pet\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Pet</span></a> <a href=\"https://c.im/tags/Pets\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Pets</span></a> <a href=\"https://c.im/tags/Niki\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Niki</span></a> <a href=\"https://c.im/tags/Nico\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Nico</span></a> <a href=\"https://c.im/tags/dopic\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>dopic</span></a><br><a href=\"https://c.im/tags/dogslife\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>dogslife</span></a> <a href=\"https://c.im/tags/Chihuahuas\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Chihuahuas</span></a> </p><p>Happy Banana Sunday.</p>",
+    "caption": "Happy Banana Sunday.",
+    "tags": [
+      {
+        "name": "dogsoffedi",
+        "url": "https://mastodon.social/tags/dogsoffedi"
+      },
+      {
+        "name": "dogsofpixelfed",
+        "url": "https://mastodon.social/tags/dogsofpixelfed"
+      },
+      {
+        "name": "dogstodon",
+        "url": "https://mastodon.social/tags/dogstodon"
+      },
+      {
+        "name": "petlife",
+        "url": "https://mastodon.social/tags/petlife"
+      },
+      {
+        "name": "mastodogs",
+        "url": "https://mastodon.social/tags/mastodogs"
+      },
+      {
+        "name": "fedidogs",
+        "url": "https://mastodon.social/tags/fedidogs"
+      },
+      {
+        "name": "pet",
+        "url": "https://mastodon.social/tags/pet"
+      },
+      {
+        "name": "pets",
+        "url": "https://mastodon.social/tags/pets"
+      },
+      {
+        "name": "niki",
+        "url": "https://mastodon.social/tags/niki"
+      },
+      {
+        "name": "nico",
+        "url": "https://mastodon.social/tags/nico"
+      },
+      {
+        "name": "dopic",
+        "url": "https://mastodon.social/tags/dopic"
+      },
+      {
+        "name": "dogslife",
+        "url": "https://mastodon.social/tags/dogslife"
+      },
+      {
+        "name": "chihuahuas",
+        "url": "https://mastodon.social/tags/chihuahuas"
+      },
+      {
+        "name": "dog",
+        "url": "https://mastodon.social/tags/dog"
+      },
+      {
+        "name": "dogs",
+        "url": "https://mastodon.social/tags/dogs"
+      },
+      {
+        "name": "dogsofmastodon",
+        "url": "https://mastodon.social/tags/dogsofmastodon"
+      }
+    ],
+    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/382/190/326/208/914/original/8e2685d1f6689e50.mp4",
+    "media_type": "video",
+    "media_description": "Playing with bits of banana around.",
+    "media_meta": {
+      "focus": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "original": {
+        "width": 1280,
+        "height": 720,
+        "frame_rate": "30/1",
+        "duration": 30.533333,
+        "bitrate": 3290756
+      },
+      "small": {
+        "width": 640,
+        "height": 360,
+        "size": "640x360",
+        "aspect": 1.7777777777777777
+      }
+    },
+    "canonical_key": "url:https://c.im/@fonecokid/117382190250141953",
+    "age_days": 2.862,
+    "freshness_tier": "primary",
+    "content_score": 38,
+    "advertised_file_size": 12559719,
+    "duration": 30.533,
+    "file_size": 12559719,
+    "width": 1280,
+    "height": 720,
+    "codec": "h264",
+    "sha256": "4a0654a6b9c73dd7625348cae0e2831d729ff87b640aa6ac2ef8ec4b9415d753",
+    "quality_score": 60.0,
+    "selection_score": 82.138,
+    "telegram_caption": "Happy Banana Sunday.\n\n@utcutie"
+  },
+  {
+    "id": "117386717279892729",
+    "url": "https://mastodon.social/@trndgtr/117386717279892729",
+    "canonical_url": "https://mastodon.social/@trndgtr/117386717279892729",
+    "account": "trndgtr",
+    "instance": "https://mastodon.social",
+    "created_at": "2026-10-05T05:45:57.716Z",
+    "content": "<p>Spain Unleashed Armored War Dogs</p><p><a href=\"https://mastodon.social/tags/aztecs\" class=\"mention hashtag\" rel=\"tag\">#<span>aztecs</span></a> <a href=\"https://mastodon.social/tags/animals\" class=\"mention hashtag\" rel=\"tag\">#<span>animals</span></a> <a href=\"https://mastodon.social/tags/history\" class=\"mention hashtag\" rel=\"tag\">#<span>history</span></a></p>",
+    "caption": "Spain Unleashed Armored War Dogs",
+    "tags": [
+      {
+        "name": "aztecs",
+        "url": "https://mastodon.social/tags/aztecs"
+      },
+      {
+        "name": "animals",
+        "url": "https://mastodon.social/tags/animals"
+      },
+      {
+        "name": "history",
+        "url": "https://mastodon.social/tags/history"
+      }
+    ],
+    "media_url": "https://files.mastodon.social/media_attachments/files/117/386/709/990/752/134/original/e9c4bc062b396bc2.mp4",
+    "media_type": "video",
+    "media_description": "",
+    "media_meta": {
+      "original": {
+        "width": 608,
+        "height": 1080,
+        "frame_rate": "30/1",
+        "duration": 33.866667,
+        "bitrate": 3554376
+      },
+      "small": {
+        "width": 360,
+        "height": 640,
+        "size": "360x640",
+        "aspect": 0.5625
+      }
+    },
+    "canonical_key": "url:https://mastodon.social/@trndgtr/117386717279892729",
+    "age_days": 2.063,
+    "freshness_tier": "primary",
+    "content_score": 36,
+    "advertised_file_size": 15046859,
+    "duration": 33.867,
+    "file_size": 15046859,
+    "width": 608,
+    "height": 1080,
+    "codec": "h264",
+    "sha256": "b48e3d174dd1305918a6ba09ad2109b5f0f83ea3821293da5cf867869d509476",
+    "quality_score": 59.0,
+    "selection_score": 81.937,
+    "telegram_caption": "Spain Unleashed Armored War Dogs\n\n@utcutie"
+  },
+  {
+    "id": "117355231125810335",
+    "url": "https://mastodon.social/@angelikanotesen/117355231151485388",
+    "canonical_url": "https://mastodon.social/@angelikanotesen/117355231151485388",
+    "account": "angelikanotesen@mastodon.social",
+    "instance": "https://mastodon.online",
+    "created_at": "2026-09-29T16:18:37.000Z",
+    "content": "<p>3/3 - It Was Broken Inside</p><p>“It’s going to die. You can’t save it. It’s broken inside,” my mother said.</p><p>I buried the kitten in the backyard.</p><p>I planted dandelions on its grave.</p><p><a href=\"https://mastodon.social/tags/Kitten\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Kitten</span></a> <a href=\"https://mastodon.social/tags/ChildhoodMemory\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>ChildhoodMemory</span></a> <a href=\"https://mastodon.social/tags/Dandelions\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Dandelions</span></a> <a href=\"https://mastodon.social/tags/BrokenInside\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>BrokenInside</span></a></p><p><a href=\"https://notesfromalife.com/\" rel=\"nofollow noopener\" translate=\"no\" target=\"_blank\"><span class=\"invisible\">https://</span><span class=\"\">notesfromalife.com/</span><span class=\"invisible\"></span></a></p><p>Discover the stories hidden behind every door.</p><p>Angelika<br>Notes From a Life</p><p><a href=\"https://mastodon.social/tags/NotesFromALife\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>NotesFromALife</span></a> <a href=\"https://mastodon.social/tags/LifeStories\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>LifeStories</span></a> <a href=\"https://mastodon.social/tags/Storytelling\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Storytelling</span></a> <a href=\"https://mastodon.social/tags/Memories\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Memories</span></a> <a href=\"https://mastodon.social/tags/PersonalStories\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>PersonalStories</span></a></p>",
+    "caption": "3/3 - It Was Broken Inside\n“It’s going to die. You can’t save it. It’s broken inside,” my mother said.\nI buried the kitten in the backyard.\nI planted dandelions on its grave.\nhttps:// notesfromalife.com/\nDiscover the stories hidden behind every door.\nAngelika\nNotes From a Life",
+    "tags": [
+      {
+        "name": "kitten",
+        "url": "https://mastodon.online/tags/kitten"
+      },
+      {
+        "name": "childhoodmemory",
+        "url": "https://mastodon.online/tags/childhoodmemory"
+      },
+      {
+        "name": "dandelions",
+        "url": "https://mastodon.online/tags/dandelions"
+      },
+      {
+        "name": "brokeninside",
+        "url": "https://mastodon.online/tags/brokeninside"
+      },
+      {
+        "name": "notesfromalife",
+        "url": "https://mastodon.online/tags/notesfromalife"
+      },
+      {
+        "name": "LifeStories",
+        "url": "https://mastodon.online/tags/LifeStories"
+      },
+      {
+        "name": "storytelling",
+        "url": "https://mastodon.online/tags/storytelling"
+      },
+      {
+        "name": "memories",
+        "url": "https://mastodon.online/tags/memories"
+      },
+      {
+        "name": "personalstories",
+        "url": "https://mastodon.online/tags/personalstories"
+      }
+    ],
+    "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/355/231/475/853/665/original/2f40f7bdfce06cbc.mp4",
+    "media_type": "video",
+    "media_description": "",
+    "media_meta": {
+      "original": {
+        "width": 1080,
+        "height": 1920,
+        "frame_rate": "30/1",
+        "duration": 43.733,
+        "bitrate": 6078366
+      },
+      "small": {
+        "width": 360,
+        "height": 640,
+        "size": "360x640",
+        "aspect": 0.5625
+      }
+    },
+    "canonical_key": "url:https://mastodon.social/@angelikanotesen/117355231151485388",
+    "age_days": 7.624,
+    "freshness_tier": "primary",
+    "content_score": 41,
+    "advertised_file_size": 33228149,
+    "duration": 43.7,
+    "file_size": 33228149,
+    "width": 1080,
+    "height": 1920,
+    "codec": "h264",
+    "sha256": "ba1be313a3a1490824d317d526bbe64132bc543a5a6ac99ccf86acb57870caf7",
+    "quality_score": 64.0,
+    "selection_score": 81.376,
+    "telegram_caption": "3/3 - It Was Broken Inside\n“It’s going to die. You can’t save it. It’s broken inside,” my mother said.\nI buried the kitten in the backyard.\nI planted dandelions on its grave.\nhttps:// notesfromalife.com/\nDiscover the stories hidden behind every door.\nAngelika\nNotes From a Life\n\n@utcutie"
+  },
+  {
+    "id": "117394028161171091",
+    "url": "https://mas.to/@markarayner/117394028042611606",
+    "canonical_url": "https://mas.to/@markarayner/117394028042611606",
+    "account": "markarayner@mas.to",
+    "instance": "https://mastodon.social",
+    "created_at": "2026-10-06T12:45:11.000Z",
+    "content": "<p>A writer's solution to the eternal problem. </p><p><a href=\"https://mas.to/tags/cat\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>cat</span></a> <a href=\"https://mas.to/tags/cats\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>cats</span></a> <a href=\"https://mas.to/tags/castsofmastodon\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>castsofmastodon</span></a> <a href=\"https://mas.to/tags/humor\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>humor</span></a> <a href=\"https://mas.to/tags/humour\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>humour</span></a> <a href=\"https://mas.to/tags/writing\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>writing</span></a> <a href=\"https://mas.to/tags/amwriting\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>amwriting</span></a></p><p>[video description: a cat sleeps in the sunshine while its hooman types on a keyboard resting on the cat's side.]</p>",
+    "caption": "A writer's solution to the eternal problem.\n[video description: a cat sleeps in the sunshine while its hooman types on a keyboard resting on the cat's side.]",
+    "tags": [
+      {
+        "name": "amWriting",
+        "url": "https://mastodon.social/tags/amWriting"
+      },
+      {
+        "name": "writing",
+        "url": "https://mastodon.social/tags/writing"
+      },
+      {
+        "name": "humour",
+        "url": "https://mastodon.social/tags/humour"
+      },
+      {
+        "name": "humor",
+        "url": "https://mastodon.social/tags/humor"
+      },
+      {
+        "name": "castsofmastodon",
+        "url": "https://mastodon.social/tags/castsofmastodon"
+      },
+      {
+        "name": "cats",
+        "url": "https://mastodon.social/tags/cats"
+      },
+      {
+        "name": "cat",
+        "url": "https://mastodon.social/tags/cat"
+      }
+    ],
+    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/394/028/092/173/274/original/683a2665939d09ed.mp4",
+    "media_type": "video",
+    "media_description": "",
+    "media_meta": {
+      "original": {
+        "width": 514,
+        "height": 718,
+        "frame_rate": "30/1",
+        "duration": 63.947755,
+        "bitrate": 404345
+      },
+      "small": {
+        "width": 458,
+        "height": 640,
+        "size": "458x640",
+        "aspect": 0.715625
+      }
+    },
+    "canonical_key": "url:https://mas.to/@markarayner/117394028042611606",
+    "age_days": 0.771,
+    "freshness_tier": "primary",
+    "content_score": 37,
+    "advertised_file_size": 3232126,
+    "duration": 63.933,
+    "file_size": 3232126,
+    "width": 514,
+    "height": 718,
+    "codec": "h264",
+    "sha256": "02196ca87c4bb745e1c0af084adca7611faebca8f9b860e2d642583c6dd37b41",
+    "quality_score": 57.0,
+    "selection_score": 81.229,
+    "telegram_caption": "A writer's solution to the eternal problem.\n[video description: a cat sleeps in the sunshine while its hooman types on a keyboard resting on the cat's side.]\n\n@utcutie"
+  },
+  {
+    "id": "117376443473081140",
+    "url": "https://c.im/@fonecokid/117376443174130062",
+    "canonical_url": "https://c.im/@fonecokid/117376443174130062",
+    "account": "fonecokid@c.im",
+    "instance": "https://mastodon.social",
+    "created_at": "2026-10-03T10:13:07.000Z",
+    "content": "<p><a href=\"https://c.im/tags/Dog\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Dog</span></a> <a href=\"https://c.im/tags/Dogs\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Dogs</span></a> <a href=\"https://c.im/tags/DogsOfMastodon\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>DogsOfMastodon</span></a> <a href=\"https://c.im/tags/DogsOfFedi\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>DogsOfFedi</span></a> <a href=\"https://c.im/tags/DogsOfPixelFed\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>DogsOfPixelFed</span></a> <a href=\"https://c.im/tags/Dogstodon\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Dogstodon</span></a> <a href=\"https://c.im/tags/PetLife\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>PetLife</span></a> <a href=\"https://c.im/tags/MastoDogs\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>MastoDogs</span></a> <a href=\"https://c.im/tags/FediDogs\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>FediDogs</span></a> <a href=\"https://c.im/tags/Pet\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Pet</span></a> <a href=\"https://c.im/tags/Pets\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Pets</span></a> <a href=\"https://c.im/tags/Niki\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Niki</span></a> <a href=\"https://c.im/tags/Nico\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Nico</span></a> <a href=\"https://c.im/tags/dopic\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>dopic</span></a><br><a href=\"https://c.im/tags/dogslife\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>dogslife</span></a> <a href=\"https://c.im/tags/Chihuahuas\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Chihuahuas</span></a></p><p>Happy Saturday to ALL.</p>",
+    "caption": "Happy Saturday to ALL.",
+    "tags": [
+      {
+        "name": "dog",
+        "url": "https://mastodon.social/tags/dog"
+      },
+      {
+        "name": "dogs",
+        "url": "https://mastodon.social/tags/dogs"
+      },
+      {
+        "name": "dogsofmastodon",
+        "url": "https://mastodon.social/tags/dogsofmastodon"
+      },
+      {
+        "name": "dogsoffedi",
+        "url": "https://mastodon.social/tags/dogsoffedi"
+      },
+      {
+        "name": "dogsofpixelfed",
+        "url": "https://mastodon.social/tags/dogsofpixelfed"
+      },
+      {
+        "name": "dogstodon",
+        "url": "https://mastodon.social/tags/dogstodon"
+      },
+      {
+        "name": "petlife",
+        "url": "https://mastodon.social/tags/petlife"
+      },
+      {
+        "name": "mastodogs",
+        "url": "https://mastodon.social/tags/mastodogs"
+      },
+      {
+        "name": "fedidogs",
+        "url": "https://mastodon.social/tags/fedidogs"
+      },
+      {
+        "name": "pet",
+        "url": "https://mastodon.social/tags/pet"
+      },
+      {
+        "name": "pets",
+        "url": "https://mastodon.social/tags/pets"
+      },
+      {
+        "name": "niki",
+        "url": "https://mastodon.social/tags/niki"
+      },
+      {
+        "name": "nico",
+        "url": "https://mastodon.social/tags/nico"
+      },
+      {
+        "name": "dopic",
+        "url": "https://mastodon.social/tags/dopic"
+      },
+      {
+        "name": "dogslife",
+        "url": "https://mastodon.social/tags/dogslife"
+      },
+      {
+        "name": "chihuahuas",
+        "url": "https://mastodon.social/tags/chihuahuas"
+      }
+    ],
+    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/376/443/258/909/633/original/ceaa500c5a53a7d0.mp4",
+    "media_type": "video",
+    "media_description": "Banana game with uncle kyle.",
+    "media_meta": {
+      "focus": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "original": {
+        "width": 1280,
+        "height": 720,
+        "frame_rate": "30/1",
+        "duration": 34.333333,
+        "bitrate": 3112717
+      },
+      "small": {
+        "width": 640,
+        "height": 360,
+        "size": "640x360",
+        "aspect": 1.7777777777777777
+      }
+    },
+    "canonical_key": "url:https://c.im/@fonecokid/117376443174130062",
+    "age_days": 3.877,
+    "freshness_tier": "primary",
+    "content_score": 38,
+    "advertised_file_size": 13358743,
+    "duration": 34.333,
+    "file_size": 13358743,
+    "width": 1280,
+    "height": 720,
+    "codec": "h264",
+    "sha256": "04e5d8be48be2bc213a43f2444895cfdfc4d390bbb9200f700e64e27ca8a8c84",
+    "quality_score": 60.0,
+    "selection_score": 81.123,
+    "telegram_caption": "Happy Saturday to ALL.\n\n@utcutie"
+  },
+  {
+    "id": "117386276637628940",
+    "url": "https://loops.video/v/ixmrpfit8O",
+    "canonical_url": "https://loops.video/v/ixmrpfit8O",
+    "account": "willowashmaple@loops.video",
+    "instance": "https://mstdn.party",
+    "created_at": "2026-10-05T03:53:54.000Z",
+    "content": "<p>playful kitty</p><p>\n<a href=\"https://loops.video/tag/cat\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>cat</span></a> <a href=\"https://loops.video/tag/floof\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>floof</span></a> <a href=\"https://loops.video/tag/blueeyespinknose\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>blueeyespinknose</span></a></p>",
+    "caption": "playful kitty",
+    "tags": [
+      {
+        "name": "cat",
+        "url": "https://mstdn.party/tags/cat"
+      },
+      {
+        "name": "floof",
+        "url": "https://mstdn.party/tags/floof"
+      },
+      {
+        "name": "blueeyespinknose",
+        "url": "https://mstdn.party/tags/blueeyespinknose"
+      }
+    ],
+    "media_url": "https://files.mstdn.party/cache/media_attachments/files/117/386/296/457/830/049/original/15cd4baa1a0a94e7.mp4",
+    "media_type": "video",
+    "media_description": "",
+    "media_meta": {
+      "original": {
+        "width": 1280,
+        "height": 720,
+        "frame_rate": "14803/500",
+        "duration": 24.335,
+        "bitrate": 3212171
+      },
+      "small": {
+        "width": 640,
+        "height": 360,
+        "size": "640x360",
+        "aspect": 1.7777777777777777
+      }
+    },
+    "canonical_key": "url:https://loops.video/v/ixmrpfit8O",
+    "age_days": 2.141,
+    "freshness_tier": "primary",
+    "content_score": 35,
+    "advertised_file_size": 9770981,
+    "duration": 24.286,
+    "file_size": 9770981,
+    "width": 1280,
+    "height": 720,
+    "codec": "h264",
+    "sha256": "eb847c1a4b3db9a18121e535b54c5eab153e7175423c056e6f211f3bfdf9f2b4",
+    "quality_score": 57.0,
+    "selection_score": 79.859,
+    "telegram_caption": "playful kitty\n\n@utcutie"
+  },
+  {
+    "id": "117391020068196933",
+    "url": "https://mastodon.social/@crittersnackstation/117391020068196933",
+    "canonical_url": "https://mastodon.social/@crittersnackstation/117391020068196933",
+    "account": "crittersnackstation",
+    "instance": "https://mastodon.social",
+    "created_at": "2026-10-06T00:00:13.060Z",
+    "content": "<p>stew the raccoon:)) <a href=\"https://mastodon.social/tags/raccoon\" class=\"mention hashtag\" rel=\"tag\">#<span>raccoon</span></a> <a href=\"https://mastodon.social/tags/critter\" class=\"mention hashtag\" rel=\"tag\">#<span>critter</span></a>  <a href=\"https://mastodon.social/tags/raccoonfamily\" class=\"mention hashtag\" rel=\"tag\">#<span>raccoonfamily</span></a>  <a href=\"https://mastodon.social/tags/backyardwildlife\" class=\"mention hashtag\" rel=\"tag\">#<span>backyardwildlife</span></a>  <a href=\"https://mastodon.social/tags/cuteanimals\" class=\"mention hashtag\" rel=\"tag\">#<span>cuteanimals</span></a></p>",
+    "caption": "stew the raccoon:))",
+    "tags": [
+      {
+        "name": "raccoon",
+        "url": "https://mastodon.social/tags/raccoon"
+      },
+      {
+        "name": "critter",
+        "url": "https://mastodon.social/tags/critter"
+      },
+      {
+        "name": "raccoonfamily",
+        "url": "https://mastodon.social/tags/raccoonfamily"
+      },
+      {
+        "name": "backyardwildlife",
+        "url": "https://mastodon.social/tags/backyardwildlife"
+      },
+      {
+        "name": "cuteanimals",
+        "url": "https://mastodon.social/tags/cuteanimals"
+      }
+    ],
+    "media_url": "https://files.mastodon.social/media_attachments/files/117/391/019/909/315/771/original/d11cffea42d9219e.mp4",
+    "media_type": "video",
+    "media_description": "",
+    "media_meta": {
+      "original": {
+        "width": 1080,
+        "height": 1920,
+        "frame_rate": "30/1",
+        "duration": 31.509002,
+        "bitrate": 9092267
+      },
+      "small": {
+        "width": 360,
+        "height": 640,
+        "size": "360x640",
+        "aspect": 0.5625
+      }
+    },
+    "canonical_key": "url:https://mastodon.social/@crittersnackstation/117391020068196933",
+    "age_days": 1.303,
+    "freshness_tier": "primary",
+    "content_score": 33,
+    "advertised_file_size": 27824438,
     "duration": 31.5,
     "file_size": 27824438,
-    "file_size_mb": 26.535,
-    "sha256": "66e27c6a3c2bad3186de4a24a7f2cca5464b25f684e40a602bf123eeea970958",
-    "animal_relevance": 5,
-    "engagement_score": 1.5,
-    "recency_score": 25.0,
-    "quality_score": 25.0,
-    "caption_quality_score": 5.0,
-    "freshness_days": 0.782,
+    "width": 1080,
+    "height": 1920,
+    "codec": "h264",
+    "sha256": "c2efe5d765466846b7a5cafa4824fcaca520b670e1d077db10449b77152889f1",
+    "quality_score": 56.0,
+    "selection_score": 79.697,
+    "telegram_caption": "stew the raccoon:))\n\n@utcutie"
+  },
+  {
+    "id": "117367467411464113",
+    "url": "https://mastodon.social/@catrescue/117367467411464113",
+    "canonical_url": "https://mastodon.social/@catrescue/117367467411464113",
+    "account": "catrescue",
+    "instance": "https://mastodon.social",
+    "created_at": "2026-10-01T20:10:28.034Z",
+    "content": "<p>Yumak had a difficult beginning and lost one of his eyes along the way. But his story continued with healing, love and a family of his own 🥹 <a href=\"https://mastodon.social/tags/catsofinstagram\" class=\"mention hashtag\" rel=\"tag\">#<span>catsofinstagram</span></a> <a href=\"https://mastodon.social/tags/catrescue\" class=\"mention hashtag\" rel=\"tag\">#<span>catrescue</span></a> <a href=\"https://mastodon.social/tags/rescue\" class=\"mention hashtag\" rel=\"tag\">#<span>rescue</span></a> <a href=\"https://mastodon.social/tags/catlover\" class=\"mention hashtag\" rel=\"tag\">#<span>catlover</span></a> <a href=\"https://mastodon.social/tags/kitten\" class=\"mention hashtag\" rel=\"tag\">#<span>kitten</span></a></p>",
+    "caption": "Yumak had a difficult beginning and lost one of his eyes along the way. But his story continued with healing, love and a family of his own 🥹",
+    "tags": [
+      {
+        "name": "catsofinstagram",
+        "url": "https://mastodon.social/tags/catsofinstagram"
+      },
+      {
+        "name": "catrescue",
+        "url": "https://mastodon.social/tags/catrescue"
+      },
+      {
+        "name": "rescue",
+        "url": "https://mastodon.social/tags/rescue"
+      },
+      {
+        "name": "catlover",
+        "url": "https://mastodon.social/tags/catlover"
+      },
+      {
+        "name": "kitten",
+        "url": "https://mastodon.social/tags/kitten"
+      }
+    ],
+    "media_url": "https://files.mastodon.social/media_attachments/files/117/367/466/757/319/329/original/3f009a35d575b25e.mp4",
+    "media_type": "video",
+    "media_description": "",
+    "media_meta": {
+      "original": {
+        "width": 720,
+        "height": 1280,
+        "frame_rate": "30/1",
+        "duration": 53.379819,
+        "bitrate": 773108
+      },
+      "small": {
+        "width": 360,
+        "height": 640,
+        "size": "360x640",
+        "aspect": 0.5625
+      }
+    },
+    "canonical_key": "url:https://mastodon.social/@catrescue/117367467411464113",
+    "age_days": 5.462,
     "freshness_tier": "primary",
-    "total_score": 76.35
+    "content_score": 29,
+    "advertised_file_size": 5158547,
+    "duration": 53.267,
+    "file_size": 5158547,
+    "width": 720,
+    "height": 1280,
+    "codec": "h264",
+    "sha256": "9d735f391c9fc7b928cb8d6d1b976cc666b361f1534adee49b16b0f405e7138b",
+    "quality_score": 60.0,
+    "selection_score": 79.538,
+    "telegram_caption": "Yumak had a difficult beginning and lost one of his eyes along the way. But his story continued with healing, love and a family of his own 🥹\n\n@utcutie"
+  },
+  {
+    "id": "117394911055090818",
+    "url": "https://infosec.exchange/@GuillaumeRossolini/117394910712542266",
+    "canonical_url": "https://infosec.exchange/@GuillaumeRossolini/117394910712542266",
+    "account": "GuillaumeRossolini@infosec.exchange",
+    "instance": "https://mastodon.social",
+    "created_at": "2026-10-06T16:29:39.000Z",
+    "content": "<p><span class=\"h-card\" translate=\"no\"><a href=\"https://infosec.exchange/@catsalad\" class=\"u-url mention\" rel=\"nofollow noopener\" target=\"_blank\">@<span>catsalad</span></a></span> there’s a mouse! Catch it! </p><p>(In reality she doesn’t ever eat them)</p><p><a href=\"https://infosec.exchange/tags/cat\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>cat</span></a> <a href=\"https://infosec.exchange/tags/VanilleTheCat\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>VanilleTheCat</span></a></p>",
+    "caption": "@ catsalad there’s a mouse! Catch it!\n(In reality she doesn’t ever eat them)",
+    "tags": [
+      {
+        "name": "cat",
+        "url": "https://mastodon.social/tags/cat"
+      },
+      {
+        "name": "vanillethecat",
+        "url": "https://mastodon.social/tags/vanillethecat"
+      }
+    ],
+    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/394/910/927/640/711/original/754490a6286b8f39.mp4",
+    "media_type": "video",
+    "media_description": "Short clip of my cat on my bed, annoyed that my foot should be moving under the covers, so she’s attacking it",
+    "media_meta": {
+      "focus": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "original": {
+        "width": 1920,
+        "height": 1080,
+        "frame_rate": "30000/1001",
+        "duration": 17.584233,
+        "bitrate": 7067469
+      },
+      "small": {
+        "width": 640,
+        "height": 360,
+        "size": "640x360",
+        "aspect": 1.7777777777777777
+      }
+    },
+    "canonical_key": "url:https://infosec.exchange/@GuillaumeRossolini/117394910712542266",
+    "age_days": 0.616,
+    "freshness_tier": "primary",
+    "content_score": 36,
+    "advertised_file_size": 15534503,
+    "duration": 17.584,
+    "file_size": 15534503,
+    "width": 1920,
+    "height": 1080,
+    "codec": "h264",
+    "sha256": "2bfbcf4a510e0b9001cc44904e1651a1a3800760d1ea04c49dbfa03b9bc345d5",
+    "quality_score": 54.0,
+    "selection_score": 78.384,
+    "telegram_caption": "@ catsalad there’s a mouse! Catch it!\n(In reality she doesn’t ever eat them)\n\n@utcutie"
+  },
+  {
+    "id": "117386976129116328",
+    "url": "https://mastodon.social/@muhnin/117386976129116328",
+    "canonical_url": "https://mastodon.social/@muhnin/117386976129116328",
+    "account": "muhnin",
+    "instance": "https://mastodon.social",
+    "created_at": "2026-10-05T06:51:47.444Z",
+    "content": "<p>Was macht eigentlich meine <a href=\"https://mastodon.social/tags/Seerose\" class=\"mention hashtag\" rel=\"tag\">#<span>Seerose</span></a> ?</p><p>Die wurde von der Jugendgang von nebenan über den Sommer ganz schön zerrupft 😲</p><p>Ich habe einen flachen Topfuntersetzer mit Wasser daneben gestellt, der wird aber komplett ignoriert. 🤷🏼‍♀️</p><p><a href=\"https://mastodon.social/tags/Spatzen\" class=\"mention hashtag\" rel=\"tag\">#<span>Spatzen</span></a> <a href=\"https://mastodon.social/tags/V%C3%B6gel\" class=\"mention hashtag\" rel=\"tag\">#<span>Vögel</span></a> <a href=\"https://mastodon.social/tags/Berlin\" class=\"mention hashtag\" rel=\"tag\">#<span>Berlin</span></a> <a href=\"https://mastodon.social/tags/birds\" class=\"mention hashtag\" rel=\"tag\">#<span>birds</span></a> <a href=\"https://mastodon.social/tags/animals\" class=\"mention hashtag\" rel=\"tag\">#<span>animals</span></a> <a href=\"https://mastodon.social/tags/tiere\" class=\"mention hashtag\" rel=\"tag\">#<span>tiere</span></a></p>",
+    "caption": "Was macht eigentlich meine ?\nDie wurde von der Jugendgang von nebenan über den Sommer ganz schön zerrupft 😲\nIch habe einen flachen Topfuntersetzer mit Wasser daneben gestellt, der wird aber komplett ignoriert. 🤷🏼‍♀️",
+    "tags": [
+      {
+        "name": "seerose",
+        "url": "https://mastodon.social/tags/seerose"
+      },
+      {
+        "name": "spatzen",
+        "url": "https://mastodon.social/tags/spatzen"
+      },
+      {
+        "name": "vogel",
+        "url": "https://mastodon.social/tags/vogel"
+      },
+      {
+        "name": "berlin",
+        "url": "https://mastodon.social/tags/berlin"
+      },
+      {
+        "name": "birds",
+        "url": "https://mastodon.social/tags/birds"
+      },
+      {
+        "name": "animals",
+        "url": "https://mastodon.social/tags/animals"
+      },
+      {
+        "name": "tiere",
+        "url": "https://mastodon.social/tags/tiere"
+      }
+    ],
+    "media_url": "https://files.mastodon.social/media_attachments/files/117/386/950/206/636/862/original/583b6c84be1aa975.mp4",
+    "media_type": "video",
+    "media_description": "Drei Spatzen-Vögel, die am Rand eines schwarzen, mit Wasser befüllten Eimers sitzen und trinken und sich baden. Im Eimer, auf der Wasseroberfläche sieht man die teils zerrupften, grünen Blätter einer Zwergseerose.",
+    "media_meta": {
+      "original": {
+        "width": 720,
+        "height": 1280,
+        "frame_rate": "87375/2911",
+        "duration": 38.813333,
+        "bitrate": 2388235
+      },
+      "small": {
+        "width": 360,
+        "height": 640,
+        "size": "360x640",
+        "aspect": 0.5625
+      },
+      "focus": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    },
+    "canonical_key": "url:https://mastodon.social/@muhnin/117386976129116328",
+    "age_days": 2.017,
+    "freshness_tier": "primary",
+    "content_score": 33,
+    "advertised_file_size": 11586923,
+    "duration": 38.813,
+    "file_size": 11586923,
+    "width": 1280,
+    "height": 720,
+    "codec": "h264",
+    "sha256": "1744a287094d90c4c39945e3b887199576c7ee4ed8f7edce9970ae32b4426330",
+    "quality_score": 55.0,
+    "selection_score": 77.983,
+    "telegram_caption": "Was macht eigentlich meine ?\nDie wurde von der Jugendgang von nebenan über den Sommer ganz schön zerrupft 😲\nIch habe einen flachen Topfuntersetzer mit Wasser daneben gestellt, der wird aber komplett ignoriert. 🤷🏼‍♀️\n\n@utcutie"
+  },
+  {
+    "id": "117378828908839622",
+    "url": "https://kolektiva.social/@jamesjoelrussell/117378826586319800",
+    "canonical_url": "https://kolektiva.social/@jamesjoelrussell/117378826586319800",
+    "account": "jamesjoelrussell@kolektiva.social",
+    "instance": "https://mastodon.online",
+    "created_at": "2026-10-03T20:19:15.000Z",
+    "content": "<p>If my dog Rufus was Ahnuld in Predator</p><p><a href=\"https://kolektiva.social/tags/predator\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>predator</span></a> <a href=\"https://kolektiva.social/tags/predator1987\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>predator1987</span></a> <a href=\"https://kolektiva.social/tags/dog\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>dog</span></a> <a href=\"https://kolektiva.social/tags/dogsofinstagram\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>dogsofinstagram</span></a> <a href=\"https://kolektiva.social/tags/venicebeach\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>venicebeach</span></a></p>",
+    "caption": "If my dog Rufus was Ahnuld in Predator",
+    "tags": [
+      {
+        "name": "predator",
+        "url": "https://mastodon.online/tags/predator"
+      },
+      {
+        "name": "Predator1987",
+        "url": "https://mastodon.online/tags/Predator1987"
+      },
+      {
+        "name": "dog",
+        "url": "https://mastodon.online/tags/dog"
+      },
+      {
+        "name": "dogsofinstagram",
+        "url": "https://mastodon.online/tags/dogsofinstagram"
+      },
+      {
+        "name": "venicebeach",
+        "url": "https://mastodon.online/tags/venicebeach"
+      }
+    ],
+    "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/378/826/630/025/721/original/c06c2a30204939d9.mp4",
+    "media_type": "video",
+    "media_description": "",
+    "media_meta": {
+      "original": {
+        "width": 1080,
+        "height": 1920,
+        "frame_rate": "30/1",
+        "duration": 37.2,
+        "bitrate": 6670478
+      },
+      "small": {
+        "width": 360,
+        "height": 640,
+        "size": "360x640",
+        "aspect": 0.5625
+      }
+    },
+    "canonical_key": "url:https://kolektiva.social/@jamesjoelrussell/117378826586319800",
+    "age_days": 3.456,
+    "freshness_tier": "primary",
+    "content_score": 33,
+    "advertised_file_size": 31017723,
+    "duration": 37.2,
+    "file_size": 31017723,
+    "width": 1080,
+    "height": 1920,
+    "codec": "h264",
+    "sha256": "90a02bbc43575c330aa29a0c1d5de65a07d23ac90cdf52adf288164033149990",
+    "quality_score": 56.0,
+    "selection_score": 77.544,
+    "telegram_caption": "If my dog Rufus was Ahnuld in Predator\n\n@utcutie"
+  },
+  {
+    "id": "117375538552645390",
+    "url": "https://retro-gaiden.com/@VilmaTheKitty/117375538531296618",
+    "canonical_url": "https://retro-gaiden.com/@VilmaTheKitty/117375538531296618",
+    "account": "VilmaTheKitty@retro-gaiden.com",
+    "instance": "https://mastodon.online",
+    "created_at": "2026-10-03T06:23:03.000Z",
+    "content": "<p>Hello Mastodon! Here's an old video of me trying to steal Vilma's shark toy.</p><p>\"Rainbows\" Kevin MacLeod (incompetech.com)<br>Licensed under Creative Commons: By Attribution 4.0 License<br><a href=\"http://creativecommons.org/licenses/by/4.0/\" rel=\"nofollow noopener\" translate=\"no\" target=\"_blank\"><span class=\"invisible\">http://</span><span class=\"ellipsis\">creativecommons.org/licenses/b</span><span class=\"invisible\">y/4.0/</span></a></p><p><a href=\"https://retro-gaiden.com/tags/cat\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>cat</span></a> <a href=\"https://retro-gaiden.com/tags/cats\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>cats</span></a> <a href=\"https://retro-gaiden.com/tags/catsofmastodon\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>catsofmastodon</span></a> <a href=\"https://retro-gaiden.com/tags/catsoffediverse\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>catsoffediverse</span></a> <a href=\"https://retro-gaiden.com/tags/pets\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>pets</span></a> <a href=\"https://retro-gaiden.com/tags/animals\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>animals</span></a> <a href=\"https://retro-gaiden.com/tags/cute\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>cute</span></a> <a href=\"https://retro-gaiden.com/tags/felines\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>felines</span></a> <a href=\"https://retro-gaiden.com/tags/caturday\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>caturday</span></a> <a href=\"https://retro-gaiden.com/tags/funny\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>funny</span></a></p>",
+    "caption": "Hello Mastodon! Here's an old video of me trying to steal Vilma's shark toy.\nhttp:// creativecommons.org/licenses/b y/4.0/",
+    "tags": [
+      {
+        "name": "cat",
+        "url": "https://mastodon.online/tags/cat"
+      },
+      {
+        "name": "cats",
+        "url": "https://mastodon.online/tags/cats"
+      },
+      {
+        "name": "catsofmastodon",
+        "url": "https://mastodon.online/tags/catsofmastodon"
+      },
+      {
+        "name": "catsoffediverse",
+        "url": "https://mastodon.online/tags/catsoffediverse"
+      },
+      {
+        "name": "pets",
+        "url": "https://mastodon.online/tags/pets"
+      },
+      {
+        "name": "animals",
+        "url": "https://mastodon.online/tags/animals"
+      },
+      {
+        "name": "cute",
+        "url": "https://mastodon.online/tags/cute"
+      },
+      {
+        "name": "felines",
+        "url": "https://mastodon.online/tags/felines"
+      },
+      {
+        "name": "Caturday",
+        "url": "https://mastodon.online/tags/Caturday"
+      },
+      {
+        "name": "funny",
+        "url": "https://mastodon.online/tags/funny"
+      }
+    ],
+    "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/375/770/203/093/869/original/736610a5cc020e67.mp4",
+    "media_type": "video",
+    "media_description": "",
+    "media_meta": {
+      "original": {
+        "width": 1920,
+        "height": 1080,
+        "frame_rate": "5785/193",
+        "duration": 24.192,
+        "bitrate": 4999183
+      },
+      "small": {
+        "width": 640,
+        "height": 360,
+        "size": "640x360",
+        "aspect": 1.7777777777777777
+      }
+    },
+    "canonical_key": "url:https://retro-gaiden.com/@VilmaTheKitty/117375538531296618",
+    "age_days": 4.037,
+    "freshness_tier": "primary",
+    "content_score": 33,
+    "advertised_file_size": 15117531,
+    "duration": 24.188,
+    "file_size": 15117531,
+    "width": 1920,
+    "height": 1080,
+    "codec": "h264",
+    "sha256": "18d5cdff36514ef9656667e8f0e73f8f634054e534f1ecaa972b0b0555de4789",
+    "quality_score": 56.0,
+    "selection_score": 76.963,
+    "telegram_caption": "Hello Mastodon! Here's an old video of me trying to steal Vilma's shark toy.\nhttp:// creativecommons.org/licenses/b y/4.0/\n\n@utcutie"
+  },
+  {
+    "id": "117367968898548316",
+    "url": "https://christmas.tattoo/@sultmhoor/statuses/01M3WRP66MEJ1BY0D45CRBZCV2",
+    "canonical_url": "https://christmas.tattoo/@sultmhoor/statuses/01M3WRP66MEJ1BY0D45CRBZCV2",
+    "account": "sultmhoor@christmas.tattoo",
+    "instance": "https://mastodon.social",
+    "created_at": "2026-10-01T22:17:17.000Z",
+    "content": "<p>kitten loving <a href=\"https://christmas.tattoo/tags/oaklandcountyanimalshelter\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>oaklandcountyanimalshelter</span></a> <a href=\"https://christmas.tattoo/tags/kittens\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>kittens</span></a> <a href=\"https://christmas.tattoo/tags/adoptdontshop\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>adoptdontshop</span></a></p>",
+    "caption": "kitten loving",
+    "tags": [
+      {
+        "name": "oaklandcountyanimalshelter",
+        "url": "https://mastodon.social/tags/oaklandcountyanimalshelter"
+      },
+      {
+        "name": "kittens",
+        "url": "https://mastodon.social/tags/kittens"
+      },
+      {
+        "name": "adoptdontshop",
+        "url": "https://mastodon.social/tags/adoptdontshop"
+      }
+    ],
+    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/367/966/136/041/725/original/774c17e385ec079d.mp4",
+    "media_type": "video",
+    "media_description": "",
+    "media_meta": {
+      "original": {
+        "width": 720,
+        "height": 1280,
+        "frame_rate": "34080000/1427963",
+        "duration": 47.598767,
+        "bitrate": 3946398
+      },
+      "small": {
+        "width": 360,
+        "height": 640,
+        "size": "360x640",
+        "aspect": 0.5625
+      }
+    },
+    "canonical_key": "url:https://christmas.tattoo/@sultmhoor/statuses/01M3WRP66MEJ1BY0D45CRBZCV2",
+    "age_days": 5.374,
+    "freshness_tier": "primary",
+    "content_score": 33,
+    "advertised_file_size": 23480462,
+    "duration": 47.599,
+    "file_size": 23480462,
+    "width": 720,
+    "height": 1280,
+    "codec": "h264",
+    "sha256": "2316330d99020814663a96981a1b11fbaf1b9990edee1ba93533050c4e53dbbc",
+    "quality_score": 56.0,
+    "selection_score": 75.626,
+    "telegram_caption": "kitten loving\n\n@utcutie"
+  },
+  {
+    "id": "117388577022747422",
+    "url": "https://mastodon.social/@kaersvang/117388577022747422",
+    "canonical_url": "https://mastodon.social/@kaersvang/117388577022747422",
+    "account": "kaersvang",
+    "instance": "https://mastodon.social",
+    "created_at": "2026-10-05T13:38:55.145Z",
+    "content": "<p>A short video of our old dog Bertha ❤️❤️<br /><a href=\"https://mastodon.social/tags/doglife\" class=\"mention hashtag\" rel=\"tag\">#<span>doglife</span></a> <a href=\"https://mastodon.social/tags/animals\" class=\"mention hashtag\" rel=\"tag\">#<span>animals</span></a> <a href=\"https://mastodon.social/tags/goodlife\" class=\"mention hashtag\" rel=\"tag\">#<span>goodlife</span></a> <a href=\"https://mastodon.social/tags/wildlife\" class=\"mention hashtag\" rel=\"tag\">#<span>wildlife</span></a> <a href=\"https://mastodon.social/tags/love\" class=\"mention hashtag\" rel=\"tag\">#<span>love</span></a></p>",
+    "caption": "A short video of our old dog Bertha ❤️❤️",
+    "tags": [
+      {
+        "name": "doglife",
+        "url": "https://mastodon.social/tags/doglife"
+      },
+      {
+        "name": "animals",
+        "url": "https://mastodon.social/tags/animals"
+      },
+      {
+        "name": "goodlife",
+        "url": "https://mastodon.social/tags/goodlife"
+      },
+      {
+        "name": "wildlife",
+        "url": "https://mastodon.social/tags/wildlife"
+      },
+      {
+        "name": "love",
+        "url": "https://mastodon.social/tags/love"
+      }
+    ],
+    "media_url": "https://files.mastodon.social/media_attachments/files/117/388/566/376/048/142/original/681db9ba1a38fd20.mp4",
+    "media_type": "video",
+    "media_description": "",
+    "media_meta": {
+      "original": {
+        "width": 1080,
+        "height": 1920,
+        "frame_rate": "14512500/484267",
+        "duration": 21.525333,
+        "bitrate": 17264406
+      },
+      "small": {
+        "width": 360,
+        "height": 640,
+        "size": "360x640",
+        "aspect": 0.5625
+      }
+    },
+    "canonical_key": "url:https://mastodon.social/@kaersvang/117388577022747422",
+    "age_days": 1.734,
+    "freshness_tier": "primary",
+    "content_score": 33,
+    "advertised_file_size": 46452762,
+    "duration": 21.523,
+    "file_size": 46452762,
+    "width": 1920,
+    "height": 1080,
+    "codec": "h264",
+    "sha256": "e98d9197be34253ea4e4f362f8ef497f457b543cc7996af4d7a7394192f3ef4b",
+    "quality_score": 51.0,
+    "selection_score": 74.266,
+    "telegram_caption": "A short video of our old dog Bertha ❤️❤️\n\n@utcutie"
+  },
+  {
+    "id": "117374509418590154",
+    "url": "https://mastodon.social/@joyousjoyness/117374508762349729",
+    "canonical_url": "https://mastodon.social/@joyousjoyness/117374508762349729",
+    "account": "joyousjoyness@mastodon.social",
+    "instance": "https://mstdn.party",
+    "created_at": "2026-10-03T02:01:10.000Z",
+    "content": "<p>This is my custom foiled drawing of Asahi the adorable white dog! </p><p><a href=\"https://mastodon.social/tags/dog\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>dog</span></a> <a href=\"https://mastodon.social/tags/art\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>art</span></a></p>",
+    "caption": "This is my custom foiled drawing of Asahi the adorable white dog!",
+    "tags": [
+      {
+        "name": "dog",
+        "url": "https://mstdn.party/tags/dog"
+      },
+      {
+        "name": "art",
+        "url": "https://mstdn.party/tags/art"
+      }
+    ],
+    "media_url": "https://files.mstdn.party/cache/media_attachments/files/117/374/508/895/301/618/original/10ba4e1287f2ca38.mp4",
+    "media_type": "video",
+    "media_description": "",
+    "media_meta": {
+      "original": {
+        "width": 1080,
+        "height": 1920,
+        "frame_rate": "30/1",
+        "duration": 15.353,
+        "bitrate": 5966240
+      },
+      "small": {
+        "width": 360,
+        "height": 640,
+        "size": "360x640",
+        "aspect": 0.5625
+      }
+    },
+    "canonical_key": "url:https://mastodon.social/@joyousjoyness/117374508762349729",
+    "age_days": 4.219,
+    "freshness_tier": "primary",
+    "content_score": 35,
+    "advertised_file_size": 11449962,
+    "duration": 15.333,
+    "file_size": 11449962,
+    "width": 1080,
+    "height": 1920,
+    "codec": "h264",
+    "sha256": "6555785163a07826739dc58bf2c0081b8ea21cb395048f2c604aff0c305aa779",
+    "quality_score": 53.0,
+    "selection_score": 73.781,
+    "telegram_caption": "This is my custom foiled drawing of Asahi the adorable white dog!\n\n@utcutie"
+  },
+  {
+    "id": "117382868882071367",
+    "url": "https://mas.to/@bark_maul/117382868723170736",
+    "canonical_url": "https://mas.to/@bark_maul/117382868723170736",
+    "account": "bark_maul@mas.to",
+    "instance": "https://mastodon.online",
+    "created_at": "2026-10-04T13:27:13.000Z",
+    "content": "<p>AHOY MARINE BIOLOGISTS! We have discovered a VERY DANGEROUS new shark species: Carcharadon Pembrokensis!</p><p>We went for swimming lessons at the Canine Dip and Dive today, and it turns out Corgis are very competent, if reluctant, swimmers.</p><p><a href=\"https://mas.to/tags/dog\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>dog</span></a> <a href=\"https://mas.to/tags/DogsOfMastodon\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>DogsOfMastodon</span></a> <a href=\"https://mas.to/tags/corgi\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>corgi</span></a></p>",
+    "caption": "AHOY MARINE BIOLOGISTS! We have discovered a VERY DANGEROUS new shark species: Carcharadon Pembrokensis!\nWe went for swimming lessons at the Canine Dip and Dive today, and it turns out Corgis are very competent, if reluctant, swimmers.",
+    "tags": [
+      {
+        "name": "corgi",
+        "url": "https://mastodon.online/tags/corgi"
+      },
+      {
+        "name": "dogsofmastodon",
+        "url": "https://mastodon.online/tags/dogsofmastodon"
+      },
+      {
+        "name": "dog",
+        "url": "https://mastodon.online/tags/dog"
+      }
+    ],
+    "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/382/868/750/109/413/original/5a39c25223220103.mp4",
+    "media_type": "video",
+    "media_description": "Carcharadon pembrokensis, swimming in a big pool with a human instructor guiding her. She always swims straight for the exit ramp. There may or may not be an expression of panic on her face, but it's probably just the way she holds her head out of the water.",
+    "media_meta": {
+      "original": {
+        "width": 540,
+        "height": 960,
+        "frame_rate": "30/1",
+        "duration": 24.310998,
+        "bitrate": 3568046
+      },
+      "small": {
+        "width": 360,
+        "height": 640,
+        "size": "360x640",
+        "aspect": 0.5625
+      }
+    },
+    "canonical_key": "url:https://mas.to/@bark_maul/117382868723170736",
+    "age_days": 2.743,
+    "freshness_tier": "primary",
+    "content_score": 33,
+    "advertised_file_size": 10842847,
+    "duration": 24.3,
+    "file_size": 10842847,
+    "width": 540,
+    "height": 960,
+    "codec": "h264",
+    "sha256": "9f7938e64014a14fce668ec30cb4c5f02ad43ec2da01ead8b63f6dd9d28ccecb",
+    "quality_score": 51.0,
+    "selection_score": 73.257,
+    "telegram_caption": "AHOY MARINE BIOLOGISTS! We have discovered a VERY DANGEROUS new shark species: Carcharadon Pembrokensis!\nWe went for swimming lessons at the Canine Dip and Dive today, and it turns out Corgis are very competent, if reluctant, swimmers.\n\n@utcutie"
+  },
+  {
+    "id": "117338219977795548",
+    "url": "https://mastodon.social/@angelikanotesen/117338219967910320",
+    "canonical_url": "https://mastodon.social/@angelikanotesen/117338219967910320",
+    "account": "angelikanotesen@mastodon.social",
+    "instance": "https://mastodon.online",
+    "created_at": "2026-09-26T16:12:27.000Z",
+    "content": "<p>2/3 - I Wanted to Save It</p><p>The boys ran away.</p><p>I picked up the injured kitten, carried it home, cleaned the blood and dirt from its body, and gave it some water.</p><p>Very quickly, I realized I didn’t know how to help it.</p><p>Continues in part 3/3.</p><p><a href=\"https://mastodon.social/tags/Kitten\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Kitten</span></a> <a href=\"https://mastodon.social/tags/ChildhoodMemory\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>ChildhoodMemory</span></a> <a href=\"https://mastodon.social/tags/TryingToHelp\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>TryingToHelp</span></a> <a href=\"https://mastodon.social/tags/BrokenInside\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>BrokenInside</span></a></p><p><a href=\"https://notesfromalife.com/\" rel=\"nofollow noopener\" translate=\"no\" target=\"_blank\"><span class=\"invisible\">https://</span><span class=\"\">notesfromalife.com/</span><span class=\"invisible\"></span></a></p><p>Discover the stories hidden behind every door.</p><p>Angelika<br>Notes From a Life</p><p><a href=\"https://mastodon.social/tags/NotesFromALife\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>NotesFromALife</span></a> <a href=\"https://mastodon.social/tags/LifeStories\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>LifeStories</span></a> <a href=\"https://mastodon.social/tags/Storytelling\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Storytelling</span></a> <a href=\"https://mastodon.social/tags/Memories\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Memories</span></a> <a href=\"https://mastodon.social/tags/PersonalStories\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>PersonalStories</span></a></p>",
+    "caption": "2/3 - I Wanted to Save It\nThe boys ran away.\nI picked up the injured kitten, carried it home, cleaned the blood and dirt from its body, and gave it some water.\nVery quickly, I realized I didn’t know how to help it.\nContinues in part 3/3.\nhttps:// notesfromalife.com/\nDiscover the stories hidden behind every door.\nAngelika\nNotes From a Life",
+    "tags": [
+      {
+        "name": "kitten",
+        "url": "https://mastodon.online/tags/kitten"
+      },
+      {
+        "name": "childhoodmemory",
+        "url": "https://mastodon.online/tags/childhoodmemory"
+      },
+      {
+        "name": "tryingtohelp",
+        "url": "https://mastodon.online/tags/tryingtohelp"
+      },
+      {
+        "name": "brokeninside",
+        "url": "https://mastodon.online/tags/brokeninside"
+      },
+      {
+        "name": "notesfromalife",
+        "url": "https://mastodon.online/tags/notesfromalife"
+      },
+      {
+        "name": "LifeStories",
+        "url": "https://mastodon.online/tags/LifeStories"
+      },
+      {
+        "name": "storytelling",
+        "url": "https://mastodon.online/tags/storytelling"
+      },
+      {
+        "name": "memories",
+        "url": "https://mastodon.online/tags/memories"
+      },
+      {
+        "name": "personalstories",
+        "url": "https://mastodon.online/tags/personalstories"
+      }
+    ],
+    "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/338/242/942/378/635/original/3697c908caa93b80.mp4",
+    "media_type": "video",
+    "media_description": "",
+    "media_meta": {
+      "original": {
+        "width": 1080,
+        "height": 1920,
+        "frame_rate": "30/1",
+        "duration": 47.6,
+        "bitrate": 6089276
+      },
+      "small": {
+        "width": 360,
+        "height": 640,
+        "size": "360x640",
+        "aspect": 0.5625
+      }
+    },
+    "canonical_key": "url:https://mastodon.social/@angelikanotesen/117338219967910320",
+    "age_days": 10.628,
+    "freshness_tier": "primary",
+    "content_score": 35,
+    "advertised_file_size": 36231197,
+    "duration": 47.6,
+    "file_size": 36231197,
+    "width": 1080,
+    "height": 1920,
+    "codec": "h264",
+    "sha256": "7cdb2c5e0f8cf42d851263886f074adda6fcc95dede3d6a91a8285de95f53d6e",
+    "quality_score": 58.0,
+    "selection_score": 72.372,
+    "telegram_caption": "2/3 - I Wanted to Save It\nThe boys ran away.\nI picked up the injured kitten, carried it home, cleaned the blood and dirt from its body, and gave it some water.\nVery quickly, I realized I didn’t know how to help it.\nContinues in part 3/3.\nhttps:// notesfromalife.com/\nDiscover the stories hidden behind every door.\nAngelika\nNotes From a Life\n\n@utcutie"
   }
 ]
