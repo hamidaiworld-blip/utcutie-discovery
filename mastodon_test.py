@@ -581,8 +581,10 @@ def get_visual_net():
     global VISUAL_NET
     if VISUAL_NET is None:
         ensure_visual_model()
-        VISUAL_NET = cv2.dnn.readNetFromCaffe(
-            str(VISUAL_PROTO), str(VISUAL_WEIGHTS)
+        VISUAL_NET = cv2.dnn.readNet(
+            str(VISUAL_WEIGHTS),
+            str(VISUAL_PROTO),
+            "Caffe",
         )
     return VISUAL_NET
 
