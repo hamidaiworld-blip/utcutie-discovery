@@ -20,18 +20,10 @@ jobs:
         uses: actions/checkout@v4
 
 
-      # --------------------------------------------------
-      # 2. Verify FFmpeg already available on the hosted runner
-      # --------------------------------------------------
-
-      - name: Verify FFmpeg
-        run: |
-          ffmpeg -version
-          ffprobe -version
 
 
       # --------------------------------------------------
-      # 3. Install Python dependencies
+      # 2. Install Python dependencies
       # --------------------------------------------------
 
       - name: Install Python dependencies
@@ -41,7 +33,7 @@ jobs:
 
 
       # --------------------------------------------------
-      # 4. Create isolated test history
+      # 3. Create isolated test history
       #
       # The REAL history.json is backed up.
       # Discovery sees an empty history for this test only.
@@ -58,7 +50,7 @@ jobs:
 
 
       # --------------------------------------------------
-      # 5. Run discovery
+      # 4. Run discovery
       # --------------------------------------------------
 
       - name: Run Mastodon discovery
@@ -67,7 +59,7 @@ jobs:
 
 
       # --------------------------------------------------
-      # 6. Send first selected video to Render
+      # 5. Send first selected video to Render
       #
       # The real history is restored regardless of success
       # or failure.
