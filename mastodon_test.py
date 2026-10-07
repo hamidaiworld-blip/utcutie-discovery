@@ -138,6 +138,24 @@ IRRELEVANT_TERMS = {
     "baseball", "hockey", "tennis",
     "keychain", "unboxing", "product", "portrait commission",
     "custom art", "custom portrait", "merch", "merchandise",
+    "drawing", "illustration", "foiled", "artwork", "painting",
+}
+
+TRAGEDY_TERMS = {
+    "it was broken inside", "broken inside", "it is broken inside",
+    "it's going to die", "going to die", "will die", "dying",
+    "died", "death", "buried", "grave", "injured", "injury",
+    "blood", "bleeding", "wounded", "suffering", "trauma",
+    "lost an eye", "lost one of his eyes", "lost one of her eyes",
+    "difficult beginning", "couldn't save", "could not save",
+    "wanted to save it", "i wanted to save", "you can't save it",
+}
+
+WELFARE_STORY_TERMS = {
+    "most never get that opportunity", "never get that opportunity",
+    "got to live a full and happy life", "full and happy life",
+    "given a second chance", "second chance", "saved from",
+    "saved him", "saved her", "saved this", "rescue story",
 }
 
 PROMO_TERMS = {
@@ -230,6 +248,14 @@ def content_gate(status):
     pet_context = text_terms(low_caption, PET_CONTEXT_TERMS)
     advocacy = text_terms(low_caption, ADVOCACY_TERMS)
     irrelevant = text_terms(low_caption, IRRELEVANT_TERMS)
+    tragedy = text_terms(low_caption, TRAGEDY_TERMS)
+    welfare_story = text_terms(low_caption, WELFARE_STORY_TERMS)
+
+    if tragedy:
+        return False, 0, "sad/tragic content"
+
+    if welfare_story:
+        return False, 0, "rescue/welfare story content"
 
     if advocacy:
         if any(term in low_caption for term in {
