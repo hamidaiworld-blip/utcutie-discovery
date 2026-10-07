@@ -45,7 +45,7 @@
       }
     },
     "canonical_key": "url:https://khumbu.social/@elperronegro/01a1175d-3a8e-767d-a5e2-9f43fc009679",
-    "age_days": 0.147,
+    "age_days": 0.156,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 16205118,
@@ -56,7 +56,7 @@
     "codec": "",
     "sha256": "2d685715fbee5964cca726112ccac7a0ce31ebd643e25869be63faa8db8ec6bc",
     "quality_score": 60.0,
-    "selection_score": 84.853,
+    "selection_score": 84.844,
     "telegram_caption": "Arko, our mad husky has just discovered some new noises to make after dinner, when he settles down on the sofa to watch TV\n\n@utcutie"
   },
   {
@@ -101,7 +101,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@pughollow/117388711745845183",
-    "age_days": 2.274,
+    "age_days": 2.283,
     "freshness_tier": "primary",
     "content_score": 39,
     "advertised_file_size": 38935385,
@@ -112,64 +112,8 @@
     "codec": "",
     "sha256": "9b36e7ab18f857633824ab4758b0cb976cb238ef5d7bd019f4c74e29d0f9ae0e",
     "quality_score": 62.0,
-    "selection_score": 84.726,
+    "selection_score": 84.717,
     "telegram_caption": "“Come little Hazel, I'll take thee away, into a land of enchantment...\" Sometimes we catch the Scribe singing to the dogs….\n\n@utcutie"
-  },
-  {
-    "id": "117360372552602655",
-    "url": "https://fed.brid.gy/r/https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mwqja7r4742p",
-    "canonical_url": "https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mwqja7r4742p",
-    "account": "veganftaofficial.bsky.social@bsky.brid.gy",
-    "instance": "https://mastodon.social",
-    "created_at": "2026-09-30T14:05:54.634Z",
-    "content": "<p>Siirin and Saara are 2 very lucky pigs, who got to live a full and happy life. Most never get that opportunity. 💔<br><br>Original reel from the amazing esk_tuulispaa (IG) 🫶<br><br><a class=\"hashtag\" rel=\"nofollow noopener\" href=\"https://bsky.app/search?q=%23pigs\" target=\"_blank\">#pigs</a> <a class=\"hashtag\" rel=\"nofollow noopener\" href=\"https://bsky.app/search?q=%23sleepy\" target=\"_blank\">#sleepy</a> <a class=\"hashtag\" rel=\"nofollow noopener\" href=\"https://bsky.app/search?q=%23cuteanimals\" target=\"_blank\">#cuteanimals</a></p>",
-    "caption": "Siirin and Saara are 2 very lucky pigs, who got to live a full and happy life. Most never get that opportunity. 💔\nOriginal reel from the amazing esk_tuulispaa (IG) 🫶",
-    "tags": [
-      {
-        "name": "pigs",
-        "url": "https://mastodon.social/tags/pigs"
-      },
-      {
-        "name": "sleepy",
-        "url": "https://mastodon.social/tags/sleepy"
-      },
-      {
-        "name": "cuteanimals",
-        "url": "https://mastodon.social/tags/cuteanimals"
-      }
-    ],
-    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/360/372/326/121/504/original/a3b504170549ce92.mp4",
-    "media_type": "video",
-    "media_description": "",
-    "media_meta": {
-      "original": {
-        "width": 1080,
-        "height": 1920,
-        "frame_rate": "30/1",
-        "duration": 30.1,
-        "bitrate": 3073719
-      },
-      "small": {
-        "width": 360,
-        "height": 640,
-        "size": "360x640",
-        "aspect": 0.5625
-      }
-    },
-    "canonical_key": "url:https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mwqja7r4742p",
-    "age_days": 7.279,
-    "freshness_tier": "primary",
-    "content_score": 38,
-    "advertised_file_size": 11564884,
-    "duration": 30.067,
-    "file_size": 11564884,
-    "width": 1080,
-    "height": 1920,
-    "codec": "",
-    "sha256": "570d63ce838cef867a4dac6191e3a668964625cc1d36de4248251e24c8cb0548",
-    "quality_score": 65.0,
-    "selection_score": 82.721,
-    "telegram_caption": "Siirin and Saara are 2 very lucky pigs, who got to live a full and happy life. Most never get that opportunity. 💔\nOriginal reel from the amazing esk_tuulispaa (IG) 🫶\n\n@utcutie"
   },
   {
     "id": "117386976509212354",
@@ -233,7 +177,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@muhnin/117386976129116328",
-    "age_days": 2.581,
+    "age_days": 2.59,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 11586923,
@@ -244,7 +188,7 @@
     "codec": "",
     "sha256": "90b968e384f03f0da85ca4e550c5aaa3528b2ae3e05d5e6b1fe06eb08c2fede5",
     "quality_score": 60.0,
-    "selection_score": 82.419,
+    "selection_score": 82.41,
     "telegram_caption": "Was macht eigentlich meine ?\nDie wurde von der Jugendgang von nebenan über den Sommer ganz schön zerrupft 😲\nIch habe einen flachen Topfuntersetzer mit Wasser daneben gestellt, der wird aber komplett ignoriert. 🤷🏼‍♀️\n\n@utcutie"
   },
   {
@@ -345,7 +289,7 @@
       }
     },
     "canonical_key": "url:https://c.im/@fonecokid/117382190250141953",
-    "age_days": 3.425,
+    "age_days": 3.435,
     "freshness_tier": "primary",
     "content_score": 38,
     "advertised_file_size": 12559719,
@@ -356,88 +300,8 @@
     "codec": "",
     "sha256": "4a0654a6b9c73dd7625348cae0e2831d729ff87b640aa6ac2ef8ec4b9415d753",
     "quality_score": 60.0,
-    "selection_score": 81.575,
+    "selection_score": 81.565,
     "telegram_caption": "Happy Banana Sunday.\n\n@utcutie"
-  },
-  {
-    "id": "117355231125810335",
-    "url": "https://mastodon.social/@angelikanotesen/117355231151485388",
-    "canonical_url": "https://mastodon.social/@angelikanotesen/117355231151485388",
-    "account": "angelikanotesen@mastodon.social",
-    "instance": "https://mastodon.online",
-    "created_at": "2026-09-29T16:18:37.000Z",
-    "content": "<p>3/3 - It Was Broken Inside</p><p>“It’s going to die. You can’t save it. It’s broken inside,” my mother said.</p><p>I buried the kitten in the backyard.</p><p>I planted dandelions on its grave.</p><p><a href=\"https://mastodon.social/tags/Kitten\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Kitten</span></a> <a href=\"https://mastodon.social/tags/ChildhoodMemory\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>ChildhoodMemory</span></a> <a href=\"https://mastodon.social/tags/Dandelions\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Dandelions</span></a> <a href=\"https://mastodon.social/tags/BrokenInside\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>BrokenInside</span></a></p><p><a href=\"https://notesfromalife.com/\" rel=\"nofollow noopener\" translate=\"no\" target=\"_blank\"><span class=\"invisible\">https://</span><span class=\"\">notesfromalife.com/</span><span class=\"invisible\"></span></a></p><p>Discover the stories hidden behind every door.</p><p>Angelika<br>Notes From a Life</p><p><a href=\"https://mastodon.social/tags/NotesFromALife\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>NotesFromALife</span></a> <a href=\"https://mastodon.social/tags/LifeStories\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>LifeStories</span></a> <a href=\"https://mastodon.social/tags/Storytelling\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Storytelling</span></a> <a href=\"https://mastodon.social/tags/Memories\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Memories</span></a> <a href=\"https://mastodon.social/tags/PersonalStories\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>PersonalStories</span></a></p>",
-    "caption": "3/3 - It Was Broken Inside\n“It’s going to die. You can’t save it. It’s broken inside,” my mother said.\nI buried the kitten in the backyard.\nI planted dandelions on its grave.\nhttps:// notesfromalife.com/\nDiscover the stories hidden behind every door.\nAngelika\nNotes From a Life",
-    "tags": [
-      {
-        "name": "kitten",
-        "url": "https://mastodon.online/tags/kitten"
-      },
-      {
-        "name": "childhoodmemory",
-        "url": "https://mastodon.online/tags/childhoodmemory"
-      },
-      {
-        "name": "dandelions",
-        "url": "https://mastodon.online/tags/dandelions"
-      },
-      {
-        "name": "brokeninside",
-        "url": "https://mastodon.online/tags/brokeninside"
-      },
-      {
-        "name": "notesfromalife",
-        "url": "https://mastodon.online/tags/notesfromalife"
-      },
-      {
-        "name": "LifeStories",
-        "url": "https://mastodon.online/tags/LifeStories"
-      },
-      {
-        "name": "storytelling",
-        "url": "https://mastodon.online/tags/storytelling"
-      },
-      {
-        "name": "memories",
-        "url": "https://mastodon.online/tags/memories"
-      },
-      {
-        "name": "personalstories",
-        "url": "https://mastodon.online/tags/personalstories"
-      }
-    ],
-    "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/355/231/475/853/665/original/2f40f7bdfce06cbc.mp4",
-    "media_type": "video",
-    "media_description": "",
-    "media_meta": {
-      "original": {
-        "width": 1080,
-        "height": 1920,
-        "frame_rate": "30/1",
-        "duration": 43.733,
-        "bitrate": 6078366
-      },
-      "small": {
-        "width": 360,
-        "height": 640,
-        "size": "360x640",
-        "aspect": 0.5625
-      }
-    },
-    "canonical_key": "url:https://mastodon.social/@angelikanotesen/117355231151485388",
-    "age_days": 8.187,
-    "freshness_tier": "primary",
-    "content_score": 41,
-    "advertised_file_size": 33228149,
-    "duration": 43.7,
-    "file_size": 33228149,
-    "width": 1080,
-    "height": 1920,
-    "codec": "",
-    "sha256": "ba1be313a3a1490824d317d526bbe64132bc543a5a6ac99ccf86acb57870caf7",
-    "quality_score": 64.0,
-    "selection_score": 80.813,
-    "telegram_caption": "3/3 - It Was Broken Inside\n“It’s going to die. You can’t save it. It’s broken inside,” my mother said.\nI buried the kitten in the backyard.\nI planted dandelions on its grave.\nhttps:// notesfromalife.com/\nDiscover the stories hidden behind every door.\nAngelika\nNotes From a Life\n\n@utcutie"
   },
   {
     "id": "117376443473081140",
@@ -537,7 +401,7 @@
       }
     },
     "canonical_key": "url:https://c.im/@fonecokid/117376443174130062",
-    "age_days": 4.44,
+    "age_days": 4.45,
     "freshness_tier": "primary",
     "content_score": 38,
     "advertised_file_size": 13358743,
@@ -548,7 +412,7 @@
     "codec": "",
     "sha256": "04e5d8be48be2bc213a43f2444895cfdfc4d390bbb9200f700e64e27ca8a8c84",
     "quality_score": 60.0,
-    "selection_score": 80.56,
+    "selection_score": 80.55,
     "telegram_caption": "Happy Saturday to ALL.\n\n@utcutie"
   },
   {
@@ -601,7 +465,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@crittersnackstation/117391020068196933",
-    "age_days": 1.866,
+    "age_days": 1.875,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 27824438,
@@ -612,72 +476,8 @@
     "codec": "",
     "sha256": "c2efe5d765466846b7a5cafa4824fcaca520b670e1d077db10449b77152889f1",
     "quality_score": 56.0,
-    "selection_score": 79.134,
+    "selection_score": 79.125,
     "telegram_caption": "stew the raccoon:))\n\n@utcutie"
-  },
-  {
-    "id": "117367467411464113",
-    "url": "https://mastodon.social/@catrescue/117367467411464113",
-    "canonical_url": "https://mastodon.social/@catrescue/117367467411464113",
-    "account": "catrescue",
-    "instance": "https://mastodon.social",
-    "created_at": "2026-10-01T20:10:28.034Z",
-    "content": "<p>Yumak had a difficult beginning and lost one of his eyes along the way. But his story continued with healing, love and a family of his own 🥹 <a href=\"https://mastodon.social/tags/catsofinstagram\" class=\"mention hashtag\" rel=\"tag\">#<span>catsofinstagram</span></a> <a href=\"https://mastodon.social/tags/catrescue\" class=\"mention hashtag\" rel=\"tag\">#<span>catrescue</span></a> <a href=\"https://mastodon.social/tags/rescue\" class=\"mention hashtag\" rel=\"tag\">#<span>rescue</span></a> <a href=\"https://mastodon.social/tags/catlover\" class=\"mention hashtag\" rel=\"tag\">#<span>catlover</span></a> <a href=\"https://mastodon.social/tags/kitten\" class=\"mention hashtag\" rel=\"tag\">#<span>kitten</span></a></p>",
-    "caption": "Yumak had a difficult beginning and lost one of his eyes along the way. But his story continued with healing, love and a family of his own 🥹",
-    "tags": [
-      {
-        "name": "catsofinstagram",
-        "url": "https://mastodon.social/tags/catsofinstagram"
-      },
-      {
-        "name": "catrescue",
-        "url": "https://mastodon.social/tags/catrescue"
-      },
-      {
-        "name": "rescue",
-        "url": "https://mastodon.social/tags/rescue"
-      },
-      {
-        "name": "catlover",
-        "url": "https://mastodon.social/tags/catlover"
-      },
-      {
-        "name": "kitten",
-        "url": "https://mastodon.social/tags/kitten"
-      }
-    ],
-    "media_url": "https://files.mastodon.social/media_attachments/files/117/367/466/757/319/329/original/3f009a35d575b25e.mp4",
-    "media_type": "video",
-    "media_description": "",
-    "media_meta": {
-      "original": {
-        "width": 720,
-        "height": 1280,
-        "frame_rate": "30/1",
-        "duration": 53.379819,
-        "bitrate": 773108
-      },
-      "small": {
-        "width": 360,
-        "height": 640,
-        "size": "360x640",
-        "aspect": 0.5625
-      }
-    },
-    "canonical_key": "url:https://mastodon.social/@catrescue/117367467411464113",
-    "age_days": 6.025,
-    "freshness_tier": "primary",
-    "content_score": 29,
-    "advertised_file_size": 5158547,
-    "duration": 53.267,
-    "file_size": 5158547,
-    "width": 720,
-    "height": 1280,
-    "codec": "",
-    "sha256": "9d735f391c9fc7b928cb8d6d1b976cc666b361f1534adee49b16b0f405e7138b",
-    "quality_score": 60.0,
-    "selection_score": 78.975,
-    "telegram_caption": "Yumak had a difficult beginning and lost one of his eyes along the way. But his story continued with healing, love and a family of his own 🥹\n\n@utcutie"
   },
   {
     "id": "117394911055090818",
@@ -721,7 +521,7 @@
       }
     },
     "canonical_key": "url:https://infosec.exchange/@GuillaumeRossolini/117394910712542266",
-    "age_days": 1.179,
+    "age_days": 1.188,
     "freshness_tier": "primary",
     "content_score": 36,
     "advertised_file_size": 15534503,
@@ -732,76 +532,8 @@
     "codec": "",
     "sha256": "2bfbcf4a510e0b9001cc44904e1651a1a3800760d1ea04c49dbfa03b9bc345d5",
     "quality_score": 54.0,
-    "selection_score": 77.821,
+    "selection_score": 77.812,
     "telegram_caption": "@ catsalad there’s a mouse! Catch it!\n(In reality she doesn’t ever eat them)\n\n@utcutie"
-  },
-  {
-    "id": "117366116371558775",
-    "url": "https://mastodon.social/@oksana_lukerya/117366116371558775",
-    "canonical_url": "https://mastodon.social/@oksana_lukerya/117366116371558775",
-    "account": "oksana_lukerya",
-    "instance": "https://mastodon.social",
-    "created_at": "2026-10-01T14:26:52.800Z",
-    "content": "<p>First days at home.<br />A fluffy sweet kitty? Don&#39;t be fooled by the innocent look—this little spy is just studying the territory before taking over. <br />📖 More about me: <a href=\"https://allmylinks.com/lukerya\" target=\"_blank\" rel=\"nofollow noopener\" translate=\"no\"><span class=\"invisible\">https://</span><span class=\"\">allmylinks.com/lukerya</span><span class=\"invisible\"></span></a><br /><a href=\"https://mastodon.social/tags/cat\" class=\"mention hashtag\" rel=\"tag\">#<span>cat</span></a> <a href=\"https://mastodon.social/tags/kitten\" class=\"mention hashtag\" rel=\"tag\">#<span>kitten</span></a> <a href=\"https://mastodon.social/tags/pets\" class=\"mention hashtag\" rel=\"tag\">#<span>pets</span></a> <a href=\"https://mastodon.social/tags/humor\" class=\"mention hashtag\" rel=\"tag\">#<span>humor</span></a> <a href=\"https://mastodon.social/tags/life\" class=\"mention hashtag\" rel=\"tag\">#<span>life</span></a></p>",
-    "caption": "First days at home.\nA fluffy sweet kitty? Don't be fooled by the innocent look—this little spy is just studying the territory before taking over.\n📖 More about me: https:// allmylinks.com/lukerya",
-    "tags": [
-      {
-        "name": "cat",
-        "url": "https://mastodon.social/tags/cat"
-      },
-      {
-        "name": "kitten",
-        "url": "https://mastodon.social/tags/kitten"
-      },
-      {
-        "name": "pets",
-        "url": "https://mastodon.social/tags/pets"
-      },
-      {
-        "name": "humor",
-        "url": "https://mastodon.social/tags/humor"
-      },
-      {
-        "name": "life",
-        "url": "https://mastodon.social/tags/life"
-      }
-    ],
-    "media_url": "https://files.mastodon.social/media_attachments/files/117/366/107/562/593/843/original/77a07790e15a9880.mp4",
-    "media_type": "video",
-    "media_description": "A light-colored kitten sits still, intently watching a moving toy and turning its head to follow the action without standing up.",
-    "media_meta": {
-      "original": {
-        "width": 576,
-        "height": 1024,
-        "frame_rate": "87930000/2931857",
-        "duration": 32.576189,
-        "bitrate": 2582148
-      },
-      "small": {
-        "width": 360,
-        "height": 640,
-        "size": "360x640",
-        "aspect": 0.5625
-      },
-      "focus": {
-        "x": 0.0,
-        "y": 0.0
-      }
-    },
-    "canonical_key": "url:https://mastodon.social/@oksana_lukerya/117366116371558775",
-    "age_days": 6.264,
-    "freshness_tier": "primary",
-    "content_score": 37,
-    "advertised_file_size": 10514571,
-    "duration": 32.576,
-    "file_size": 10514571,
-    "width": 576,
-    "height": 1024,
-    "codec": "",
-    "sha256": "b92abe9ba037be177699d1ae47c13c716142508d1d22e8d8a14513503f170b98",
-    "quality_score": 59.0,
-    "selection_score": 77.736,
-    "telegram_caption": "First days at home.\nA fluffy sweet kitty? Don't be fooled by the innocent look—this little spy is just studying the territory before taking over.\n📖 More about me: https:// allmylinks.com/lukerya\n\n@utcutie"
   },
   {
     "id": "117378828908839622",
@@ -853,7 +585,7 @@
       }
     },
     "canonical_key": "url:https://kolektiva.social/@jamesjoelrussell/117378826586319800",
-    "age_days": 4.02,
+    "age_days": 4.029,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 31017723,
@@ -864,7 +596,7 @@
     "codec": "",
     "sha256": "90a02bbc43575c330aa29a0c1d5de65a07d23ac90cdf52adf288164033149990",
     "quality_score": 56.0,
-    "selection_score": 76.98,
+    "selection_score": 76.971,
     "telegram_caption": "If my dog Rufus was Ahnuld in Predator\n\n@utcutie"
   },
   {
@@ -937,7 +669,7 @@
       }
     },
     "canonical_key": "url:https://retro-gaiden.com/@VilmaTheKitty/117375538531296618",
-    "age_days": 4.6,
+    "age_days": 4.609,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 15117531,
@@ -948,7 +680,7 @@
     "codec": "",
     "sha256": "18d5cdff36514ef9656667e8f0e73f8f634054e534f1ecaa972b0b0555de4789",
     "quality_score": 56.0,
-    "selection_score": 76.4,
+    "selection_score": 76.391,
     "telegram_caption": "Hello Mastodon! Here's an old video of me trying to steal Vilma's shark toy.\nhttp:// creativecommons.org/licenses/b y/4.0/\n\n@utcutie"
   },
   {
@@ -993,7 +725,7 @@
       }
     },
     "canonical_key": "url:https://christmas.tattoo/@sultmhoor/statuses/01M3WRP66MEJ1BY0D45CRBZCV2",
-    "age_days": 5.937,
+    "age_days": 5.947,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 23480462,
@@ -1004,7 +736,7 @@
     "codec": "",
     "sha256": "2316330d99020814663a96981a1b11fbaf1b9990edee1ba93533050c4e53dbbc",
     "quality_score": 56.0,
-    "selection_score": 75.063,
+    "selection_score": 75.053,
     "telegram_caption": "kitten loving\n\n@utcutie"
   },
   {
@@ -1057,7 +789,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@kaersvang/117388577022747422",
-    "age_days": 2.297,
+    "age_days": 2.307,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 46452762,
@@ -1068,60 +800,8 @@
     "codec": "",
     "sha256": "e98d9197be34253ea4e4f362f8ef497f457b543cc7996af4d7a7394192f3ef4b",
     "quality_score": 51.0,
-    "selection_score": 73.703,
+    "selection_score": 73.693,
     "telegram_caption": "A short video of our old dog Bertha ❤️❤️\n\n@utcutie"
-  },
-  {
-    "id": "117374509326986267",
-    "url": "https://mastodon.social/@joyousjoyness/117374508762349729",
-    "canonical_url": "https://mastodon.social/@joyousjoyness/117374508762349729",
-    "account": "joyousjoyness@mastodon.social",
-    "instance": "https://mastodon.world",
-    "created_at": "2026-10-03T02:01:10.000Z",
-    "content": "<p>This is my custom foiled drawing of Asahi the adorable white dog! </p><p><a href=\"https://mastodon.social/tags/dog\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>dog</span></a> <a href=\"https://mastodon.social/tags/art\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>art</span></a></p>",
-    "caption": "This is my custom foiled drawing of Asahi the adorable white dog!",
-    "tags": [
-      {
-        "name": "dog",
-        "url": "https://mastodon.world/tags/dog"
-      },
-      {
-        "name": "art",
-        "url": "https://mastodon.world/tags/art"
-      }
-    ],
-    "media_url": "https://s3.eu-central-2.wasabisys.com/mastodonworld/cache/media_attachments/files/117/374/508/864/918/914/original/74308f07203c000c.mp4",
-    "media_type": "video",
-    "media_description": "",
-    "media_meta": {
-      "original": {
-        "width": 1080,
-        "height": 1920,
-        "frame_rate": "30/1",
-        "duration": 15.353,
-        "bitrate": 5966240
-      },
-      "small": {
-        "width": 360,
-        "height": 640,
-        "size": "360x640",
-        "aspect": 0.5625
-      }
-    },
-    "canonical_key": "url:https://mastodon.social/@joyousjoyness/117374508762349729",
-    "age_days": 4.784,
-    "freshness_tier": "primary",
-    "content_score": 35,
-    "advertised_file_size": 11449961,
-    "duration": 15.333,
-    "file_size": 11449961,
-    "width": 1080,
-    "height": 1920,
-    "codec": "",
-    "sha256": "dc870aec62292f3bc334813db27b18d7f058a4e10b933c88aa276a93ec96ed8e",
-    "quality_score": 53.0,
-    "selection_score": 73.216,
-    "telegram_caption": "This is my custom foiled drawing of Asahi the adorable white dog!\n\n@utcutie"
   },
   {
     "id": "117382868882071367",
@@ -1165,7 +845,7 @@
       }
     },
     "canonical_key": "url:https://mas.to/@bark_maul/117382868723170736",
-    "age_days": 3.306,
+    "age_days": 3.315,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 10842847,
@@ -1176,88 +856,8 @@
     "codec": "",
     "sha256": "9f7938e64014a14fce668ec30cb4c5f02ad43ec2da01ead8b63f6dd9d28ccecb",
     "quality_score": 51.0,
-    "selection_score": 72.694,
+    "selection_score": 72.685,
     "telegram_caption": "AHOY MARINE BIOLOGISTS! We have discovered a VERY DANGEROUS new shark species: Carcharadon Pembrokensis!\nWe went for swimming lessons at the Canine Dip and Dive today, and it turns out Corgis are very competent, if reluctant, swimmers.\n\n@utcutie"
-  },
-  {
-    "id": "117338219977795548",
-    "url": "https://mastodon.social/@angelikanotesen/117338219967910320",
-    "canonical_url": "https://mastodon.social/@angelikanotesen/117338219967910320",
-    "account": "angelikanotesen@mastodon.social",
-    "instance": "https://mastodon.online",
-    "created_at": "2026-09-26T16:12:27.000Z",
-    "content": "<p>2/3 - I Wanted to Save It</p><p>The boys ran away.</p><p>I picked up the injured kitten, carried it home, cleaned the blood and dirt from its body, and gave it some water.</p><p>Very quickly, I realized I didn’t know how to help it.</p><p>Continues in part 3/3.</p><p><a href=\"https://mastodon.social/tags/Kitten\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Kitten</span></a> <a href=\"https://mastodon.social/tags/ChildhoodMemory\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>ChildhoodMemory</span></a> <a href=\"https://mastodon.social/tags/TryingToHelp\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>TryingToHelp</span></a> <a href=\"https://mastodon.social/tags/BrokenInside\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>BrokenInside</span></a></p><p><a href=\"https://notesfromalife.com/\" rel=\"nofollow noopener\" translate=\"no\" target=\"_blank\"><span class=\"invisible\">https://</span><span class=\"\">notesfromalife.com/</span><span class=\"invisible\"></span></a></p><p>Discover the stories hidden behind every door.</p><p>Angelika<br>Notes From a Life</p><p><a href=\"https://mastodon.social/tags/NotesFromALife\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>NotesFromALife</span></a> <a href=\"https://mastodon.social/tags/LifeStories\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>LifeStories</span></a> <a href=\"https://mastodon.social/tags/Storytelling\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Storytelling</span></a> <a href=\"https://mastodon.social/tags/Memories\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Memories</span></a> <a href=\"https://mastodon.social/tags/PersonalStories\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>PersonalStories</span></a></p>",
-    "caption": "2/3 - I Wanted to Save It\nThe boys ran away.\nI picked up the injured kitten, carried it home, cleaned the blood and dirt from its body, and gave it some water.\nVery quickly, I realized I didn’t know how to help it.\nContinues in part 3/3.\nhttps:// notesfromalife.com/\nDiscover the stories hidden behind every door.\nAngelika\nNotes From a Life",
-    "tags": [
-      {
-        "name": "kitten",
-        "url": "https://mastodon.online/tags/kitten"
-      },
-      {
-        "name": "childhoodmemory",
-        "url": "https://mastodon.online/tags/childhoodmemory"
-      },
-      {
-        "name": "tryingtohelp",
-        "url": "https://mastodon.online/tags/tryingtohelp"
-      },
-      {
-        "name": "brokeninside",
-        "url": "https://mastodon.online/tags/brokeninside"
-      },
-      {
-        "name": "notesfromalife",
-        "url": "https://mastodon.online/tags/notesfromalife"
-      },
-      {
-        "name": "LifeStories",
-        "url": "https://mastodon.online/tags/LifeStories"
-      },
-      {
-        "name": "storytelling",
-        "url": "https://mastodon.online/tags/storytelling"
-      },
-      {
-        "name": "memories",
-        "url": "https://mastodon.online/tags/memories"
-      },
-      {
-        "name": "personalstories",
-        "url": "https://mastodon.online/tags/personalstories"
-      }
-    ],
-    "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/338/242/942/378/635/original/3697c908caa93b80.mp4",
-    "media_type": "video",
-    "media_description": "",
-    "media_meta": {
-      "original": {
-        "width": 1080,
-        "height": 1920,
-        "frame_rate": "30/1",
-        "duration": 47.6,
-        "bitrate": 6089276
-      },
-      "small": {
-        "width": 360,
-        "height": 640,
-        "size": "360x640",
-        "aspect": 0.5625
-      }
-    },
-    "canonical_key": "url:https://mastodon.social/@angelikanotesen/117338219967910320",
-    "age_days": 11.191,
-    "freshness_tier": "primary",
-    "content_score": 35,
-    "advertised_file_size": 36231197,
-    "duration": 47.6,
-    "file_size": 36231197,
-    "width": 1080,
-    "height": 1920,
-    "codec": "",
-    "sha256": "7cdb2c5e0f8cf42d851263886f074adda6fcc95dede3d6a91a8285de95f53d6e",
-    "quality_score": 58.0,
-    "selection_score": 71.809,
-    "telegram_caption": "2/3 - I Wanted to Save It\nThe boys ran away.\nI picked up the injured kitten, carried it home, cleaned the blood and dirt from its body, and gave it some water.\nVery quickly, I realized I didn’t know how to help it.\nContinues in part 3/3.\nhttps:// notesfromalife.com/\nDiscover the stories hidden behind every door.\nAngelika\nNotes From a Life\n\n@utcutie"
   },
   {
     "id": "117375943446815506",
@@ -1337,7 +937,7 @@
       }
     },
     "canonical_key": "url:https://loops.video/v/iv03Sbf8Pc",
-    "age_days": 4.529,
+    "age_days": 4.538,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 7149841,
@@ -1348,7 +948,7 @@
     "codec": "",
     "sha256": "6c36234344de5d6e84d7aecfbba7189f77766a4498adc929ada0a2cb44891c39",
     "quality_score": 50.0,
-    "selection_score": 70.471,
+    "selection_score": 70.462,
     "telegram_caption": "Sea and dog 😁\n\n@utcutie"
   },
   {
@@ -1397,7 +997,7 @@
       }
     },
     "canonical_key": "url:https://universeodon.com/@adtothebone/117278198128139377",
-    "age_days": 21.791,
+    "age_days": 21.8,
     "freshness_tier": "secondary",
     "content_score": 39,
     "advertised_file_size": 15689291,
@@ -1408,7 +1008,379 @@
     "codec": "",
     "sha256": "3ae3200bb60fe536b7434d4443ea1bd831d3d2d3d300bb94045d573440aa1d3b",
     "quality_score": 66.0,
-    "selection_score": 69.209,
+    "selection_score": 69.2,
     "telegram_caption": "I spent about 45 minutes with my crew on my side of the back door glass, and the lil mom and her four kittens outside on the deck. And then this happened. Just try telling me this isn’t Jinx’s mom and his next-gen little brothers and sisters.\n\n@utcutie"
+  },
+  {
+    "id": "117309876373420271",
+    "url": "https://fed.brid.gy/r/https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mw23nenfmi2z",
+    "canonical_url": "https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mw23nenfmi2z",
+    "account": "veganftaofficial.bsky.social@bsky.brid.gy",
+    "instance": "https://mastodon.social",
+    "created_at": "2026-09-21T16:04:11.865Z",
+    "content": "<p>Margot was discarded by the dairy industry when she was no longer considered profitable. 💔<br><br>Now she’s finally free to live as herself - not a machine, but a sentient being with a life of her own. 🐄💚<br><br>Clips from the amazing moustache_farmer (IG) 🫶<br><br><a class=\"hashtag\" rel=\"nofollow noopener\" href=\"https://bsky.app/search?q=%23cow\" target=\"_blank\">#cow</a> <a class=\"hashtag\" rel=\"nofollow noopener\" href=\"https://bsky.app/search?q=%23cuteanimals\" target=\"_blank\">#cuteanimals</a> <a class=\"hashtag\" rel=\"nofollow noopener\" href=\"https://bsky.app/search?q=%23bekindtoanimals\" target=\"_blank\">#bekindtoanimals</a></p>",
+    "caption": "Margot was discarded by the dairy industry when she was no longer considered profitable. 💔\nNow she’s finally free to live as herself - not a machine, but a sentient being with a life of her own. 🐄💚\nClips from the amazing moustache_farmer (IG) 🫶",
+    "tags": [
+      {
+        "name": "cow",
+        "url": "https://mastodon.social/tags/cow"
+      },
+      {
+        "name": "cuteanimals",
+        "url": "https://mastodon.social/tags/cuteanimals"
+      },
+      {
+        "name": "bekindtoanimals",
+        "url": "https://mastodon.social/tags/bekindtoanimals"
+      }
+    ],
+    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/309/876/205/332/989/original/7d457a79e78d934c.mp4",
+    "media_type": "video",
+    "media_description": "",
+    "media_meta": {
+      "original": {
+        "width": 720,
+        "height": 1280,
+        "frame_rate": "30/1",
+        "duration": 16.5,
+        "bitrate": 1633550
+      },
+      "small": {
+        "width": 360,
+        "height": 640,
+        "size": "360x640",
+        "aspect": 0.5625
+      }
+    },
+    "canonical_key": "url:https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mw23nenfmi2z",
+    "age_days": 16.206,
+    "freshness_tier": "secondary",
+    "content_score": 33,
+    "advertised_file_size": 3369213,
+    "duration": 16.4,
+    "file_size": 3369213,
+    "width": 720,
+    "height": 1280,
+    "codec": "",
+    "sha256": "c66a1d4740523abb46e1c0b0928fcd731fd5bd98dc1c4985b7020ad47b70764a",
+    "quality_score": 59.0,
+    "selection_score": 67.794,
+    "telegram_caption": "Margot was discarded by the dairy industry when she was no longer considered profitable. 💔\nNow she’s finally free to live as herself - not a machine, but a sentient being with a life of her own. 🐄💚\nClips from the amazing moustache_farmer (IG) 🫶\n\n@utcutie"
+  },
+  {
+    "id": "117290998688761498",
+    "url": "https://fed.brid.gy/r/https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mvrper2kch2n",
+    "canonical_url": "https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mvrper2kch2n",
+    "account": "veganftaofficial.bsky.social@bsky.brid.gy",
+    "instance": "https://mastodon.social",
+    "created_at": "2026-09-18T08:03:20.039Z",
+    "content": "<p>Cows are friends, not food. 🐮💚<br><br>Credit: secondchances1433 (IG) 🫶<br><br><a class=\"hashtag\" rel=\"nofollow noopener\" href=\"https://bsky.app/search?q=%23cows\" target=\"_blank\">#cows</a> <a class=\"hashtag\" rel=\"nofollow noopener\" href=\"https://bsky.app/search?q=%23cuteanimals\" target=\"_blank\">#cuteanimals</a> <a class=\"hashtag\" rel=\"nofollow noopener\" href=\"https://bsky.app/search?q=%23animallover\" target=\"_blank\">#animallover</a></p>",
+    "caption": "Cows are friends, not food. 🐮💚\nCredit: secondchances1433 (IG) 🫶",
+    "tags": [
+      {
+        "name": "cows",
+        "url": "https://mastodon.social/tags/cows"
+      },
+      {
+        "name": "cuteanimals",
+        "url": "https://mastodon.social/tags/cuteanimals"
+      },
+      {
+        "name": "animallover",
+        "url": "https://mastodon.social/tags/animallover"
+      }
+    ],
+    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/290/998/488/881/884/original/452c36f4ac47d179.mp4",
+    "media_type": "video",
+    "media_description": "",
+    "media_meta": {
+      "original": {
+        "width": 1080,
+        "height": 1920,
+        "frame_rate": "30/1",
+        "duration": 17.933008,
+        "bitrate": 3065431
+      },
+      "small": {
+        "width": 360,
+        "height": 640,
+        "size": "360x640",
+        "aspect": 0.5625
+      }
+    },
+    "canonical_key": "url:https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mvrper2kch2n",
+    "age_days": 19.54,
+    "freshness_tier": "secondary",
+    "content_score": 38,
+    "advertised_file_size": 6871566,
+    "duration": 17.933,
+    "file_size": 6871566,
+    "width": 1080,
+    "height": 1920,
+    "codec": "",
+    "sha256": "ace30cda9a663464334d9e32e243a90e7e25947ff2d80bcb3f49c0c536c25e93",
+    "quality_score": 60.0,
+    "selection_score": 65.46,
+    "telegram_caption": "Cows are friends, not food. 🐮💚\nCredit: secondchances1433 (IG) 🫶\n\n@utcutie"
+  },
+  {
+    "id": "117295199465292841",
+    "url": "https://universeodon.com/@adtothebone/117295199328041992",
+    "canonical_url": "https://universeodon.com/@adtothebone/117295199328041992",
+    "account": "adtothebone@universeodon.com",
+    "instance": "https://mastodon.social",
+    "created_at": "2026-09-19T01:51:44.000Z",
+    "content": "<p>Attempts to start trapping Jinx’s family (mom and younger sibs) have been given the partial green light for the morning. Hopefully they stay the night and I can catch a couple of them to start, as available space is still limited. Wish me luck!</p><p>I will have no control over the naming, but here are some possibilities that rhyme with Jinx: </p><p>Binx<br>Dinx <br>Finx <br>Linx<br>Minx<br>Pinx <br>Sphinx<br>Tinx <br>Winx <br>Zinx </p><p><a href=\"https://universeodon.com/tags/cats\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>cats</span></a> <a href=\"https://universeodon.com/tags/kittens\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>kittens</span></a> <a href=\"https://universeodon.com/tags/northdakota\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>northdakota</span></a> <a href=\"https://universeodon.com/tags/gottacatchemall\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>gottacatchemall</span></a></p>",
+    "caption": "Attempts to start trapping Jinx’s family (mom and younger sibs) have been given the partial green light for the morning. Hopefully they stay the night and I can catch a couple of them to start, as available space is still limited. Wish me luck!\nI will have no control over the naming, but here are some possibilities that rhyme with Jinx:\nBinx\nDinx\nFinx\nLinx\nMinx\nPinx\nSphinx\nTinx\nWinx\nZinx",
+    "tags": [
+      {
+        "name": "cats",
+        "url": "https://mastodon.social/tags/cats"
+      },
+      {
+        "name": "kittens",
+        "url": "https://mastodon.social/tags/kittens"
+      },
+      {
+        "name": "northdakota",
+        "url": "https://mastodon.social/tags/northdakota"
+      },
+      {
+        "name": "gottacatchemall",
+        "url": "https://mastodon.social/tags/gottacatchemall"
+      }
+    ],
+    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/295/199/352/694/589/original/996d747914748629.mp4",
+    "media_type": "video",
+    "media_description": "",
+    "media_meta": {
+      "original": {
+        "width": 1280,
+        "height": 720,
+        "frame_rate": "30/1",
+        "duration": 36.801995,
+        "bitrate": 3220657
+      },
+      "small": {
+        "width": 640,
+        "height": 360,
+        "size": "640x360",
+        "aspect": 1.7777777777777777
+      }
+    },
+    "canonical_key": "url:https://universeodon.com/@adtothebone/117295199328041992",
+    "age_days": 18.798,
+    "freshness_tier": "secondary",
+    "content_score": 35,
+    "advertised_file_size": 14815827,
+    "duration": 36.8,
+    "file_size": 14815827,
+    "width": 1280,
+    "height": 720,
+    "codec": "",
+    "sha256": "97a1a250af98880146f697e787d3c64462d8b29bbb17c50af0061b45db5cea31",
+    "quality_score": 57.0,
+    "selection_score": 63.202,
+    "telegram_caption": "Attempts to start trapping Jinx’s family (mom and younger sibs) have been given the partial green light for the morning. Hopefully they stay the night and I can catch a couple of them to start, as available space is still limited. Wish me luck!\nI will have no control over the naming, but here are some possibilities that rhyme with Jinx:\nBinx\nDinx\nFinx\nLinx\nMinx\nPinx\nSphinx\nTinx\nWinx\nZinx\n\n@utcutie"
+  },
+  {
+    "id": "117262124555229709",
+    "url": "https://mastodon.durrans.com/@dan/117262124034501135",
+    "canonical_url": "https://mastodon.durrans.com/@dan/117262124034501135",
+    "account": "dan@durrans.com",
+    "instance": "https://mastodon.social",
+    "created_at": "2026-09-13T05:40:15.000Z",
+    "content": "<p>Emma is going to want one of these little furry bastards isn't she.... we are going to end up with a third cat.</p><p> <a href=\"https://mastodon.durrans.com/tags/Caturday\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Caturday</span></a> <a href=\"https://mastodon.durrans.com/tags/Kittenday\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Kittenday</span></a> <a href=\"https://mastodon.durrans.com/tags/Kittens\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Kittens</span></a> <a href=\"https://mastodon.durrans.com/tags/CatsOfMastodon\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>CatsOfMastodon</span></a> <a href=\"https://mastodon.durrans.com/tags/FediCats\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>FediCats</span></a> <a href=\"https://mastodon.durrans.com/tags/Cat\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Cat</span></a></p>",
+    "caption": "Emma is going to want one of these little furry bastards isn't she.... we are going to end up with a third cat.",
+    "tags": [
+      {
+        "name": "caturday",
+        "url": "https://mastodon.social/tags/caturday"
+      },
+      {
+        "name": "kittenday",
+        "url": "https://mastodon.social/tags/kittenday"
+      },
+      {
+        "name": "kittens",
+        "url": "https://mastodon.social/tags/kittens"
+      },
+      {
+        "name": "catsofmastodon",
+        "url": "https://mastodon.social/tags/catsofmastodon"
+      },
+      {
+        "name": "fedicats",
+        "url": "https://mastodon.social/tags/fedicats"
+      },
+      {
+        "name": "cat",
+        "url": "https://mastodon.social/tags/cat"
+      }
+    ],
+    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/262/124/145/582/394/original/8a1253b83c5f5b54.mp4",
+    "media_type": "video",
+    "media_description": "A puddle of kittens climb over each other while yawning.",
+    "media_meta": {
+      "original": {
+        "width": 478,
+        "height": 850,
+        "frame_rate": "151200000/5046089",
+        "duration": 112.135311,
+        "bitrate": 1640685
+      },
+      "small": {
+        "width": 360,
+        "height": 640,
+        "size": "360x640",
+        "aspect": 0.5625
+      }
+    },
+    "canonical_key": "url:https://mastodon.durrans.com/@dan/117262124034501135",
+    "age_days": 24.639,
+    "freshness_tier": "secondary",
+    "content_score": 33,
+    "advertised_file_size": 22997353,
+    "duration": 112.135,
+    "file_size": 22997353,
+    "width": 478,
+    "height": 850,
+    "codec": "",
+    "sha256": "c1fed942a50deef36357ce99fb081410dc80d9a30205153d30f08bbe6a6a2f90",
+    "quality_score": 59.0,
+    "selection_score": 59.361,
+    "telegram_caption": "Emma is going to want one of these little furry bastards isn't she.... we are going to end up with a third cat.\n\n@utcutie"
+  },
+  {
+    "id": "117259743816714566",
+    "url": "https://mastodon.durrans.com/@dan/117259743610433442",
+    "canonical_url": "https://mastodon.durrans.com/@dan/117259743610433442",
+    "account": "dan@durrans.com",
+    "instance": "https://mastodon.social",
+    "created_at": "2026-09-12T19:34:53.000Z",
+    "content": "<p>I am now getting regular video updates from my sister… it's dinner time for the kittens!  <a href=\"https://mastodon.durrans.com/tags/Caturday\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Caturday</span></a> <a href=\"https://mastodon.durrans.com/tags/Kittenday\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Kittenday</span></a> <a href=\"https://mastodon.durrans.com/tags/Kittens\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Kittens</span></a> <a href=\"https://mastodon.durrans.com/tags/CatsOfMastodon\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>CatsOfMastodon</span></a> <a href=\"https://mastodon.durrans.com/tags/FediCats\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>FediCats</span></a> <a href=\"https://mastodon.durrans.com/tags/Cat\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Cat</span></a></p>",
+    "caption": "I am now getting regular video updates from my sister… it's dinner time for the kittens!",
+    "tags": [
+      {
+        "name": "caturday",
+        "url": "https://mastodon.social/tags/caturday"
+      },
+      {
+        "name": "kittenday",
+        "url": "https://mastodon.social/tags/kittenday"
+      },
+      {
+        "name": "kittens",
+        "url": "https://mastodon.social/tags/kittens"
+      },
+      {
+        "name": "catsofmastodon",
+        "url": "https://mastodon.social/tags/catsofmastodon"
+      },
+      {
+        "name": "fedicats",
+        "url": "https://mastodon.social/tags/fedicats"
+      },
+      {
+        "name": "cat",
+        "url": "https://mastodon.social/tags/cat"
+      }
+    ],
+    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/259/743/715/805/148/original/9ec6c25567752e11.mp4",
+    "media_type": "video",
+    "media_description": "Freshly minted kittens snuggle into their mum’s belly to get some dinner",
+    "media_meta": {
+      "original": {
+        "width": 478,
+        "height": 850,
+        "frame_rate": "6590000/220381",
+        "duration": 44.0762,
+        "bitrate": 1947371
+      },
+      "small": {
+        "width": 360,
+        "height": 640,
+        "size": "360x640",
+        "aspect": 0.5625
+      }
+    },
+    "canonical_key": "url:https://mastodon.durrans.com/@dan/117259743610433442",
+    "age_days": 25.06,
+    "freshness_tier": "secondary",
+    "content_score": 36,
+    "advertised_file_size": 10729092,
+    "duration": 44.076,
+    "file_size": 10729092,
+    "width": 478,
+    "height": 850,
+    "codec": "",
+    "sha256": "97c2bc7d4117e39dc2e267dbaf4b26c52eff3fa73a89f3a2795c684c6ae1a9e3",
+    "quality_score": 58.0,
+    "selection_score": 58.0,
+    "telegram_caption": "I am now getting regular video updates from my sister… it's dinner time for the kittens!\n\n@utcutie"
+  },
+  {
+    "id": "117209132293036316",
+    "url": "https://mastodon.social/@cloudyaww/117209132293036316",
+    "canonical_url": "https://mastodon.social/@cloudyaww/117209132293036316",
+    "account": "cloudyaww",
+    "instance": "https://mastodon.social",
+    "created_at": "2026-09-03T21:03:45.901Z",
+    "content": "<p>A freshly bathed dog was offered a towel.</p><p>Naturally, the approved drying procedure involved shaking, carpet-scooting, zoomies and sharing the water with everyone nearby. 💦🐕</p><p><a href=\"https://mastodon.social/tags/Dogs\" class=\"mention hashtag\" rel=\"tag\">#<span>Dogs</span></a> <a href=\"https://mastodon.social/tags/FunnyDogs\" class=\"mention hashtag\" rel=\"tag\">#<span>FunnyDogs</span></a> <a href=\"https://mastodon.social/tags/DogVideos\" class=\"mention hashtag\" rel=\"tag\">#<span>DogVideos</span></a> <a href=\"https://mastodon.social/tags/PetVideos\" class=\"mention hashtag\" rel=\"tag\">#<span>PetVideos</span></a> <a href=\"https://mastodon.social/tags/CloudyAww\" class=\"mention hashtag\" rel=\"tag\">#<span>CloudyAww</span></a></p>",
+    "caption": "A freshly bathed dog was offered a towel.\nNaturally, the approved drying procedure involved shaking, carpet-scooting, zoomies and sharing the water with everyone nearby. 💦🐕",
+    "tags": [
+      {
+        "name": "dogs",
+        "url": "https://mastodon.social/tags/dogs"
+      },
+      {
+        "name": "funnydogs",
+        "url": "https://mastodon.social/tags/funnydogs"
+      },
+      {
+        "name": "dogvideos",
+        "url": "https://mastodon.social/tags/dogvideos"
+      },
+      {
+        "name": "petvideos",
+        "url": "https://mastodon.social/tags/petvideos"
+      },
+      {
+        "name": "cloudyaww",
+        "url": "https://mastodon.social/tags/cloudyaww"
+      }
+    ],
+    "media_url": "https://files.mastodon.social/media_attachments/files/117/209/129/335/820/099/original/1240d881c384ca0e.mp4",
+    "media_type": "video",
+    "media_description": "A quick funny montage of wet dogs rejecting ordinary drying: shaking off water, escaping towels, rubbing against carpet, racing around, rolling outside and spraying a nearby human.",
+    "media_meta": {
+      "original": {
+        "width": 720,
+        "height": 1280,
+        "frame_rate": "30/1",
+        "duration": 18.0,
+        "bitrate": 3118593
+      },
+      "small": {
+        "width": 360,
+        "height": 640,
+        "size": "360x640",
+        "aspect": 0.5625
+      }
+    },
+    "canonical_key": "url:https://mastodon.social/@cloudyaww/117209132293036316",
+    "age_days": 33.998,
+    "freshness_tier": "emergency",
+    "content_score": 38,
+    "advertised_file_size": 7016835,
+    "duration": 18.0,
+    "file_size": 7016835,
+    "width": 720,
+    "height": 1280,
+    "codec": "",
+    "sha256": "4009755a4cb75c257b97987992567e859a27ce3d6161055a62cd3256de3e5c77",
+    "quality_score": 65.0,
+    "selection_score": 65.0,
+    "telegram_caption": "A freshly bathed dog was offered a towel.\nNaturally, the approved drying procedure involved shaking, carpet-scooting, zoomies and sharing the water with everyone nearby. 💦🐕\n\n@utcutie"
   }
 ]

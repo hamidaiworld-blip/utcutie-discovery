@@ -41,7 +41,7 @@
       }
     },
     "canonical_key": "url:https://infosec.exchange/@GuillaumeRossolini/117394910712542266",
-    "age_days": 1.179,
+    "age_days": 1.188,
     "freshness_tier": "primary",
     "content_score": 36,
     "advertised_file_size": 15534503
@@ -88,7 +88,7 @@
       }
     },
     "canonical_key": "url:https://christmas.tattoo/@sultmhoor/statuses/01M3WRP66MEJ1BY0D45CRBZCV2",
-    "age_days": 5.937,
+    "age_days": 5.947,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 23480462
@@ -139,7 +139,7 @@
       }
     },
     "canonical_key": "url:https://universeodon.com/@adtothebone/117337930254992900",
-    "age_days": 11.242,
+    "age_days": 11.251,
     "freshness_tier": "primary",
     "content_score": 32,
     "advertised_file_size": 1440756
@@ -190,7 +190,7 @@
       }
     },
     "canonical_key": "url:https://universeodon.com/@adtothebone/117295199328041992",
-    "age_days": 18.788,
+    "age_days": 18.798,
     "freshness_tier": "secondary",
     "content_score": 35,
     "advertised_file_size": 14815827
@@ -241,7 +241,7 @@
       }
     },
     "canonical_key": "url:https://universeodon.com/@adtothebone/117278198128139377",
-    "age_days": 21.791,
+    "age_days": 21.8,
     "freshness_tier": "secondary",
     "content_score": 39,
     "advertised_file_size": 15689291
@@ -292,7 +292,7 @@
       }
     },
     "canonical_key": "url:https://universeodon.com/@adtothebone/117277971978819432",
-    "age_days": 21.831,
+    "age_days": 21.84,
     "freshness_tier": "secondary",
     "content_score": 36,
     "advertised_file_size": 11926922
@@ -367,7 +367,7 @@
       }
     },
     "canonical_key": "url:https://cyberplace.social/@notkawaii_irl/117264590287095586",
-    "age_days": 24.194,
+    "age_days": 24.204,
     "freshness_tier": "secondary",
     "content_score": 38,
     "advertised_file_size": 2058201
@@ -426,7 +426,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.durrans.com/@dan/117262124034501135",
-    "age_days": 24.63,
+    "age_days": 24.639,
     "freshness_tier": "secondary",
     "content_score": 33,
     "advertised_file_size": 22997353
@@ -485,7 +485,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.durrans.com/@dan/117259743610433442",
-    "age_days": 25.05,
+    "age_days": 25.06,
     "freshness_tier": "secondary",
     "content_score": 36,
     "advertised_file_size": 10729092
@@ -544,7 +544,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.durrans.com/@dan/117256741164404902",
-    "age_days": 25.58,
+    "age_days": 25.59,
     "freshness_tier": "secondary",
     "content_score": 36,
     "advertised_file_size": 11104425
@@ -595,124 +595,10 @@
       }
     },
     "canonical_key": "url:https://hachyderm.io/@fuzzykb/117174735725766784",
-    "age_days": 40.063,
+    "age_days": 40.072,
     "freshness_tier": "emergency",
     "content_score": 48,
     "advertised_file_size": 7341194
-  },
-  {
-    "id": "117367467411464113",
-    "url": "https://mastodon.social/@catrescue/117367467411464113",
-    "canonical_url": "https://mastodon.social/@catrescue/117367467411464113",
-    "account": "catrescue",
-    "instance": "https://mastodon.social",
-    "created_at": "2026-10-01T20:10:28.034Z",
-    "content": "<p>Yumak had a difficult beginning and lost one of his eyes along the way. But his story continued with healing, love and a family of his own 🥹 <a href=\"https://mastodon.social/tags/catsofinstagram\" class=\"mention hashtag\" rel=\"tag\">#<span>catsofinstagram</span></a> <a href=\"https://mastodon.social/tags/catrescue\" class=\"mention hashtag\" rel=\"tag\">#<span>catrescue</span></a> <a href=\"https://mastodon.social/tags/rescue\" class=\"mention hashtag\" rel=\"tag\">#<span>rescue</span></a> <a href=\"https://mastodon.social/tags/catlover\" class=\"mention hashtag\" rel=\"tag\">#<span>catlover</span></a> <a href=\"https://mastodon.social/tags/kitten\" class=\"mention hashtag\" rel=\"tag\">#<span>kitten</span></a></p>",
-    "caption": "Yumak had a difficult beginning and lost one of his eyes along the way. But his story continued with healing, love and a family of his own 🥹",
-    "tags": [
-      {
-        "name": "catsofinstagram",
-        "url": "https://mastodon.social/tags/catsofinstagram"
-      },
-      {
-        "name": "catrescue",
-        "url": "https://mastodon.social/tags/catrescue"
-      },
-      {
-        "name": "rescue",
-        "url": "https://mastodon.social/tags/rescue"
-      },
-      {
-        "name": "catlover",
-        "url": "https://mastodon.social/tags/catlover"
-      },
-      {
-        "name": "kitten",
-        "url": "https://mastodon.social/tags/kitten"
-      }
-    ],
-    "media_url": "https://files.mastodon.social/media_attachments/files/117/367/466/757/319/329/original/3f009a35d575b25e.mp4",
-    "media_type": "video",
-    "media_description": "",
-    "media_meta": {
-      "original": {
-        "width": 720,
-        "height": 1280,
-        "frame_rate": "30/1",
-        "duration": 53.379819,
-        "bitrate": 773108
-      },
-      "small": {
-        "width": 360,
-        "height": 640,
-        "size": "360x640",
-        "aspect": 0.5625
-      }
-    },
-    "canonical_key": "url:https://mastodon.social/@catrescue/117367467411464113",
-    "age_days": 6.025,
-    "freshness_tier": "primary",
-    "content_score": 29,
-    "advertised_file_size": 5158547
-  },
-  {
-    "id": "117366116371558775",
-    "url": "https://mastodon.social/@oksana_lukerya/117366116371558775",
-    "canonical_url": "https://mastodon.social/@oksana_lukerya/117366116371558775",
-    "account": "oksana_lukerya",
-    "instance": "https://mastodon.social",
-    "created_at": "2026-10-01T14:26:52.800Z",
-    "content": "<p>First days at home.<br />A fluffy sweet kitty? Don&#39;t be fooled by the innocent look—this little spy is just studying the territory before taking over. <br />📖 More about me: <a href=\"https://allmylinks.com/lukerya\" target=\"_blank\" rel=\"nofollow noopener\" translate=\"no\"><span class=\"invisible\">https://</span><span class=\"\">allmylinks.com/lukerya</span><span class=\"invisible\"></span></a><br /><a href=\"https://mastodon.social/tags/cat\" class=\"mention hashtag\" rel=\"tag\">#<span>cat</span></a> <a href=\"https://mastodon.social/tags/kitten\" class=\"mention hashtag\" rel=\"tag\">#<span>kitten</span></a> <a href=\"https://mastodon.social/tags/pets\" class=\"mention hashtag\" rel=\"tag\">#<span>pets</span></a> <a href=\"https://mastodon.social/tags/humor\" class=\"mention hashtag\" rel=\"tag\">#<span>humor</span></a> <a href=\"https://mastodon.social/tags/life\" class=\"mention hashtag\" rel=\"tag\">#<span>life</span></a></p>",
-    "caption": "First days at home.\nA fluffy sweet kitty? Don't be fooled by the innocent look—this little spy is just studying the territory before taking over.\n📖 More about me: https:// allmylinks.com/lukerya",
-    "tags": [
-      {
-        "name": "cat",
-        "url": "https://mastodon.social/tags/cat"
-      },
-      {
-        "name": "kitten",
-        "url": "https://mastodon.social/tags/kitten"
-      },
-      {
-        "name": "pets",
-        "url": "https://mastodon.social/tags/pets"
-      },
-      {
-        "name": "humor",
-        "url": "https://mastodon.social/tags/humor"
-      },
-      {
-        "name": "life",
-        "url": "https://mastodon.social/tags/life"
-      }
-    ],
-    "media_url": "https://files.mastodon.social/media_attachments/files/117/366/107/562/593/843/original/77a07790e15a9880.mp4",
-    "media_type": "video",
-    "media_description": "A light-colored kitten sits still, intently watching a moving toy and turning its head to follow the action without standing up.",
-    "media_meta": {
-      "original": {
-        "width": 576,
-        "height": 1024,
-        "frame_rate": "87930000/2931857",
-        "duration": 32.576189,
-        "bitrate": 2582148
-      },
-      "small": {
-        "width": 360,
-        "height": 640,
-        "size": "360x640",
-        "aspect": 0.5625
-      },
-      "focus": {
-        "x": 0.0,
-        "y": 0.0
-      }
-    },
-    "canonical_key": "url:https://mastodon.social/@oksana_lukerya/117366116371558775",
-    "age_days": 6.264,
-    "freshness_tier": "primary",
-    "content_score": 37,
-    "advertised_file_size": 10514571
   },
   {
     "id": "117400804533779677",
@@ -760,7 +646,7 @@
       }
     },
     "canonical_key": "url:https://khumbu.social/@elperronegro/01a1175d-3a8e-767d-a5e2-9f43fc009679",
-    "age_days": 0.147,
+    "age_days": 0.156,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 16205118
@@ -827,7 +713,7 @@
       }
     },
     "canonical_key": "url:https://loops.video/v/iA76EXqCyC",
-    "age_days": 0.559,
+    "age_days": 0.569,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 2141400
@@ -882,7 +768,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@VitalisViVa/117389744202260081",
-    "age_days": 2.091,
+    "age_days": 2.101,
     "freshness_tier": "primary",
     "content_score": 34,
     "advertised_file_size": 2244042
@@ -985,7 +871,7 @@
       }
     },
     "canonical_key": "url:https://c.im/@fonecokid/117383380609116583",
-    "age_days": 3.215,
+    "age_days": 3.224,
     "freshness_tier": "primary",
     "content_score": 40,
     "advertised_file_size": 6937607
@@ -1028,7 +914,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.sdf.org/@PugHollowSanctuary/117395838006552833",
-    "age_days": 1.015,
+    "age_days": 1.024,
     "freshness_tier": "primary",
     "content_score": 36,
     "advertised_file_size": 17202187
@@ -1071,85 +957,10 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@pughollow/117395837510891831",
-    "age_days": 1.015,
+    "age_days": 1.025,
     "freshness_tier": "primary",
     "content_score": 36,
     "advertised_file_size": 17202187
-  },
-  {
-    "id": "117160337995281732",
-    "url": "https://aus.social/@AusSMC/117160337367073942",
-    "canonical_url": "https://aus.social/@AusSMC/117160337367073942",
-    "account": "AusSMC@aus.social",
-    "instance": "https://mastodon.social",
-    "created_at": "2026-08-26T06:14:34.000Z",
-    "content": "<p>🐶 Watching videos of adorable puppies in the office may be an effective way of lowering your blood pressure, according to Korean scientists</p><p>✨Follow the link for more information on this story✨<br><a href=\"https://www.scimex.org/newsfeed/overworked-and-stressed-this-puppy-video-will-make-you-feel-better\" rel=\"nofollow noopener\" translate=\"no\" target=\"_blank\"><span class=\"invisible\">https://www.</span><span class=\"ellipsis\">scimex.org/newsfeed/overworked</span><span class=\"invisible\">-and-stressed-this-puppy-video-will-make-you-feel-better</span></a></p><p><a href=\"https://aus.social/tags/science\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>science</span></a> <a href=\"https://aus.social/tags/sciencenews\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>sciencenews</span></a> <a href=\"https://aus.social/tags/research\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>research</span></a> <a href=\"https://aus.social/tags/stem\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>stem</span></a> <a href=\"https://aus.social/tags/facts\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>facts</span></a> <a href=\"https://aus.social/tags/knowledge\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>knowledge</span></a> <a href=\"https://aus.social/tags/sciencefacts\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>sciencefacts</span></a> <a href=\"https://aus.social/tags/puppy\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>puppy</span></a> <a href=\"https://aus.social/tags/puppies\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>puppies</span></a> <a href=\"https://aus.social/tags/pupperforstress\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>pupperforstress</span></a></p>",
-    "caption": "🐶 Watching videos of adorable puppies in the office may be an effective way of lowering your blood pressure, according to Korean scientists\n✨Follow the link for more information on this story✨\nscimex.org/newsfeed/overworked -and-stressed-this-puppy-video-will-make-you-feel-better",
-    "tags": [
-      {
-        "name": "science",
-        "url": "https://mastodon.social/tags/science"
-      },
-      {
-        "name": "sciencenews",
-        "url": "https://mastodon.social/tags/sciencenews"
-      },
-      {
-        "name": "research",
-        "url": "https://mastodon.social/tags/research"
-      },
-      {
-        "name": "stem",
-        "url": "https://mastodon.social/tags/stem"
-      },
-      {
-        "name": "facts",
-        "url": "https://mastodon.social/tags/facts"
-      },
-      {
-        "name": "knowledge",
-        "url": "https://mastodon.social/tags/knowledge"
-      },
-      {
-        "name": "sciencefacts",
-        "url": "https://mastodon.social/tags/sciencefacts"
-      },
-      {
-        "name": "puppy",
-        "url": "https://mastodon.social/tags/puppy"
-      },
-      {
-        "name": "puppies",
-        "url": "https://mastodon.social/tags/puppies"
-      },
-      {
-        "name": "pupperforstress",
-        "url": "https://mastodon.social/tags/pupperforstress"
-      }
-    ],
-    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/160/337/411/609/087/original/ae07fb0e679d1ca1.mp4",
-    "media_type": "video",
-    "media_description": "",
-    "media_meta": {
-      "original": {
-        "width": 1080,
-        "height": 1350,
-        "frame_rate": "30/1",
-        "duration": 58.333,
-        "bitrate": 2583449
-      },
-      "small": {
-        "width": 512,
-        "height": 640,
-        "size": "512x640",
-        "aspect": 0.8
-      }
-    },
-    "canonical_key": "url:https://aus.social/@AusSMC/117160337367073942",
-    "age_days": 42.606,
-    "freshness_tier": "emergency",
-    "content_score": 41,
-    "advertised_file_size": 18837543
   },
   {
     "id": "117397729247105701",
@@ -1197,7 +1008,7 @@
       }
     },
     "canonical_key": "url:https://bark.lgbt/@emberfox/117397729087124515",
-    "age_days": 0.681,
+    "age_days": 0.69,
     "freshness_tier": "primary",
     "content_score": 38,
     "advertised_file_size": 8498549
@@ -1244,7 +1055,7 @@
       }
     },
     "canonical_key": "url:https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3muk44t4dmx2j",
-    "age_days": 35.279,
+    "age_days": 35.289,
     "freshness_tier": "emergency",
     "content_score": 33,
     "advertised_file_size": 3739004
@@ -1347,7 +1158,7 @@
       }
     },
     "canonical_key": "url:https://c.im/@fonecokid/117382190250141953",
-    "age_days": 3.425,
+    "age_days": 3.435,
     "freshness_tier": "primary",
     "content_score": 38,
     "advertised_file_size": 12559719
@@ -1450,7 +1261,7 @@
       }
     },
     "canonical_key": "url:https://c.im/@fonecokid/117376443174130062",
-    "age_days": 4.44,
+    "age_days": 4.45,
     "freshness_tier": "primary",
     "content_score": 38,
     "advertised_file_size": 13358743
@@ -1525,7 +1336,7 @@
       }
     },
     "canonical_key": "url:https://retro-gaiden.com/@VilmaTheKitty/117375538531296618",
-    "age_days": 4.6,
+    "age_days": 4.609,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 15117531
@@ -1580,7 +1391,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@kaersvang/117388577022747422",
-    "age_days": 2.297,
+    "age_days": 2.307,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 46452762
@@ -1635,57 +1446,10 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@crittersnackstation/117391020068196933",
-    "age_days": 1.866,
+    "age_days": 1.875,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 27824438
-  },
-  {
-    "id": "117360372552602655",
-    "url": "https://fed.brid.gy/r/https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mwqja7r4742p",
-    "canonical_url": "https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mwqja7r4742p",
-    "account": "veganftaofficial.bsky.social@bsky.brid.gy",
-    "instance": "https://mastodon.social",
-    "created_at": "2026-09-30T14:05:54.634Z",
-    "content": "<p>Siirin and Saara are 2 very lucky pigs, who got to live a full and happy life. Most never get that opportunity. 💔<br><br>Original reel from the amazing esk_tuulispaa (IG) 🫶<br><br><a class=\"hashtag\" rel=\"nofollow noopener\" href=\"https://bsky.app/search?q=%23pigs\" target=\"_blank\">#pigs</a> <a class=\"hashtag\" rel=\"nofollow noopener\" href=\"https://bsky.app/search?q=%23sleepy\" target=\"_blank\">#sleepy</a> <a class=\"hashtag\" rel=\"nofollow noopener\" href=\"https://bsky.app/search?q=%23cuteanimals\" target=\"_blank\">#cuteanimals</a></p>",
-    "caption": "Siirin and Saara are 2 very lucky pigs, who got to live a full and happy life. Most never get that opportunity. 💔\nOriginal reel from the amazing esk_tuulispaa (IG) 🫶",
-    "tags": [
-      {
-        "name": "pigs",
-        "url": "https://mastodon.social/tags/pigs"
-      },
-      {
-        "name": "sleepy",
-        "url": "https://mastodon.social/tags/sleepy"
-      },
-      {
-        "name": "cuteanimals",
-        "url": "https://mastodon.social/tags/cuteanimals"
-      }
-    ],
-    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/360/372/326/121/504/original/a3b504170549ce92.mp4",
-    "media_type": "video",
-    "media_description": "",
-    "media_meta": {
-      "original": {
-        "width": 1080,
-        "height": 1920,
-        "frame_rate": "30/1",
-        "duration": 30.1,
-        "bitrate": 3073719
-      },
-      "small": {
-        "width": 360,
-        "height": 640,
-        "size": "360x640",
-        "aspect": 0.5625
-      }
-    },
-    "canonical_key": "url:https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mwqja7r4742p",
-    "age_days": 7.279,
-    "freshness_tier": "primary",
-    "content_score": 38,
-    "advertised_file_size": 11564884
   },
   {
     "id": "117309876373420271",
@@ -1729,7 +1493,7 @@
       }
     },
     "canonical_key": "url:https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mw23nenfmi2z",
-    "age_days": 16.197,
+    "age_days": 16.206,
     "freshness_tier": "secondary",
     "content_score": 33,
     "advertised_file_size": 3369213
@@ -1776,7 +1540,7 @@
       }
     },
     "canonical_key": "url:https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mvrper2kch2n",
-    "age_days": 19.53,
+    "age_days": 19.54,
     "freshness_tier": "secondary",
     "content_score": 38,
     "advertised_file_size": 6871566
@@ -1831,7 +1595,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@crittersnackstation/117218319113461368",
-    "age_days": 32.366,
+    "age_days": 32.376,
     "freshness_tier": "emergency",
     "content_score": 31,
     "advertised_file_size": 42531385
@@ -1890,7 +1654,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@Layan2002/117190655093159599",
-    "age_days": 37.252,
+    "age_days": 37.261,
     "freshness_tier": "emergency",
     "content_score": 32,
     "advertised_file_size": 4017054
@@ -1937,7 +1701,7 @@
       }
     },
     "canonical_key": "url:https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mtveaa6juv2b",
-    "age_days": 43.53,
+    "age_days": 43.539,
     "freshness_tier": "emergency",
     "content_score": 36,
     "advertised_file_size": 9001450
@@ -2012,7 +1776,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@Sarah34/117133052592867633",
-    "age_days": 47.425,
+    "age_days": 47.434,
     "freshness_tier": "emergency",
     "content_score": 33,
     "advertised_file_size": 2573972
@@ -2059,81 +1823,10 @@
       }
     },
     "canonical_key": "url:https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mtgvjgyqxt2y",
-    "age_days": 49.28,
+    "age_days": 49.29,
     "freshness_tier": "emergency",
     "content_score": 36,
     "advertised_file_size": 9240091
-  },
-  {
-    "id": "117066076316285726",
-    "url": "https://mastodon.social/@AsarSameer/117066076316285726",
-    "canonical_url": "https://mastodon.social/@AsarSameer/117066076316285726",
-    "account": "AsarSameer",
-    "instance": "https://mastodon.social",
-    "created_at": "2026-08-09T14:42:44.889Z",
-    "content": "<p>Amid all this pain, suffering, and displacement... <br />Love, joy, happiness and laughter gathered in one person<br />Sila  🐱💛</p><p>Every bit of support from you adds more joy to her🙏🏻<br /><a href=\"https://chuffed.org/project/131514-help-asar-and-her-family-survive-the-genocide\" target=\"_blank\" rel=\"nofollow noopener\" translate=\"no\"><span class=\"invisible\">https://</span><span class=\"ellipsis\">chuffed.org/project/131514-hel</span><span class=\"invisible\">p-asar-and-her-family-survive-the-genocide</span></a></p><p><a href=\"https://mastodon.social/tags/Sila\" class=\"mention hashtag\" rel=\"tag\">#<span>Sila</span></a> <a href=\"https://mastodon.social/tags/SilaAndTheCat\" class=\"mention hashtag\" rel=\"tag\">#<span>SilaAndTheCat</span></a> <a href=\"https://mastodon.social/tags/BabyAndCat\" class=\"mention hashtag\" rel=\"tag\">#<span>BabyAndCat</span></a> <a href=\"https://mastodon.social/tags/Cat\" class=\"mention hashtag\" rel=\"tag\">#<span>Cat</span></a> <a href=\"https://mastodon.social/tags/Kitten\" class=\"mention hashtag\" rel=\"tag\">#<span>Kitten</span></a> <a href=\"https://mastodon.social/tags/Hope\" class=\"mention hashtag\" rel=\"tag\">#<span>Hope</span></a> <a href=\"https://mastodon.social/tags/Gaza\" class=\"mention hashtag\" rel=\"tag\">#<span>Gaza</span></a> <a href=\"https://mastodon.social/tags/CuteAnimals\" class=\"mention hashtag\" rel=\"tag\">#<span>CuteAnimals</span></a> <a href=\"https://mastodon.social/tags/CatsOfMastodon\" class=\"mention hashtag\" rel=\"tag\">#<span>CatsOfMastodon</span></a></p>",
-    "caption": "Amid all this pain, suffering, and displacement...\nLove, joy, happiness and laughter gathered in one person\nSila 🐱💛\nEvery bit of support from you adds more joy to her🙏🏻\nhttps:// chuffed.org/project/131514-hel p-asar-and-her-family-survive-the-genocide",
-    "tags": [
-      {
-        "name": "sila",
-        "url": "https://mastodon.social/tags/sila"
-      },
-      {
-        "name": "silaandthecat",
-        "url": "https://mastodon.social/tags/silaandthecat"
-      },
-      {
-        "name": "babyandcat",
-        "url": "https://mastodon.social/tags/babyandcat"
-      },
-      {
-        "name": "cat",
-        "url": "https://mastodon.social/tags/cat"
-      },
-      {
-        "name": "kitten",
-        "url": "https://mastodon.social/tags/kitten"
-      },
-      {
-        "name": "hope",
-        "url": "https://mastodon.social/tags/hope"
-      },
-      {
-        "name": "gaza",
-        "url": "https://mastodon.social/tags/gaza"
-      },
-      {
-        "name": "cuteanimals",
-        "url": "https://mastodon.social/tags/cuteanimals"
-      },
-      {
-        "name": "catsofmastodon",
-        "url": "https://mastodon.social/tags/catsofmastodon"
-      }
-    ],
-    "media_url": "https://files.mastodon.social/media_attachments/files/117/066/072/106/786/778/original/52de47b740213fa1.mp4",
-    "media_type": "video",
-    "media_description": "",
-    "media_meta": {
-      "original": {
-        "width": 474,
-        "height": 850,
-        "frame_rate": "1485000/74353",
-        "duration": 41.324671,
-        "bitrate": 1237095
-      },
-      "small": {
-        "width": 357,
-        "height": 640,
-        "size": "357x640",
-        "aspect": 0.5578125
-      }
-    },
-    "canonical_key": "url:https://mastodon.social/@AsarSameer/117066076316285726",
-    "age_days": 59.253,
-    "freshness_tier": "emergency",
-    "content_score": 34,
-    "advertised_file_size": 6390321
   },
   {
     "id": "117064974430472905",
@@ -2177,7 +1870,7 @@
       }
     },
     "canonical_key": "url:https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3msndet323g2z",
-    "age_days": 59.448,
+    "age_days": 59.458,
     "freshness_tier": "emergency",
     "content_score": 33,
     "advertised_file_size": 4797590
@@ -2261,7 +1954,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@cyprnews/117303498213231503",
-    "age_days": 17.323,
+    "age_days": 17.333,
     "freshness_tier": "secondary",
     "content_score": 29,
     "advertised_file_size": 8816282
@@ -2356,7 +2049,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@sabarishofficial/117201334692312348",
-    "age_days": 35.366,
+    "age_days": 35.375,
     "freshness_tier": "emergency",
     "content_score": 35,
     "advertised_file_size": 11323169
@@ -2411,7 +2104,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@cloudyaww/117209132293036316",
-    "age_days": 33.989,
+    "age_days": 33.998,
     "freshness_tier": "emergency",
     "content_score": 38,
     "advertised_file_size": 7016835
@@ -2462,7 +2155,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@cloudyaww/117178455192350277",
-    "age_days": 39.406,
+    "age_days": 39.416,
     "freshness_tier": "emergency",
     "content_score": 33,
     "advertised_file_size": 6985042
@@ -2513,89 +2206,10 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@cloudyaww/117180076392687995",
-    "age_days": 39.12,
+    "age_days": 39.13,
     "freshness_tier": "emergency",
     "content_score": 38,
     "advertised_file_size": 7122420
-  },
-  {
-    "id": "117214559473613604",
-    "url": "https://mastodon.social/@Catslife786/117214559473613604",
-    "canonical_url": "https://mastodon.social/@Catslife786/117214559473613604",
-    "account": "Catslife786",
-    "instance": "https://mastodon.social",
-    "created_at": "2026-09-04T20:03:58.086Z",
-    "content": "<p>Mother Cat Protects Her Injured Kitten ❤️🐱 | She Never Leaves Her Baby Behind</p><p><a href=\"https://mastodon.social/tags/Cat\" class=\"mention hashtag\" rel=\"tag\">#<span>Cat</span></a> <a href=\"https://mastodon.social/tags/MotherCat\" class=\"mention hashtag\" rel=\"tag\">#<span>MotherCat</span></a> <a href=\"https://mastodon.social/tags/Kitten\" class=\"mention hashtag\" rel=\"tag\">#<span>Kitten</span></a> <a href=\"https://mastodon.social/tags/InjuredKitten\" class=\"mention hashtag\" rel=\"tag\">#<span>InjuredKitten</span></a> <a href=\"https://mastodon.social/tags/CatLovers\" class=\"mention hashtag\" rel=\"tag\">#<span>CatLovers</span></a> <a href=\"https://mastodon.social/tags/AnimalRescue\" class=\"mention hashtag\" rel=\"tag\">#<span>AnimalRescue</span></a> <a href=\"https://mastodon.social/tags/CatsLife\" class=\"mention hashtag\" rel=\"tag\">#<span>CatsLife</span></a> <a href=\"https://mastodon.social/tags/CuteCats\" class=\"mention hashtag\" rel=\"tag\">#<span>CuteCats</span></a> <a href=\"https://mastodon.social/tags/AnimalLove\" class=\"mention hashtag\" rel=\"tag\">#<span>AnimalLove</span></a> <a href=\"https://mastodon.social/tags/KittenRescue\" class=\"mention hashtag\" rel=\"tag\">#<span>KittenRescue</span></a> <a href=\"https://mastodon.social/tags/CatsLife786\" class=\"mention hashtag\" rel=\"tag\">#<span>CatsLife786</span></a></p>",
-    "caption": "Mother Cat Protects Her Injured Kitten ❤️🐱 | She Never Leaves Her Baby Behind",
-    "tags": [
-      {
-        "name": "cat",
-        "url": "https://mastodon.social/tags/cat"
-      },
-      {
-        "name": "mothercat",
-        "url": "https://mastodon.social/tags/mothercat"
-      },
-      {
-        "name": "kitten",
-        "url": "https://mastodon.social/tags/kitten"
-      },
-      {
-        "name": "injuredkitten",
-        "url": "https://mastodon.social/tags/injuredkitten"
-      },
-      {
-        "name": "catlovers",
-        "url": "https://mastodon.social/tags/catlovers"
-      },
-      {
-        "name": "animalrescue",
-        "url": "https://mastodon.social/tags/animalrescue"
-      },
-      {
-        "name": "catslife",
-        "url": "https://mastodon.social/tags/catslife"
-      },
-      {
-        "name": "cutecats",
-        "url": "https://mastodon.social/tags/cutecats"
-      },
-      {
-        "name": "animallove",
-        "url": "https://mastodon.social/tags/animallove"
-      },
-      {
-        "name": "kittenrescue",
-        "url": "https://mastodon.social/tags/kittenrescue"
-      },
-      {
-        "name": "catslife786",
-        "url": "https://mastodon.social/tags/catslife786"
-      }
-    ],
-    "media_url": "https://files.mastodon.social/media_attachments/files/117/214/558/588/227/406/original/1f0ffc55b361d5bb.mp4",
-    "media_type": "video",
-    "media_description": "",
-    "media_meta": {
-      "original": {
-        "width": 720,
-        "height": 1280,
-        "frame_rate": "49500000/1774219",
-        "duration": 19.720708,
-        "bitrate": 10242711
-      },
-      "small": {
-        "width": 360,
-        "height": 640,
-        "size": "360x640",
-        "aspect": 0.5625
-      }
-    },
-    "canonical_key": "url:https://mastodon.social/@Catslife786/117214559473613604",
-    "age_days": 33.03,
-    "freshness_tier": "emergency",
-    "content_score": 36,
-    "advertised_file_size": 25249190
   },
   {
     "id": "117394028185526394",
@@ -2655,152 +2269,10 @@
       }
     },
     "canonical_key": "url:https://mas.to/@markarayner/117394028042611606",
-    "age_days": 1.335,
+    "age_days": 1.345,
     "freshness_tier": "primary",
     "content_score": 37,
     "advertised_file_size": 3232126
-  },
-  {
-    "id": "117355231125810335",
-    "url": "https://mastodon.social/@angelikanotesen/117355231151485388",
-    "canonical_url": "https://mastodon.social/@angelikanotesen/117355231151485388",
-    "account": "angelikanotesen@mastodon.social",
-    "instance": "https://mastodon.online",
-    "created_at": "2026-09-29T16:18:37.000Z",
-    "content": "<p>3/3 - It Was Broken Inside</p><p>“It’s going to die. You can’t save it. It’s broken inside,” my mother said.</p><p>I buried the kitten in the backyard.</p><p>I planted dandelions on its grave.</p><p><a href=\"https://mastodon.social/tags/Kitten\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Kitten</span></a> <a href=\"https://mastodon.social/tags/ChildhoodMemory\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>ChildhoodMemory</span></a> <a href=\"https://mastodon.social/tags/Dandelions\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Dandelions</span></a> <a href=\"https://mastodon.social/tags/BrokenInside\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>BrokenInside</span></a></p><p><a href=\"https://notesfromalife.com/\" rel=\"nofollow noopener\" translate=\"no\" target=\"_blank\"><span class=\"invisible\">https://</span><span class=\"\">notesfromalife.com/</span><span class=\"invisible\"></span></a></p><p>Discover the stories hidden behind every door.</p><p>Angelika<br>Notes From a Life</p><p><a href=\"https://mastodon.social/tags/NotesFromALife\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>NotesFromALife</span></a> <a href=\"https://mastodon.social/tags/LifeStories\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>LifeStories</span></a> <a href=\"https://mastodon.social/tags/Storytelling\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Storytelling</span></a> <a href=\"https://mastodon.social/tags/Memories\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Memories</span></a> <a href=\"https://mastodon.social/tags/PersonalStories\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>PersonalStories</span></a></p>",
-    "caption": "3/3 - It Was Broken Inside\n“It’s going to die. You can’t save it. It’s broken inside,” my mother said.\nI buried the kitten in the backyard.\nI planted dandelions on its grave.\nhttps:// notesfromalife.com/\nDiscover the stories hidden behind every door.\nAngelika\nNotes From a Life",
-    "tags": [
-      {
-        "name": "kitten",
-        "url": "https://mastodon.online/tags/kitten"
-      },
-      {
-        "name": "childhoodmemory",
-        "url": "https://mastodon.online/tags/childhoodmemory"
-      },
-      {
-        "name": "dandelions",
-        "url": "https://mastodon.online/tags/dandelions"
-      },
-      {
-        "name": "brokeninside",
-        "url": "https://mastodon.online/tags/brokeninside"
-      },
-      {
-        "name": "notesfromalife",
-        "url": "https://mastodon.online/tags/notesfromalife"
-      },
-      {
-        "name": "LifeStories",
-        "url": "https://mastodon.online/tags/LifeStories"
-      },
-      {
-        "name": "storytelling",
-        "url": "https://mastodon.online/tags/storytelling"
-      },
-      {
-        "name": "memories",
-        "url": "https://mastodon.online/tags/memories"
-      },
-      {
-        "name": "personalstories",
-        "url": "https://mastodon.online/tags/personalstories"
-      }
-    ],
-    "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/355/231/475/853/665/original/2f40f7bdfce06cbc.mp4",
-    "media_type": "video",
-    "media_description": "",
-    "media_meta": {
-      "original": {
-        "width": 1080,
-        "height": 1920,
-        "frame_rate": "30/1",
-        "duration": 43.733,
-        "bitrate": 6078366
-      },
-      "small": {
-        "width": 360,
-        "height": 640,
-        "size": "360x640",
-        "aspect": 0.5625
-      }
-    },
-    "canonical_key": "url:https://mastodon.social/@angelikanotesen/117355231151485388",
-    "age_days": 8.187,
-    "freshness_tier": "primary",
-    "content_score": 41,
-    "advertised_file_size": 33228149
-  },
-  {
-    "id": "117338219977795548",
-    "url": "https://mastodon.social/@angelikanotesen/117338219967910320",
-    "canonical_url": "https://mastodon.social/@angelikanotesen/117338219967910320",
-    "account": "angelikanotesen@mastodon.social",
-    "instance": "https://mastodon.online",
-    "created_at": "2026-09-26T16:12:27.000Z",
-    "content": "<p>2/3 - I Wanted to Save It</p><p>The boys ran away.</p><p>I picked up the injured kitten, carried it home, cleaned the blood and dirt from its body, and gave it some water.</p><p>Very quickly, I realized I didn’t know how to help it.</p><p>Continues in part 3/3.</p><p><a href=\"https://mastodon.social/tags/Kitten\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Kitten</span></a> <a href=\"https://mastodon.social/tags/ChildhoodMemory\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>ChildhoodMemory</span></a> <a href=\"https://mastodon.social/tags/TryingToHelp\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>TryingToHelp</span></a> <a href=\"https://mastodon.social/tags/BrokenInside\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>BrokenInside</span></a></p><p><a href=\"https://notesfromalife.com/\" rel=\"nofollow noopener\" translate=\"no\" target=\"_blank\"><span class=\"invisible\">https://</span><span class=\"\">notesfromalife.com/</span><span class=\"invisible\"></span></a></p><p>Discover the stories hidden behind every door.</p><p>Angelika<br>Notes From a Life</p><p><a href=\"https://mastodon.social/tags/NotesFromALife\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>NotesFromALife</span></a> <a href=\"https://mastodon.social/tags/LifeStories\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>LifeStories</span></a> <a href=\"https://mastodon.social/tags/Storytelling\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Storytelling</span></a> <a href=\"https://mastodon.social/tags/Memories\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>Memories</span></a> <a href=\"https://mastodon.social/tags/PersonalStories\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>PersonalStories</span></a></p>",
-    "caption": "2/3 - I Wanted to Save It\nThe boys ran away.\nI picked up the injured kitten, carried it home, cleaned the blood and dirt from its body, and gave it some water.\nVery quickly, I realized I didn’t know how to help it.\nContinues in part 3/3.\nhttps:// notesfromalife.com/\nDiscover the stories hidden behind every door.\nAngelika\nNotes From a Life",
-    "tags": [
-      {
-        "name": "kitten",
-        "url": "https://mastodon.online/tags/kitten"
-      },
-      {
-        "name": "childhoodmemory",
-        "url": "https://mastodon.online/tags/childhoodmemory"
-      },
-      {
-        "name": "tryingtohelp",
-        "url": "https://mastodon.online/tags/tryingtohelp"
-      },
-      {
-        "name": "brokeninside",
-        "url": "https://mastodon.online/tags/brokeninside"
-      },
-      {
-        "name": "notesfromalife",
-        "url": "https://mastodon.online/tags/notesfromalife"
-      },
-      {
-        "name": "LifeStories",
-        "url": "https://mastodon.online/tags/LifeStories"
-      },
-      {
-        "name": "storytelling",
-        "url": "https://mastodon.online/tags/storytelling"
-      },
-      {
-        "name": "memories",
-        "url": "https://mastodon.online/tags/memories"
-      },
-      {
-        "name": "personalstories",
-        "url": "https://mastodon.online/tags/personalstories"
-      }
-    ],
-    "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/338/242/942/378/635/original/3697c908caa93b80.mp4",
-    "media_type": "video",
-    "media_description": "",
-    "media_meta": {
-      "original": {
-        "width": 1080,
-        "height": 1920,
-        "frame_rate": "30/1",
-        "duration": 47.6,
-        "bitrate": 6089276
-      },
-      "small": {
-        "width": 360,
-        "height": 640,
-        "size": "360x640",
-        "aspect": 0.5625
-      }
-    },
-    "canonical_key": "url:https://mastodon.social/@angelikanotesen/117338219967910320",
-    "age_days": 11.191,
-    "freshness_tier": "primary",
-    "content_score": 35,
-    "advertised_file_size": 36231197
   },
   {
     "id": "117388711695592308",
@@ -2844,7 +2316,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@pughollow/117388711745845183",
-    "age_days": 2.274,
+    "age_days": 2.283,
     "freshness_tier": "primary",
     "content_score": 39,
     "advertised_file_size": 38935385
@@ -2891,7 +2363,7 @@
       }
     },
     "canonical_key": "url:https://mas.to/@bark_maul/117382868723170736",
-    "age_days": 3.306,
+    "age_days": 3.315,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 10842847
@@ -2946,7 +2418,7 @@
       }
     },
     "canonical_key": "url:https://kolektiva.social/@jamesjoelrussell/117378826586319800",
-    "age_days": 4.02,
+    "age_days": 4.029,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 31017723
@@ -3010,7 +2482,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@joyousjoyness/117378048319110545",
-    "age_days": 4.157,
+    "age_days": 4.167,
     "freshness_tier": "primary",
     "content_score": 29,
     "advertised_file_size": 325598
@@ -3093,7 +2565,7 @@
       }
     },
     "canonical_key": "url:https://loops.video/v/iv03Sbf8Pc",
-    "age_days": 4.529,
+    "age_days": 4.538,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 7149841
@@ -3172,7 +2644,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@TristanKrs/117196160275654578",
-    "age_days": 36.28,
+    "age_days": 36.289,
     "freshness_tier": "emergency",
     "content_score": 33,
     "advertised_file_size": 29088971
@@ -3227,7 +2699,7 @@
       }
     },
     "canonical_key": "url:https://loops.video/v/hFriGzvBBc",
-    "age_days": 46.142,
+    "age_days": 46.151,
     "freshness_tier": "emergency",
     "content_score": 36,
     "advertised_file_size": 3842729
@@ -3294,7 +2766,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@muhnin/117386976129116328",
-    "age_days": 2.581,
+    "age_days": 2.59,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 11586923
@@ -3341,52 +2813,9 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@trndgtr/117386717279892729",
-    "age_days": 2.626,
+    "age_days": 2.636,
     "freshness_tier": "primary",
     "content_score": 36,
     "advertised_file_size": 15046859
-  },
-  {
-    "id": "117374509326986267",
-    "url": "https://mastodon.social/@joyousjoyness/117374508762349729",
-    "canonical_url": "https://mastodon.social/@joyousjoyness/117374508762349729",
-    "account": "joyousjoyness@mastodon.social",
-    "instance": "https://mastodon.world",
-    "created_at": "2026-10-03T02:01:10.000Z",
-    "content": "<p>This is my custom foiled drawing of Asahi the adorable white dog! </p><p><a href=\"https://mastodon.social/tags/dog\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>dog</span></a> <a href=\"https://mastodon.social/tags/art\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>art</span></a></p>",
-    "caption": "This is my custom foiled drawing of Asahi the adorable white dog!",
-    "tags": [
-      {
-        "name": "dog",
-        "url": "https://mastodon.world/tags/dog"
-      },
-      {
-        "name": "art",
-        "url": "https://mastodon.world/tags/art"
-      }
-    ],
-    "media_url": "https://s3.eu-central-2.wasabisys.com/mastodonworld/cache/media_attachments/files/117/374/508/864/918/914/original/74308f07203c000c.mp4",
-    "media_type": "video",
-    "media_description": "",
-    "media_meta": {
-      "original": {
-        "width": 1080,
-        "height": 1920,
-        "frame_rate": "30/1",
-        "duration": 15.353,
-        "bitrate": 5966240
-      },
-      "small": {
-        "width": 360,
-        "height": 640,
-        "size": "360x640",
-        "aspect": 0.5625
-      }
-    },
-    "canonical_key": "url:https://mastodon.social/@joyousjoyness/117374508762349729",
-    "age_days": 4.784,
-    "freshness_tier": "primary",
-    "content_score": 35,
-    "advertised_file_size": 11449961
   }
 ]
