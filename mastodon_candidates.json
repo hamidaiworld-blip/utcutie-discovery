@@ -41,7 +41,7 @@
       }
     },
     "canonical_key": "url:https://infosec.exchange/@GuillaumeRossolini/117394910712542266",
-    "age_days": 1.188,
+    "age_days": 1.194,
     "freshness_tier": "primary",
     "content_score": 36,
     "advertised_file_size": 15534503
@@ -88,7 +88,7 @@
       }
     },
     "canonical_key": "url:https://christmas.tattoo/@sultmhoor/statuses/01M3WRP66MEJ1BY0D45CRBZCV2",
-    "age_days": 5.947,
+    "age_days": 5.953,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 23480462
@@ -139,61 +139,10 @@
       }
     },
     "canonical_key": "url:https://universeodon.com/@adtothebone/117337930254992900",
-    "age_days": 11.251,
+    "age_days": 11.257,
     "freshness_tier": "primary",
     "content_score": 32,
     "advertised_file_size": 1440756
-  },
-  {
-    "id": "117295199465292841",
-    "url": "https://universeodon.com/@adtothebone/117295199328041992",
-    "canonical_url": "https://universeodon.com/@adtothebone/117295199328041992",
-    "account": "adtothebone@universeodon.com",
-    "instance": "https://mastodon.social",
-    "created_at": "2026-09-19T01:51:44.000Z",
-    "content": "<p>Attempts to start trapping Jinx’s family (mom and younger sibs) have been given the partial green light for the morning. Hopefully they stay the night and I can catch a couple of them to start, as available space is still limited. Wish me luck!</p><p>I will have no control over the naming, but here are some possibilities that rhyme with Jinx: </p><p>Binx<br>Dinx <br>Finx <br>Linx<br>Minx<br>Pinx <br>Sphinx<br>Tinx <br>Winx <br>Zinx </p><p><a href=\"https://universeodon.com/tags/cats\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>cats</span></a> <a href=\"https://universeodon.com/tags/kittens\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>kittens</span></a> <a href=\"https://universeodon.com/tags/northdakota\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>northdakota</span></a> <a href=\"https://universeodon.com/tags/gottacatchemall\" class=\"mention hashtag\" rel=\"nofollow noopener\" target=\"_blank\">#<span>gottacatchemall</span></a></p>",
-    "caption": "Attempts to start trapping Jinx’s family (mom and younger sibs) have been given the partial green light for the morning. Hopefully they stay the night and I can catch a couple of them to start, as available space is still limited. Wish me luck!\nI will have no control over the naming, but here are some possibilities that rhyme with Jinx:\nBinx\nDinx\nFinx\nLinx\nMinx\nPinx\nSphinx\nTinx\nWinx\nZinx",
-    "tags": [
-      {
-        "name": "cats",
-        "url": "https://mastodon.social/tags/cats"
-      },
-      {
-        "name": "kittens",
-        "url": "https://mastodon.social/tags/kittens"
-      },
-      {
-        "name": "northdakota",
-        "url": "https://mastodon.social/tags/northdakota"
-      },
-      {
-        "name": "gottacatchemall",
-        "url": "https://mastodon.social/tags/gottacatchemall"
-      }
-    ],
-    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/295/199/352/694/589/original/996d747914748629.mp4",
-    "media_type": "video",
-    "media_description": "",
-    "media_meta": {
-      "original": {
-        "width": 1280,
-        "height": 720,
-        "frame_rate": "30/1",
-        "duration": 36.801995,
-        "bitrate": 3220657
-      },
-      "small": {
-        "width": 640,
-        "height": 360,
-        "size": "640x360",
-        "aspect": 1.7777777777777777
-      }
-    },
-    "canonical_key": "url:https://universeodon.com/@adtothebone/117295199328041992",
-    "age_days": 18.798,
-    "freshness_tier": "secondary",
-    "content_score": 35,
-    "advertised_file_size": 14815827
   },
   {
     "id": "117278198248855828",
@@ -241,7 +190,7 @@
       }
     },
     "canonical_key": "url:https://universeodon.com/@adtothebone/117278198128139377",
-    "age_days": 21.8,
+    "age_days": 21.806,
     "freshness_tier": "secondary",
     "content_score": 39,
     "advertised_file_size": 15689291
@@ -292,7 +241,7 @@
       }
     },
     "canonical_key": "url:https://universeodon.com/@adtothebone/117277971978819432",
-    "age_days": 21.84,
+    "age_days": 21.846,
     "freshness_tier": "secondary",
     "content_score": 36,
     "advertised_file_size": 11926922
@@ -367,7 +316,7 @@
       }
     },
     "canonical_key": "url:https://cyberplace.social/@notkawaii_irl/117264590287095586",
-    "age_days": 24.204,
+    "age_days": 24.21,
     "freshness_tier": "secondary",
     "content_score": 38,
     "advertised_file_size": 2058201
@@ -426,7 +375,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.durrans.com/@dan/117262124034501135",
-    "age_days": 24.639,
+    "age_days": 24.645,
     "freshness_tier": "secondary",
     "content_score": 33,
     "advertised_file_size": 22997353
@@ -485,7 +434,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.durrans.com/@dan/117259743610433442",
-    "age_days": 25.06,
+    "age_days": 25.066,
     "freshness_tier": "secondary",
     "content_score": 36,
     "advertised_file_size": 10729092
@@ -544,7 +493,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.durrans.com/@dan/117256741164404902",
-    "age_days": 25.59,
+    "age_days": 25.596,
     "freshness_tier": "secondary",
     "content_score": 36,
     "advertised_file_size": 11104425
@@ -595,7 +544,7 @@
       }
     },
     "canonical_key": "url:https://hachyderm.io/@fuzzykb/117174735725766784",
-    "age_days": 40.072,
+    "age_days": 40.078,
     "freshness_tier": "emergency",
     "content_score": 48,
     "advertised_file_size": 7341194
@@ -646,7 +595,7 @@
       }
     },
     "canonical_key": "url:https://khumbu.social/@elperronegro/01a1175d-3a8e-767d-a5e2-9f43fc009679",
-    "age_days": 0.156,
+    "age_days": 0.162,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 16205118
@@ -713,7 +662,7 @@
       }
     },
     "canonical_key": "url:https://loops.video/v/iA76EXqCyC",
-    "age_days": 0.569,
+    "age_days": 0.575,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 2141400
@@ -768,7 +717,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@VitalisViVa/117389744202260081",
-    "age_days": 2.101,
+    "age_days": 2.107,
     "freshness_tier": "primary",
     "content_score": 34,
     "advertised_file_size": 2244042
@@ -871,7 +820,7 @@
       }
     },
     "canonical_key": "url:https://c.im/@fonecokid/117383380609116583",
-    "age_days": 3.224,
+    "age_days": 3.23,
     "freshness_tier": "primary",
     "content_score": 40,
     "advertised_file_size": 6937607
@@ -914,7 +863,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.sdf.org/@PugHollowSanctuary/117395838006552833",
-    "age_days": 1.024,
+    "age_days": 1.03,
     "freshness_tier": "primary",
     "content_score": 36,
     "advertised_file_size": 17202187
@@ -957,7 +906,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@pughollow/117395837510891831",
-    "age_days": 1.025,
+    "age_days": 1.03,
     "freshness_tier": "primary",
     "content_score": 36,
     "advertised_file_size": 17202187
@@ -1008,7 +957,7 @@
       }
     },
     "canonical_key": "url:https://bark.lgbt/@emberfox/117397729087124515",
-    "age_days": 0.69,
+    "age_days": 0.696,
     "freshness_tier": "primary",
     "content_score": 38,
     "advertised_file_size": 8498549
@@ -1055,7 +1004,7 @@
       }
     },
     "canonical_key": "url:https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3muk44t4dmx2j",
-    "age_days": 35.289,
+    "age_days": 35.295,
     "freshness_tier": "emergency",
     "content_score": 33,
     "advertised_file_size": 3739004
@@ -1158,7 +1107,7 @@
       }
     },
     "canonical_key": "url:https://c.im/@fonecokid/117382190250141953",
-    "age_days": 3.435,
+    "age_days": 3.441,
     "freshness_tier": "primary",
     "content_score": 38,
     "advertised_file_size": 12559719
@@ -1261,7 +1210,7 @@
       }
     },
     "canonical_key": "url:https://c.im/@fonecokid/117376443174130062",
-    "age_days": 4.45,
+    "age_days": 4.456,
     "freshness_tier": "primary",
     "content_score": 38,
     "advertised_file_size": 13358743
@@ -1336,7 +1285,7 @@
       }
     },
     "canonical_key": "url:https://retro-gaiden.com/@VilmaTheKitty/117375538531296618",
-    "age_days": 4.609,
+    "age_days": 4.615,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 15117531
@@ -1391,7 +1340,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@kaersvang/117388577022747422",
-    "age_days": 2.307,
+    "age_days": 2.313,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 46452762
@@ -1446,104 +1395,10 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@crittersnackstation/117391020068196933",
-    "age_days": 1.875,
+    "age_days": 1.881,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 27824438
-  },
-  {
-    "id": "117309876373420271",
-    "url": "https://fed.brid.gy/r/https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mw23nenfmi2z",
-    "canonical_url": "https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mw23nenfmi2z",
-    "account": "veganftaofficial.bsky.social@bsky.brid.gy",
-    "instance": "https://mastodon.social",
-    "created_at": "2026-09-21T16:04:11.865Z",
-    "content": "<p>Margot was discarded by the dairy industry when she was no longer considered profitable. 💔<br><br>Now she’s finally free to live as herself - not a machine, but a sentient being with a life of her own. 🐄💚<br><br>Clips from the amazing moustache_farmer (IG) 🫶<br><br><a class=\"hashtag\" rel=\"nofollow noopener\" href=\"https://bsky.app/search?q=%23cow\" target=\"_blank\">#cow</a> <a class=\"hashtag\" rel=\"nofollow noopener\" href=\"https://bsky.app/search?q=%23cuteanimals\" target=\"_blank\">#cuteanimals</a> <a class=\"hashtag\" rel=\"nofollow noopener\" href=\"https://bsky.app/search?q=%23bekindtoanimals\" target=\"_blank\">#bekindtoanimals</a></p>",
-    "caption": "Margot was discarded by the dairy industry when she was no longer considered profitable. 💔\nNow she’s finally free to live as herself - not a machine, but a sentient being with a life of her own. 🐄💚\nClips from the amazing moustache_farmer (IG) 🫶",
-    "tags": [
-      {
-        "name": "cow",
-        "url": "https://mastodon.social/tags/cow"
-      },
-      {
-        "name": "cuteanimals",
-        "url": "https://mastodon.social/tags/cuteanimals"
-      },
-      {
-        "name": "bekindtoanimals",
-        "url": "https://mastodon.social/tags/bekindtoanimals"
-      }
-    ],
-    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/309/876/205/332/989/original/7d457a79e78d934c.mp4",
-    "media_type": "video",
-    "media_description": "",
-    "media_meta": {
-      "original": {
-        "width": 720,
-        "height": 1280,
-        "frame_rate": "30/1",
-        "duration": 16.5,
-        "bitrate": 1633550
-      },
-      "small": {
-        "width": 360,
-        "height": 640,
-        "size": "360x640",
-        "aspect": 0.5625
-      }
-    },
-    "canonical_key": "url:https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mw23nenfmi2z",
-    "age_days": 16.206,
-    "freshness_tier": "secondary",
-    "content_score": 33,
-    "advertised_file_size": 3369213
-  },
-  {
-    "id": "117290998688761498",
-    "url": "https://fed.brid.gy/r/https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mvrper2kch2n",
-    "canonical_url": "https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mvrper2kch2n",
-    "account": "veganftaofficial.bsky.social@bsky.brid.gy",
-    "instance": "https://mastodon.social",
-    "created_at": "2026-09-18T08:03:20.039Z",
-    "content": "<p>Cows are friends, not food. 🐮💚<br><br>Credit: secondchances1433 (IG) 🫶<br><br><a class=\"hashtag\" rel=\"nofollow noopener\" href=\"https://bsky.app/search?q=%23cows\" target=\"_blank\">#cows</a> <a class=\"hashtag\" rel=\"nofollow noopener\" href=\"https://bsky.app/search?q=%23cuteanimals\" target=\"_blank\">#cuteanimals</a> <a class=\"hashtag\" rel=\"nofollow noopener\" href=\"https://bsky.app/search?q=%23animallover\" target=\"_blank\">#animallover</a></p>",
-    "caption": "Cows are friends, not food. 🐮💚\nCredit: secondchances1433 (IG) 🫶",
-    "tags": [
-      {
-        "name": "cows",
-        "url": "https://mastodon.social/tags/cows"
-      },
-      {
-        "name": "cuteanimals",
-        "url": "https://mastodon.social/tags/cuteanimals"
-      },
-      {
-        "name": "animallover",
-        "url": "https://mastodon.social/tags/animallover"
-      }
-    ],
-    "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/290/998/488/881/884/original/452c36f4ac47d179.mp4",
-    "media_type": "video",
-    "media_description": "",
-    "media_meta": {
-      "original": {
-        "width": 1080,
-        "height": 1920,
-        "frame_rate": "30/1",
-        "duration": 17.933008,
-        "bitrate": 3065431
-      },
-      "small": {
-        "width": 360,
-        "height": 640,
-        "size": "360x640",
-        "aspect": 0.5625
-      }
-    },
-    "canonical_key": "url:https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mvrper2kch2n",
-    "age_days": 19.54,
-    "freshness_tier": "secondary",
-    "content_score": 38,
-    "advertised_file_size": 6871566
   },
   {
     "id": "117218319113461368",
@@ -1595,7 +1450,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@crittersnackstation/117218319113461368",
-    "age_days": 32.376,
+    "age_days": 32.381,
     "freshness_tier": "emergency",
     "content_score": 31,
     "advertised_file_size": 42531385
@@ -1654,7 +1509,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@Layan2002/117190655093159599",
-    "age_days": 37.261,
+    "age_days": 37.267,
     "freshness_tier": "emergency",
     "content_score": 32,
     "advertised_file_size": 4017054
@@ -1701,7 +1556,7 @@
       }
     },
     "canonical_key": "url:https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mtveaa6juv2b",
-    "age_days": 43.539,
+    "age_days": 43.545,
     "freshness_tier": "emergency",
     "content_score": 36,
     "advertised_file_size": 9001450
@@ -1776,7 +1631,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@Sarah34/117133052592867633",
-    "age_days": 47.434,
+    "age_days": 47.44,
     "freshness_tier": "emergency",
     "content_score": 33,
     "advertised_file_size": 2573972
@@ -1823,7 +1678,7 @@
       }
     },
     "canonical_key": "url:https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3mtgvjgyqxt2y",
-    "age_days": 49.29,
+    "age_days": 49.296,
     "freshness_tier": "emergency",
     "content_score": 36,
     "advertised_file_size": 9240091
@@ -1870,7 +1725,7 @@
       }
     },
     "canonical_key": "url:https://bsky.app/profile/did:plc:fe7wk7bzjxhyzzoecttcw322/post/3msndet323g2z",
-    "age_days": 59.458,
+    "age_days": 59.463,
     "freshness_tier": "emergency",
     "content_score": 33,
     "advertised_file_size": 4797590
@@ -1954,7 +1809,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@cyprnews/117303498213231503",
-    "age_days": 17.333,
+    "age_days": 17.338,
     "freshness_tier": "secondary",
     "content_score": 29,
     "advertised_file_size": 8816282
@@ -2049,7 +1904,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@sabarishofficial/117201334692312348",
-    "age_days": 35.375,
+    "age_days": 35.381,
     "freshness_tier": "emergency",
     "content_score": 35,
     "advertised_file_size": 11323169
@@ -2104,7 +1959,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@cloudyaww/117209132293036316",
-    "age_days": 33.998,
+    "age_days": 34.004,
     "freshness_tier": "emergency",
     "content_score": 38,
     "advertised_file_size": 7016835
@@ -2155,7 +2010,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@cloudyaww/117178455192350277",
-    "age_days": 39.416,
+    "age_days": 39.422,
     "freshness_tier": "emergency",
     "content_score": 33,
     "advertised_file_size": 6985042
@@ -2206,7 +2061,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@cloudyaww/117180076392687995",
-    "age_days": 39.13,
+    "age_days": 39.135,
     "freshness_tier": "emergency",
     "content_score": 38,
     "advertised_file_size": 7122420
@@ -2269,7 +2124,7 @@
       }
     },
     "canonical_key": "url:https://mas.to/@markarayner/117394028042611606",
-    "age_days": 1.345,
+    "age_days": 1.35,
     "freshness_tier": "primary",
     "content_score": 37,
     "advertised_file_size": 3232126
@@ -2316,7 +2171,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@pughollow/117388711745845183",
-    "age_days": 2.283,
+    "age_days": 2.289,
     "freshness_tier": "primary",
     "content_score": 39,
     "advertised_file_size": 38935385
@@ -2363,7 +2218,7 @@
       }
     },
     "canonical_key": "url:https://mas.to/@bark_maul/117382868723170736",
-    "age_days": 3.315,
+    "age_days": 3.321,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 10842847
@@ -2418,7 +2273,7 @@
       }
     },
     "canonical_key": "url:https://kolektiva.social/@jamesjoelrussell/117378826586319800",
-    "age_days": 4.029,
+    "age_days": 4.035,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 31017723
@@ -2482,7 +2337,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@joyousjoyness/117378048319110545",
-    "age_days": 4.167,
+    "age_days": 4.173,
     "freshness_tier": "primary",
     "content_score": 29,
     "advertised_file_size": 325598
@@ -2565,7 +2420,7 @@
       }
     },
     "canonical_key": "url:https://loops.video/v/iv03Sbf8Pc",
-    "age_days": 4.538,
+    "age_days": 4.544,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 7149841
@@ -2644,7 +2499,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@TristanKrs/117196160275654578",
-    "age_days": 36.289,
+    "age_days": 36.295,
     "freshness_tier": "emergency",
     "content_score": 33,
     "advertised_file_size": 29088971
@@ -2699,7 +2554,7 @@
       }
     },
     "canonical_key": "url:https://loops.video/v/hFriGzvBBc",
-    "age_days": 46.151,
+    "age_days": 46.157,
     "freshness_tier": "emergency",
     "content_score": 36,
     "advertised_file_size": 3842729
@@ -2766,7 +2621,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@muhnin/117386976129116328",
-    "age_days": 2.59,
+    "age_days": 2.596,
     "freshness_tier": "primary",
     "content_score": 33,
     "advertised_file_size": 11586923
@@ -2813,7 +2668,7 @@
       }
     },
     "canonical_key": "url:https://mastodon.social/@trndgtr/117386717279892729",
-    "age_days": 2.636,
+    "age_days": 2.642,
     "freshness_tier": "primary",
     "content_score": 36,
     "advertised_file_size": 15046859
