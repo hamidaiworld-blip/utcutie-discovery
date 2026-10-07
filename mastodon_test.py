@@ -2,7 +2,6 @@ import hashlib
 import html
 import json
 import re
-import subprocess
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
@@ -654,32 +653,32 @@ def visual_media_gate(path):
 
 
 
-def ffprobe_video(path):
-    command = [
-        "ffprobe",
-        "-v", "error",
-        "-select_streams", "v:0",
-        "-show_entries", "stream=duration,width,height,codec_name",
-        "-of", "json",
-        str(path),
-    ]
-
-    result = subprocess.run(
-        command,
-        capture_output=True,
-        text=True,
-        timeout=30,
-    )
-
-    if result.returncode != 0:
-        return None
-
+def video_info(path):
+    capture = cv2.VideoCapture(str(path))
     try:
-        payload = json.loads(result.stdout)
-        streams = payload.get("streams", [])
-        return streams[0] if streams else None
-    except Exception:
-        return None
+        if not capture.isOpened():
+            return None
+
+        fps = float(capture.get(cv2.CAP_PROP_FPS) or 0)
+        frame_count = float(capture.get(cv2.CAP_PROP_FRAME_COUNT) or 0)
+        width = int(capture.get(cv2.CAP_PROP_FRAME_WIDTH) or 0)
+        height = int(capture.get(cv2.CAP_PROP_FRAME_HEIGHT) or 0)
+
+        if fps <= 0 or frame_count <= 0:
+            return None
+
+        duration = frame_count / fps
+        if duration <= 0:
+            return None
+
+        return {
+            "duration": duration,
+            "width": width,
+            "height": height,
+            "codec_name": "",
+        }
+    finally:
+        capture.release()
 
 
 def download_and_validate(candidate):
@@ -721,7 +720,7 @@ def download_and_validate(candidate):
             if total > MAX_FILE_SIZE:
                 return None, "file too large"
 
-            stream = ffprobe_video(path)
+            stream = video_info(path)
             if not stream:
                 return None, "invalid video"
 
@@ -750,8 +749,6 @@ def download_and_validate(candidate):
 
             return candidate, ""
 
-        except subprocess.TimeoutExpired:
-            return None, "ffprobe timeout"
         except requests.RequestException as exc:
             return None, f"download error: {exc}"
         except Exception as exc:
