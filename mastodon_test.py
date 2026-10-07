@@ -6,1642 +6,242 @@ import subprocess
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import urlparse
 
 import requests
 
-
-# ============================================================
-# CONFIG
-# ============================================================
 
 INSTANCES = [
     "https://mastodon.social",
     "https://mastodon.online",
     "https://mastodon.world",
+    "https://mstdn.party",
 ]
 
 HASHTAGS = [
     "cats",
     "cat",
+    "kittens",
+    "kitten",
     "dogs",
     "dog",
+    "puppies",
+    "puppy",
     "pets",
     "animals",
     "aww",
     "cuteanimals",
     "funnyanimals",
     "petsofthefediverse",
+    "cutepets",
+    "funnycats",
+    "funnydogs",
+    "animalvideos",
 ]
 
-MAX_PER_HASHTAG = 40
+MAX_PAGES_PER_TAG = 4
+STATUSES_PER_PAGE = 40
 
-MIN_DURATION = 15
-MAX_DURATION = 180
-
+MIN_DURATION = 15.0
+MAX_DURATION = 180.0
 MAX_FILE_SIZE = 48 * 1024 * 1024
 
-MAX_SELECTED = 20
-
-# Freshness policy.
 PRIMARY_DAYS = 14
 SECONDARY_DAYS = 30
 EMERGENCY_DAYS = 60
 
-# Minimum quality/relevance gates.
-MIN_CONTENT_VALUE = 30
-EMERGENCY_MIN_CONTENT_VALUE = 55
-EMERGENCY_MIN_SCORE = 75
-
-REQUEST_TIMEOUT = 30
-
-# Telegram video captions have a 1024-character limit.
-# Leave room for the final @utcutie line.
-MAX_CAPTION_LENGTH = 900
+MAX_SELECTED = 20
+MAX_DOWNLOAD_ATTEMPTS = 80
+REQUEST_TIMEOUT = 25
 
 HISTORY_FILE = Path("history.json")
-CANDIDATES_FILE = Path("mastodon_candidates.json")
-VALIDATED_FILE = Path("validated_candidates.json")
 SELECTED_FILE = Path("selected_candidates.json")
-
-# Diversity controls.
-#
-# These are NOT hard quotas.
-# They only prevent the ranking from filling the entire
-# daily selection with videos from one account/source.
-MAX_VIDEOS_PER_ACCOUNT = 2
-MAX_VIDEOS_PER_INSTANCE = 8
+VALIDATED_FILE = Path("validated_candidates.json")
+DISCOVERY_FILE = Path("mastodon_candidates.json")
 
 
-# ============================================================
-# ANIMAL RELEVANCE
-# ============================================================
-
-ANIMAL_KEYWORDS = {
-    "cat": 5,
-    "cats": 5,
-    "kitten": 5,
-    "kittens": 5,
-    "kitty": 5,
-    "kitties": 5,
-    "feline": 5,
-
-    "dog": 5,
-    "dogs": 5,
-    "puppy": 5,
-    "puppies": 5,
-    "pup": 5,
-    "canine": 5,
-
-    "pet": 4,
-    "pets": 4,
-    "animal": 4,
-    "animals": 4,
-
-    "bird": 4,
-    "birds": 4,
-    "parrot": 5,
-    "parrots": 5,
-
-    "hamster": 5,
-    "hamsters": 5,
-
-    "rabbit": 5,
-    "rabbits": 5,
-    "bunny": 5,
-    "bunnies": 5,
-
-    "guinea": 4,
-
-    "pig": 3,
-    "pigs": 3,
-
-    "horse": 4,
-    "horses": 4,
-
-    "cow": 4,
-    "cows": 4,
-
-    "goat": 4,
-    "goats": 4,
-
-    "sheep": 4,
-
-    "duck": 4,
-    "ducks": 4,
-
-    "chicken": 4,
-    "chickens": 4,
-
-    "fox": 4,
-    "foxes": 4,
-
-    "bear": 4,
-    "bears": 4,
-
-    "wildlife": 4,
-    "zoo": 3,
-
-    "animalvideo": 5,
-    "animalvideos": 5,
-    "cuteanimal": 5,
-    "cuteanimals": 5,
-    "funnyanimal": 5,
-    "funnyanimals": 5,
-    "petsofthefediverse": 5,
+ANIMAL_TERMS = {
+    "cat", "cats", "kitten", "kittens", "kitty", "kitties",
+    "dog", "dogs", "puppy", "puppies", "pup", "pups",
+    "pet", "pets", "animal", "animals",
+    "rabbit", "rabbits", "bunny", "bunnies",
+    "hamster", "hamsters", "guinea pig", "guinea pigs",
+    "bird", "birds", "parrot", "parrots", "duck", "ducks",
+    "goose", "geese", "chicken", "chickens", "hen", "hens",
+    "cow", "cows", "calf", "calves", "goat", "goats",
+    "sheep", "lamb", "lambs", "horse", "horses", "foal",
+    "pig", "pigs", "piglet", "piglets", "donkey", "donkeys",
+    "fox", "foxes", "raccoon", "raccoons", "hedgehog", "hedgehogs",
+    "deer", "deers", "fawn", "fawns", "squirrel", "squirrels",
+    "otter", "otters", "seal", "seals", "penguin", "penguins",
+    "turtle", "turtles", "tortoise", "tortoises",
+    "frog", "frogs", "snake", "snakes", "lizard", "lizards",
+    "fish", "goldfish", "monkey", "monkeys", "bear", "bears",
+    "koala", "koalas", "panda", "pandas", "lion", "lions",
+    "tiger", "tigers", "elephant", "elephants", "giraffe",
+    "zebra", "wolf", "wolves", "birdie", "kitty",
 }
 
+PET_CONTEXT_TERMS = {
+    "cute", "adorable", "funny", "hilarious", "lol", "laugh",
+    "humor", "humour", "silly", "goofy", "play", "playing",
+    "playtime", "sleeping", "sleep", "nap", "zoomies", "chasing",
+    "chase", "running", "jumping", "jump", "playing with",
+    "best friend", "friend", "family", "home", "backyard",
+    "sunshine", "sunny", "snuggle", "snuggling", "cuddle",
+    "cuddling", "wholesome", "happy", "heartwarming", "sweet",
+    "reaction", "fails", "funny video", "cute video",
+    "pet life", "pets", "animal video", "animal videos",
+}
 
-# ============================================================
-# HELPERS
-# ============================================================
+ADVOCACY_TERMS = {
+    "rescue", "rescued", "adopt", "adopted", "adoption",
+    "shelter", "foster", "fostering", "sanctuary",
+    "farm sanctuary", "vegan", "vegetarian", "animal welfare",
+    "animal rights", "animal activism", "activism", "campaign",
+    "petition", "donate", "donation", "fundraiser", "fundraising",
+    "save the animals", "meat farm",
+}
 
-def now_iso():
-    return datetime.now(
-        timezone.utc
-    ).isoformat()
+IRRELEVANT_TERMS = {
+    "org chart", "hierarchy", "leadership", "management",
+    "sociopath", "workplace", "corporate", "company",
+    "career", "linkedin", "audit", "marketing strategy",
+    "business strategy", "politics", "political campaign",
+    "election", "sports", "football", "soccer", "basketball",
+    "baseball", "hockey", "tennis",
+    "keychain", "unboxing", "product", "portrait commission",
+    "custom art", "custom portrait", "merch", "merchandise",
+}
+
+PROMO_TERMS = {
+    "subscribe", "follow us", "follow me", "link in bio",
+    "wishlist", "buy now", "shop now", "limited edition",
+    "available now", "order now", "support my patreon",
+}
+
+MUSIC_TERMS = {
+    "kevin macleod", "incompetech", "creative commons",
+    "music by", "licensed music", "royalty free music",
+}
+
+URL_RE = re.compile(r"https?://\S+|www\.\S+", re.I)
+HASHTAG_RE = re.compile(r"(?u)(?<!\w)#\s*\w+")
+PHONE_RE = re.compile(r"(?<!\w)(?:\+?\d[\d\s().-]{7,}\d)(?!\w)")
 
 
-# ============================================================
-# CAPTION CLEANING
-# ============================================================
-
-def clean_caption(raw_caption):
-    """
-    Convert Mastodon HTML into clean plain text.
-
-    Rules:
-
-    1. Remove script/style blocks.
-    2. Preserve paragraph/line boundaries.
-    3. Remove remaining HTML.
-    4. Decode HTML entities.
-    5. Remove URLs.
-    6. Remove hashtags.
-    7. Preserve meaningful line breaks.
-    8. Remove empty hashtag-only lines.
-    9. Collapse excessive blank lines.
-
-    Example:
-
-        <p><a href="...">#Dog</a> #Pets</p>
-        <p>Sunday afternoon</p>
-
-    becomes:
-
-        Sunday afternoon
-    """
-
-    if not raw_caption:
+def normalize_text(value):
+    if value is None:
         return ""
+    value = html.unescape(str(value))
+    value = re.sub(r"<script[^>]*>.*?</script>", " ", value, flags=re.I | re.S)
+    value = re.sub(r"<style[^>]*>.*?</style>", " ", value, flags=re.I | re.S)
+    value = re.sub(r"<br\s*/?>", "\n", value, flags=re.I)
+    value = re.sub(r"</(p|div|li|blockquote|h[1-6])\s*>", "\n", value, flags=re.I)
+    value = re.sub(r"<[^>]+>", " ", value)
+    value = html.unescape(value)
+    return value
 
-    text = str(raw_caption)
 
-    # --------------------------------------------------------
-    # Remove script/style blocks.
-    # --------------------------------------------------------
-
-    text = re.sub(
-        r"<(script|style)\b[^>]*>.*?</\1>",
-        " ",
-        text,
-        flags=re.IGNORECASE | re.DOTALL
-    )
-
-    # --------------------------------------------------------
-    # Convert common block-level HTML into line breaks.
-    # --------------------------------------------------------
-
-    text = re.sub(
-        r"</?(p|div|br|li|blockquote|h[1-6])\b[^>]*>",
-        "\n",
-        text,
-        flags=re.IGNORECASE
-    )
-
-    # --------------------------------------------------------
-    # Remove remaining HTML tags.
-    # --------------------------------------------------------
-
-    text = re.sub(
-        r"<[^>]+>",
-        " ",
-        text
-    )
-
-    # --------------------------------------------------------
-    # Decode HTML entities.
-    # --------------------------------------------------------
-
-    text = html.unescape(text)
-
-    # --------------------------------------------------------
-    # Remove URLs.
-    # --------------------------------------------------------
-
-    text = re.sub(
-        r"https?://\S+",
-        "",
-        text,
-        flags=re.IGNORECASE
-    )
-
-    # --------------------------------------------------------
-    # Remove hashtags.
-    #
-    # Supports normal Unicode word characters too.
-    # Examples:
-    #
-    # #Dog
-    # #DogsOfMastodon
-    # #Ú¯Ø±Ø¨Ù
-    # --------------------------------------------------------
-
-    text = re.sub(
-        r"(?<!\w)#[\w]+",
-        "",
-        text,
-        flags=re.UNICODE
-    )
-
-    # --------------------------------------------------------
-    # Clean each line individually.
-    #
-    # This deliberately preserves line boundaries instead of
-    # flattening the entire caption into one paragraph.
-    # --------------------------------------------------------
+def clean_caption(caption):
+    text = normalize_text(caption)
+    text = URL_RE.sub(" ", text)
+    text = HASHTAG_RE.sub(" ", text)
+    text = PHONE_RE.sub(" ", text)
 
     lines = []
-
-    for line in text.splitlines():
-
-        line = re.sub(
-            r"[ \t]+",
-            " ",
-            line
-        ).strip()
-
-        # Remove lines that contain nothing after hashtag/URL
-        # cleaning.
+    for raw_line in text.splitlines():
+        line = re.sub(r"\s+", " ", raw_line).strip()
         if not line:
+            continue
+
+        low = line.casefold()
+
+        if any(term in low for term in MUSIC_TERMS):
+            continue
+
+        if any(term in low for term in PROMO_TERMS):
             continue
 
         lines.append(line)
 
-    # --------------------------------------------------------
-    # Rebuild caption.
-    # --------------------------------------------------------
+    result = "\n".join(lines)
+    result = re.sub(r"\n{3,}", "\n\n", result).strip()
 
-    text = "\n".join(lines)
+    if len(result) > 900:
+        result = result[:900].rsplit(" ", 1)[0].rstrip(".,;:-")
 
-    # --------------------------------------------------------
-    # Collapse excessive blank lines.
-    # --------------------------------------------------------
+    return result
 
-    text = re.sub(
-        r"\n{3,}",
-        "\n\n",
-        text
-    )
-
-    return text.strip()
-
-
-def telegram_caption(raw_caption):
-    """
-    Produce the Telegram-ready source caption.
-
-    @utcutie is intentionally appended later by the
-    publishing workflow.
-    """
-
-    text = clean_caption(
-        raw_caption
-    )
-
-    if not text:
-        return ""
-
-    if len(text) <= MAX_CAPTION_LENGTH:
-        return text
-
-    # --------------------------------------------------------
-    # Prefer a natural boundary.
-    # --------------------------------------------------------
-
-    shortened = text[
-        :MAX_CAPTION_LENGTH
-    ]
-
-    last_newline = shortened.rfind(
-        "\n"
-    )
-
-    last_space = shortened.rfind(
-        " "
-    )
-
-    # Prefer a paragraph/line boundary.
-    if last_newline >= int(
-        MAX_CAPTION_LENGTH * 0.75
-    ):
-        shortened = shortened[
-            :last_newline
-        ]
-
-    elif last_space >= int(
-        MAX_CAPTION_LENGTH * 0.75
-    ):
-        shortened = shortened[
-            :last_space
-        ]
-
-    return shortened.rstrip()
-
-
-# ============================================================
-# TEXT / RELEVANCE
-# ============================================================
-
-def normalize_text(text):
-
-    if not text:
-        return ""
-
-    text = clean_caption(
-        text
-    )
-
-    return text.lower()
-
-
-def tokenize(text):
-
-    return set(
-        re.findall(
-            r"[a-z0-9]+",
-            normalize_text(text)
-        )
-    )
-
-
-def animal_relevance(text):
-
-    tokens = tokenize(
-        text
-    )
-
-    score = 0
-
-    for keyword, value in ANIMAL_KEYWORDS.items():
-
-        if keyword in tokens:
-            score += value
-
-    return score
-
-
-# ============================================================
-# ENGAGEMENT
-# ============================================================
-
-def engagement_score(
-    favourites,
-    reblogs,
-    replies
-):
-
-    favourites = max(
-        0,
-        int(favourites or 0)
-    )
-
-    reblogs = max(
-        0,
-        int(reblogs or 0)
-    )
-
-    replies = max(
-        0,
-        int(replies or 0)
-    )
-
-    score = 0.0
-
-    score += min(
-        40.0,
-        favourites ** 0.5
-    )
-
-    score += min(
-        30.0,
-        reblogs ** 0.5 * 1.5
-    )
-
-    score += min(
-        15.0,
-        replies ** 0.5
-    )
-
-    return round(
-        score,
-        3
-    )
-
-
-# ============================================================
-# RECENCY
-# ============================================================
-
-def recency_score(created_at):
-
-    if not created_at:
-        return 0.0
-
-    try:
-
-        created = datetime.fromisoformat(
-            created_at.replace(
-                "Z",
-                "+00:00"
-            )
-        )
-
-        age_hours = (
-            datetime.now(
-                timezone.utc
-            ) - created
-        ).total_seconds() / 3600
-
-        age_hours = max(
-            0,
-            age_hours
-        )
-
-        if age_hours <= 6:
-            return 30.0
-
-        if age_hours <= 24:
-            return 25.0
-
-        if age_hours <= 72:
-            return 18.0
-
-        if age_hours <= 168:
-            return 10.0
-
-        if age_hours <= 720:
-            return 4.0
-
-        return 1.0
-
-    except Exception:
-        return 0.0
-
-
-# ============================================================
-# VIDEO QUALITY
-# ============================================================
-
-def quality_score(
-    width,
-    height
-):
-
-    try:
-
-        width = int(
-            width or 0
-        )
-
-        height = int(
-            height or 0
-        )
-
-    except Exception:
-
-        return 0.0
-
-    pixels = (
-        width * height
-    )
-
-    if pixels >= 1920 * 1080:
-        return 25.0
-
-    if pixels >= 1280 * 720:
-        return 22.0
-
-    if pixels >= 854 * 480:
-        return 16.0
-
-    if pixels >= 640 * 360:
-        return 10.0
-
-    if pixels > 0:
-        return 5.0
-
-    return 0.0
-
-
-# ============================================================
-# CAPTION QUALITY
-# ============================================================
-
-def caption_quality_score(
-    caption
-):
-
-    text = str(
-        caption or ""
-    ).strip()
-
-    if not text:
-        return 0.0
-
-    score = 0.0
-
-    # A short meaningful caption is preferable to an empty one.
-    if len(text) >= 10:
-        score += 2.0
-
-    if len(text) >= 30:
-        score += 1.0
-
-    # Preserve captions that actually contain multiple words.
-    words = re.findall(
-        r"\S+",
-        text
-    )
-
-    if len(words) >= 4:
-        score += 1.0
-
-    # Avoid rewarding captions that are essentially just symbols.
-    alphanumeric = re.findall(
-        r"[A-Za-z0-9\u0600-\u06FF]",
-        text
-    )
-
-    if len(alphanumeric) >= 10:
-        score += 1.0
-
-    return min(
-        5.0,
-        score
-    )
-
-
-# ============================================================
-# JSON
-# ============================================================
-
-def load_json(
-    path,
-    default
-):
-
-    if not path.exists():
-        return default
-
-    try:
-
-        with path.open(
-            "r",
-            encoding="utf-8"
-        ) as f:
-
-            return json.load(f)
-
-    except Exception:
-
-        return default
-
-
-def save_json(
-    path,
-    data
-):
-
-    with path.open(
-        "w",
-        encoding="utf-8"
-    ) as f:
-
-        json.dump(
-            data,
-            f,
-            ensure_ascii=False,
-            indent=2
-        )
-
-
-# ============================================================
-# DISCOVERY
-# ============================================================
-
-def discover_candidates():
-
-    candidates = []
-
-    session = requests.Session()
-
-    session.headers.update({
-        "User-Agent": (
-            "Mozilla/5.0 "
-            "UTCutie-Mastodon-Discovery/3.0"
-        )
-    })
-
-    for instance in INSTANCES:
-
-        print()
-        print("=" * 70)
-        print(
-            f"INSTANCE: {instance}"
-        )
-        print("=" * 70)
-
-        for hashtag in HASHTAGS:
-
-            url = (
-                f"{instance}/api/v1/timelines/tag/"
-                f"{hashtag}"
-            )
-
-            params = {
-                "limit": MAX_PER_HASHTAG,
-                "only_media": "true",
-                "local": "false",
-            }
-
-            try:
-
-                response = session.get(
-                    url,
-                    params=params,
-                    timeout=REQUEST_TIMEOUT
-                )
-
-                print(
-                    f"{instance} #{hashtag}: "
-                    f"HTTP {response.status_code}"
-                )
-
-                if response.status_code != 200:
-                    continue
-
-                statuses = response.json()
-
-                if not isinstance(
-                    statuses,
-                    list
-                ):
-                    continue
-
-                for status in statuses:
-
-                    if not isinstance(
-                        status,
-                        dict
-                    ):
-                        continue
-
-                    media = status.get(
-                        "media_attachments"
-                    )
-
-                    if not isinstance(
-                        media,
-                        list
-                    ):
-                        continue
-
-                    for attachment in media:
-
-                        if not isinstance(
-                            attachment,
-                            dict
-                        ):
-                            continue
-
-                        if attachment.get(
-                            "type"
-                        ) != "video":
-                            continue
-
-                        media_url = attachment.get(
-                            "url"
-                        )
-
-                        if not media_url:
-                            continue
-
-                        account = status.get(
-                            "account"
-                        )
-
-                        if not isinstance(
-                            account,
-                            dict
-                        ):
-                            account = {}
-
-                        meta = attachment.get(
-                            "meta"
-                        )
-
-                        if not isinstance(
-                            meta,
-                            dict
-                        ):
-                            meta = {}
-
-                        original = meta.get(
-                            "original"
-                        )
-
-                        if not isinstance(
-                            original,
-                            dict
-                        ):
-                            original = {}
-
-                        raw_caption = status.get(
-                            "content",
-                            ""
-                        )
-
-                        clean = telegram_caption(
-                            raw_caption
-                        )
-
-                        candidate = {
-
-                            "status_id": status.get(
-                                "id"
-                            ),
-
-                            "status_url": status.get(
-                                "url"
-                            ),
-
-                            "instance": instance,
-
-                            "created_at": status.get(
-                                "created_at"
-                            ),
-
-                            "caption": clean,
-
-                            "account": account.get(
-                                "acct"
-                            ),
-
-                            "account_display_name": (
-                                account.get(
-                                    "display_name"
-                                )
-                            ),
-
-                            "media_url": media_url,
-
-                            "media_preview_url": (
-                                attachment.get(
-                                    "preview_url"
-                                )
-                            ),
-
-                            "media_type": (
-                                attachment.get(
-                                    "type"
-                                )
-                            ),
-
-                            "width": original.get(
-                                "width"
-                            ),
-
-                            "height": original.get(
-                                "height"
-                            ),
-
-                            "favourites": status.get(
-                                "favourites_count",
-                                0
-                            ),
-
-                            "reblogs": status.get(
-                                "reblogs_count",
-                                0
-                            ),
-
-                            "replies": status.get(
-                                "replies_count",
-                                0
-                            ),
-
-                            "hashtag": hashtag,
-
-                            # These are the post's ACTUAL Mastodon tags.
-                            # The discovery hashtag is deliberately kept
-                            # separate and is never treated as evidence.
-                            "status_tags": [
-                                str(tag.get("name", "")).strip().lower()
-                                for tag in (status.get("tags") or [])
-                                if isinstance(tag, dict)
-                                and tag.get("name")
-                            ],
-                        }
-
-                        candidates.append(
-                            candidate
-                        )
-
-            except Exception as exc:
-
-                print(
-                    f"ERROR {instance} "
-                    f"#{hashtag}: "
-                    f"{type(exc).__name__}: "
-                    f"{exc}"
-                )
-
-    return candidates
-
-
-# ============================================================
-# ============================================================
-# CANONICAL POST DEDUPLICATION
-# ============================================================
-
-def normalize_status_url(url):
-    if not url:
-        return ""
-
-    value = str(url).strip()
-
-    # brid.gy mirrors: keep the underlying source post URL.
-    if "/r/https://" in value:
-        value = value.split("/r/", 1)[1]
-
-    value = value.split("?", 1)[0].split("#", 1)[0].rstrip("/")
-
-    return value
-
-
-def canonical_status_key(candidate):
-    status_url = normalize_status_url(
-        candidate.get("status_url")
-    )
-
-    if status_url:
-        return f"status:{status_url}"
-
-    media_url = str(
-        candidate.get("media_url") or ""
-    ).split("?", 1)[0]
-
-    if media_url:
-        return f"media:{media_url}"
-
-    return ""
-
-
-def candidate_quality_key(candidate):
-    width = int(candidate.get("width") or 0)
-    height = int(candidate.get("height") or 0)
-    pixels = width * height
-
-    # Prefer higher resolution, then smaller files when resolution is equal.
-    file_size = int(candidate.get("file_size") or 0)
-
-    return (
-        pixels,
-        -file_size,
-        float(candidate.get("favourites") or 0),
-        float(candidate.get("reblogs") or 0),
-    )
-
-
-def deduplicate_candidates(candidates):
-    best = {}
-
-    for candidate in candidates:
-        key = canonical_status_key(candidate)
-
-        if not key:
-            continue
-
-        current = best.get(key)
-
-        if current is None:
-            best[key] = candidate
-            continue
-
-        if candidate_quality_key(candidate) > candidate_quality_key(current):
-            best[key] = candidate
-
-    unique = list(best.values())
-
-    return unique
-
-
-# ============================================================
-# CONTENT / RELEVANCE GATE
-# ============================================================
-
-ANIMAL_TERMS = {
-    "cat", "cats", "kitten", "kittens", "kitty", "kitties",
-    "feline", "dog", "dogs", "puppy", "puppies", "pup", "canine",
-    "pet", "pets", "animal", "animals",
-    "bird", "birds", "parrot", "parrots", "parakeet", "cockatiel",
-    "duck", "ducks", "goose", "geese", "chicken", "chickens",
-    "rabbit", "rabbits", "bunny", "bunnies", "hamster", "hamsters",
-    "raccoon", "raccoons", "tiger", "tigers", "lion", "lions",
-    "guinea", "horse", "horses", "pony", "ponies",
-    "cow", "cows", "calf", "sheep", "goat", "goats",
-    "deer", "fox", "foxes", "wolf", "wolves", "bear", "bears",
-    "panda", "monkey", "monkeys", "otter", "seal", "dolphin",
-    "turtle", "turtles", "snake", "snakes", "lizard", "frog",
-    "frogs", "hedgehog", "hedgehogs", "chihuahua", "labrador",
-    "retriever", "husky", "corgi", "poodle", "wildlife",
-}
-
-CONTEXT_TERMS = {
-    "pet", "pets", "paw", "paws", "tail", "whiskers", "zoomies",
-    "play", "playing", "playtime", "sleeping", "sleepy",
-    "cuddle", "cuddling", "hug", "hugging", "kiss", "kissing",
-    "treat", "toy", "toys", "fetch", "leash", "walk", "walking",
-    "run", "running", "funny", "hilarious", "cute", "adorable",
-    "aww", "silly", "goofy", "laugh", "laughing", "meme",
-    "reaction", "unexpected", "chaos", "derp", "wholesome",
-    "sweet", "heartwarming", "playful", "surprise", "happy",
-    "joy", "love", "friendship", "hideandseek", "justforlaughs",
-}
-
-ADVOCACY_TERMS = {
-    "rescue", "rescued", "rescuing", "adopt", "adopted", "adoption",
-    "shelter", "foster", "fostering", "animal rights",
-    "animal-rights", "meat farm", "meatfarm", "slaughter",
-    "campaign", "donate", "donation", "fundraiser", "fundraising",
-    "sanctuary", "save animals", "save the animals",
-}
-
-IRRELEVANT_TERMS = {
-    "org chart", "orgchart", "hierarchy", "sociopath", "leadership",
-    "management", "manager", "workplace", "corporate", "company",
-    "career", "linkedin", "audit", "business strategy",
-    "football", "soccer", "basketball", "baseball", "hockey",
-    "politics", "election", "government",
-}
-
-def text_tokens(text):
-    return set(re.findall(r"[a-z0-9]+", str(text or "").lower()))
 
 def contains_phrase(text, phrase):
-    return phrase.lower() in str(text or "").lower()
+    text = f" {text.casefold()} "
+    phrase = phrase.casefold().strip()
+    return f" {phrase} " in text or phrase in text
 
-def content_gate(candidate):
-    caption = str(candidate.get("caption") or "")
-    actual_tags = {
-        str(x).lower().strip()
-        for x in (candidate.get("status_tags") or [])
-        if x
+
+def text_terms(text, terms):
+    text = text.casefold()
+    return {term for term in terms if contains_phrase(text, term)}
+
+
+def content_gate(status):
+    caption = normalize_text(status.get("content", ""))
+    caption_without_hashtags = HASHTAG_RE.sub(" ", caption)
+    low_caption = caption_without_hashtags.casefold()
+
+    media = status.get("media_url", "") or ""
+    media_name = Path(urlparse(media).path).name.casefold()
+
+    caption_animals = text_terms(caption_without_hashtags, ANIMAL_TERMS)
+    tag_names = {
+        str(tag.get("name", "")).casefold().replace("_", " ")
+        for tag in status.get("tags", [])
+        if isinstance(tag, dict)
     }
+    tag_animals = {term for term in ANIMAL_TERMS if term in tag_names}
 
-    # Hashtags are discovery metadata, not semantic evidence.
-    # Remove hashtag tokens before evaluating caption animal evidence.
-    caption_without_hashtags = re.sub(r"(?u)(?<!\w)#\s*\w+", " ", caption)
-    caption_tokens = text_tokens(caption_without_hashtags)
+    pet_context = text_terms(low_caption, PET_CONTEXT_TERMS)
+    advocacy = text_terms(low_caption, ADVOCACY_TERMS)
+    irrelevant = text_terms(low_caption, IRRELEVANT_TERMS)
 
-    # Hashtags/tags are discovery signals, never sufficient animal evidence.
-    # Generic tags such as pets/animals are especially weak and cannot qualify.
-    generic_animal_tags = {
-        "pet", "pets", "animal", "animals", "cuteanimals",
-        "funnyanimals", "petsofthefediverse"
-    }
-
-    caption_animal_hits = {
-        term for term in ANIMAL_TERMS
-        if term in caption_tokens
-    }
-
-    specific_tag_animal_hits = {
-        term for term in ANIMAL_TERMS
-        if term not in generic_animal_tags
-        and term in actual_tags
-    }
-
-    caption_context_hits = {
-        term for term in CONTEXT_TERMS
-        if term in caption_tokens
-    }
-
-    text = caption.lower()
-
-    advocacy_hits = {
-        term for term in ADVOCACY_TERMS
-        if contains_phrase(text, term)
-    }
-
-    irrelevant_hits = {
-        term for term in IRRELEVANT_TERMS
-        if contains_phrase(text, term)
-    }
-
-    if len(advocacy_hits) >= 2:
+    if advocacy:
+        if any(term in low_caption for term in {
+            "sanctuary", "vegan", "vegetarian", "animal welfare",
+            "animal rights", "activism", "campaign", "petition",
+            "fundraiser", "donate",
+        }):
+            return False, 0, "advocacy/sanctuary content"
         return False, 0, "rescue/advocacy content"
 
-    if "meat farm" in text or "animal rights" in text:
-        return False, 0, "advocacy campaign content"
-
-    advocacy_context_hits = {
-        term for term in {
-            "sanctuary", "animal sanctuary", "farm sanctuary",
-            "vegan", "vegetarian", "animal welfare",
-            "animal activism", "activism", "campaign"
-        }
-        if contains_phrase(text, term)
-    }
-    if advocacy_context_hits:
-        return False, 0, "advocacy/sanctuary content"
-
-    # Explicit non-animal subject matter is rejected before scoring.
-    if irrelevant_hits and not caption_animal_hits:
+    if irrelevant:
         return False, 0, "irrelevant non-animal content"
 
-    # Primary rule: the caption itself must identify an animal.
-    # A specific animal hashtag may supplement a caption that clearly describes
-    # an animal/pet context, but tags alone can never pass the gate.
-    if not caption_animal_hits:
-        if not specific_tag_animal_hits or not caption_context_hits:
-            return False, 0, "no animal evidence"
+    filename_animal = text_terms(media_name, ANIMAL_TERMS)
 
-    animal_hits = caption_animal_hits | specific_tag_animal_hits
-    score = min(60, len(animal_hits) * 18)
+    if caption_animals:
+        score = min(45, 30 + len(caption_animals) * 3)
+        if pet_context:
+            score += min(10, len(pet_context) * 2)
+        return True, min(55, score), "passed"
 
-    if caption_context_hits:
-        score += min(25, len(caption_context_hits) * 5)
+    if tag_animals and pet_context:
+        return True, min(45, 24 + len(tag_animals) * 3 + len(pet_context) * 2), "passed"
 
-    if caption_animal_hits:
-        score += 15
+    if filename_animal and pet_context:
+        return True, 35, "passed"
 
-    return True, min(100, score), "passed"
-
-def download_and_validate(
-    candidate
-):
-
-    media_url = candidate.get(
-        "media_url"
-    )
-
-    if not media_url:
-        return None
-
-    temp_path = None
-
-    try:
-
-        with tempfile.NamedTemporaryFile(
-            suffix=".video",
-            delete=False
-        ) as temp_file:
-
-            temp_path = Path(
-                temp_file.name
-            )
-
-        print()
-        print(
-            "Downloading media:",
-            media_url
-        )
-        print(
-            "Source post:",
-            candidate.get(
-                "status_url"
-            )
-        )
-
-        response = requests.get(
-            media_url,
-            stream=True,
-            timeout=REQUEST_TIMEOUT,
-            headers={
-                "User-Agent": (
-                    "Mozilla/5.0 "
-                    "UTCutie-Mastodon-Discovery/3.0"
-                )
-            }
-        )
-
-        if response.status_code != 200:
-
-            print(
-                "  HTTP failure:",
-                response.status_code
-            )
-
-            return None
-
-        content_type = (
-            response.headers.get(
-                "content-type",
-                ""
-            ).lower()
-        )
-
-        if (
-            "video" not in content_type
-            and "octet-stream"
-            not in content_type
-        ):
-
-            print(
-                "  Not a video content type:",
-                content_type
-            )
-
-            return None
-
-        content_length = (
-            response.headers.get(
-                "content-length"
-            )
-        )
-
-        if content_length:
-
-            try:
-
-                if int(
-                    content_length
-                ) > MAX_FILE_SIZE:
-
-                    print(
-                        "  File too large."
-                    )
-
-                    return None
-
-            except ValueError:
-                pass
-
-        total_bytes = 0
-
-        with temp_path.open(
-            "wb"
-        ) as output:
-
-            for chunk in response.iter_content(
-                chunk_size=1024 * 1024
-            ):
-
-                if not chunk:
-                    continue
-
-                total_bytes += len(
-                    chunk
-                )
-
-                if total_bytes > MAX_FILE_SIZE:
-
-                    print(
-                        "  File exceeded 48 MB."
-                    )
-
-                    return None
-
-                output.write(
-                    chunk
-                )
-
-        if total_bytes == 0:
-
-            print(
-                "  Empty file."
-            )
-
-            return None
-
-        probe_command = [
-            "ffprobe",
-            "-v",
-            "error",
-            "-show_entries",
-            "format=duration",
-            "-show_entries",
-            "stream=width,height,codec_type",
-            "-of",
-            "json",
-            str(temp_path),
-        ]
-
-        probe = subprocess.run(
-            probe_command,
-            capture_output=True,
-            text=True,
-            timeout=30
-        )
-
-        if probe.returncode != 0:
-
-            print(
-                "  ffprobe failed."
-            )
-
-            return None
-
-        try:
-
-            metadata = json.loads(
-                probe.stdout
-            )
-
-        except Exception:
-
-            print(
-                "  Invalid ffprobe output."
-            )
-
-            return None
-
-        format_data = metadata.get(
-            "format"
-        )
-
-        if not isinstance(
-            format_data,
-            dict
-        ):
-            format_data = {}
-
-        streams = metadata.get(
-            "streams"
-        )
-
-        if not isinstance(
-            streams,
-            list
-        ):
-            streams = []
-
-        duration = format_data.get(
-            "duration"
-        )
-
-        if duration is None:
-
-            print(
-                "  Duration unavailable."
-            )
-
-            return None
-
-        duration = float(
-            duration
-        )
-
-        if duration < MIN_DURATION:
-
-            print(
-                f"  Too short: "
-                f"{duration:.2f}s"
-            )
-
-            return None
-
-        if duration > MAX_DURATION:
-
-            print(
-                f"  Too long: "
-                f"{duration:.2f}s"
-            )
-
-            return None
-
-        width = 0
-        height = 0
-        has_video_stream = False
-
-        for stream in streams:
-
-            if not isinstance(
-                stream,
-                dict
-            ):
-                continue
-
-            if stream.get(
-                "codec_type"
-            ) != "video":
-                continue
-
-            has_video_stream = True
-
-            try:
-
-                width = int(
-                    stream.get(
-                        "width"
-                    ) or 0
-                )
-
-            except Exception:
-
-                width = 0
-
-            try:
-
-                height = int(
-                    stream.get(
-                        "height"
-                    ) or 0
-                )
-
-            except Exception:
-
-                height = 0
-
-            break
-
-        if not has_video_stream:
-
-            print(
-                "  No video stream."
-            )
-
-            return None
-
-        if (
-            width <= 0
-            or height <= 0
-        ):
-
-            print(
-                "  Invalid video dimensions."
-            )
-
-            return None
-
-        # ----------------------------------------------------
-        # SHA-256
-        # ----------------------------------------------------
-
-        file_hash = hashlib.sha256()
-
-        with temp_path.open(
-            "rb"
-        ) as f:
-
-            while True:
-
-                chunk = f.read(
-                    1024 * 1024
-                )
-
-                if not chunk:
-                    break
-
-                file_hash.update(
-                    chunk
-                )
-
-        sha256 = file_hash.hexdigest()
-
-        result = dict(
-            candidate
-        )
-
-        result["duration"] = round(
-            duration,
-            3
-        )
-
-        result["file_size"] = (
-            total_bytes
-        )
-
-        result["file_size_mb"] = round(
-            total_bytes
-            / (1024 * 1024),
-            3
-        )
-
-        result["width"] = width
-        result["height"] = height
-
-        result["sha256"] = sha256
-
-        # Final caption cleanup.
-        result["caption"] = telegram_caption(
-            result.get(
-                "caption",
-                ""
-            )
-        )
-
-        return result
-
-    except requests.RequestException as exc:
-
-        print(
-            "  Download error:",
-            type(exc).__name__,
-            exc
-        )
-
-        return None
-
-    except subprocess.TimeoutExpired:
-
-        print(
-            "  ffprobe timeout."
-        )
-
-        return None
-
-    except Exception as exc:
-
-        print(
-            "  Validation error:",
-            type(exc).__name__,
-            exc
-        )
-
-        return None
-
-    finally:
-
-        if (
-            temp_path
-            and temp_path.exists()
-        ):
-
-            try:
-
-                temp_path.unlink()
-
-            except Exception:
-
-                pass
-
-
-# ============================================================
-# HISTORY
-#
-# IMPORTANT:
-# Discovery READS history.json.
-# Discovery NEVER writes to it.
-#
-# Successful publication is recorded by the publishing
-# workflow only after Telegram confirms success.
-# ============================================================
-
-def history_keys(
-    history
-):
-
-    keys = set()
-
-    if not isinstance(
-        history,
-        list
-    ):
-        return keys
-
-    for item in history:
-
-        if not isinstance(
-            item,
-            dict
-        ):
-            continue
-
-        for field in (
-            "sha256",
-            "media_url",
-            "status_url",
-        ):
-
-            value = item.get(
-                field
-            )
-
-            if value:
-
-                if field == "status_url":
-                    value = normalize_status_url(value)
-
-                keys.add(
-                    f"{field}:{value}"
-                )
-
-    return keys
-
-
-def already_seen(
-    candidate,
-    keys
-):
-
-    checks = [
-
-        (
-            "sha256",
-            candidate.get(
-                "sha256"
-            )
-        ),
-
-        (
-            "media_url",
-            candidate.get(
-                "media_url"
-            )
-        ),
-
-        (
-            "status_url",
-            candidate.get(
-                "status_url"
-            )
-        ),
-    ]
-
-    for field, value in checks:
-
-        if (
-            value
-            and f"{field}:{value}" in keys
-        ):
-
-            return True
-
-    return False
-
-
-# ============================================================
-# SHA-256 DEDUPLICATION
-# ============================================================
-
-def deduplicate_by_sha256(
-    candidates
-):
-
-    unique = []
-
-    seen_hashes = set()
-
-    for candidate in candidates:
-
-        sha256 = candidate.get(
-            "sha256"
-        )
-
-        if not sha256:
-            continue
-
-        if sha256 in seen_hashes:
-
-            print(
-                "  Removing duplicate media:",
-                candidate.get(
-                    "status_url"
-                )
-            )
-
-            continue
-
-        seen_hashes.add(
-            sha256
-        )
-
-        unique.append(
-            candidate
-        )
-
-    return unique
-
-
-# ============================================================
-# ============================================================
-# SCORING
+    return False, 0, "no animal evidence"
 
 
 def freshness_days(created_at):
     if not created_at:
         return 9999.0
     try:
-        created = datetime.fromisoformat(
-            str(created_at).replace("Z", "+00:00")
-        )
+        created = datetime.fromisoformat(str(created_at).replace("Z", "+00:00"))
         if created.tzinfo is None:
             created = created.replace(tzinfo=timezone.utc)
-        age_seconds = (
-            datetime.now(timezone.utc) - created
-        ).total_seconds()
+        age_seconds = (datetime.now(timezone.utc) - created).total_seconds()
         return max(0.0, age_seconds / 86400.0)
     except Exception:
         return 9999.0
@@ -1657,632 +257,658 @@ def freshness_tier(days):
     return "reject"
 
 
-# ============================================================
+def canonical_status_url(url):
+    if not url:
+        return ""
 
-def score_candidate(candidate):
-    caption = str(candidate.get("caption") or "")
-    tags = " ".join(candidate.get("status_tags") or [])
+    url = str(url).strip().rstrip("/")
 
-    relevance_text = f"{caption} {tags}"
+    bridge = re.match(
+        r"^https?://[^/]+/r/(https?://.+)$",
+        url,
+        flags=re.I,
+    )
+    if bridge:
+        url = bridge.group(1).rstrip("/")
 
-    relevance = animal_relevance(relevance_text)
+    return url
 
-    engagement = engagement_score(
-        candidate.get("favourites", 0),
-        candidate.get("reblogs", 0),
-        candidate.get("replies", 0),
+
+def canonical_key(status):
+    canonical = canonical_status_url(status.get("url"))
+    if canonical:
+        return f"url:{canonical}"
+
+    sha = status.get("sha256")
+    if sha:
+        return f"sha:{sha}"
+
+    media = status.get("media_url")
+    if media:
+        return f"media:{media}"
+
+    return ""
+
+
+def load_history():
+    if not HISTORY_FILE.exists():
+        return []
+
+    try:
+        data = json.loads(HISTORY_FILE.read_text(encoding="utf-8"))
+        return data if isinstance(data, list) else []
+    except Exception:
+        return []
+
+
+def history_keys(history):
+    keys = set()
+
+    for item in history:
+        if not isinstance(item, dict):
+            continue
+
+        for field in ("canonical_url", "url", "source_url"):
+            value = canonical_status_url(item.get(field))
+            if value:
+                keys.add(f"url:{value}")
+
+        if item.get("sha256"):
+            keys.add(f"sha:{item['sha256']}")
+
+        if item.get("media_url"):
+            keys.add(f"media:{item['media_url']}")
+
+    return keys
+
+
+def get_statuses(instance, tag, max_id=None):
+    url = f"{instance.rstrip('/')}/api/v1/timelines/tag/{tag}"
+    params = {
+        "limit": STATUSES_PER_PAGE,
+        "local": "false",
+    }
+    if max_id:
+        params["max_id"] = max_id
+
+    response = requests.get(
+        url,
+        params=params,
+        headers={"User-Agent": "UTCutieDiscovery/1.0"},
+        timeout=REQUEST_TIMEOUT,
     )
 
-    recency = recency_score(
-        candidate.get("created_at")
-    )
+    if response.status_code != 200:
+        print(f"{instance} #{tag}: HTTP {response.status_code}")
+        return []
 
-    quality = quality_score(
-        candidate.get("width"),
-        candidate.get("height"),
-    )
+    print(f"{instance} #{tag}: HTTP 200")
+    try:
+        payload = response.json()
+    except Exception:
+        return []
 
-    caption_quality = caption_quality_score(
-        caption
-    )
-
-    days = freshness_days(
-        candidate.get("created_at")
-    )
-
-    tier = freshness_tier(days)
-
-    # Penalize inefficient huge files without rejecting them.
-    file_size_mb = float(
-        candidate.get("file_size_mb") or 0
-    )
-    duration = float(
-        candidate.get("duration") or 0
-    )
-
-    efficiency_penalty = 0
-
-    if duration > 0 and file_size_mb > 35 and duration < 30:
-        efficiency_penalty = 4
-
-    # Relevance is dominant; fresh content gets a meaningful bonus.
-    total = (
-        relevance * 3.0
-        + engagement * 0.9
-        + recency * 1.2
-        + quality * 1.0
-        + caption_quality
-        - efficiency_penalty
-    )
-
-    result = dict(candidate)
-
-    result["animal_relevance"] = round(relevance, 3)
-    result["engagement_score"] = round(engagement, 3)
-    result["recency_score"] = round(recency, 3)
-    result["quality_score"] = round(quality, 3)
-    result["caption_quality_score"] = round(caption_quality, 3)
-    result["freshness_days"] = round(days, 3)
-    result["freshness_tier"] = tier
-    result["total_score"] = round(total, 3)
-
-    return result
+    return payload if isinstance(payload, list) else []
 
 
-# ============================================================
-# DIVERSE FINAL SELECTION
-# ============================================================
+def extract_video_candidates(statuses, instance):
+    candidates = []
 
-def select_diverse_candidates(candidates):
-    selected = []
-    account_counts = {}
-    instance_counts = {}
-    seen_keys = set()
+    for status in statuses:
+        attachments = status.get("media_attachments", [])
+        if not isinstance(attachments, list):
+            continue
+
+        for attachment in attachments:
+            if not isinstance(attachment, dict):
+                continue
+
+            media_type = str(attachment.get("type", "")).casefold()
+            media_url = (
+                attachment.get("url")
+                or attachment.get("remote_url")
+                or attachment.get("preview_url")
+                or ""
+            )
+
+            if media_type != "video" or not media_url:
+                continue
+
+            candidate = {
+                "id": status.get("id"),
+                "url": status.get("url", ""),
+                "canonical_url": canonical_status_url(status.get("url", "")),
+                "account": (
+                    status.get("account", {}).get("acct", "")
+                    if isinstance(status.get("account"), dict)
+                    else ""
+                ),
+                "instance": instance,
+                "created_at": status.get("created_at"),
+                "content": status.get("content", ""),
+                "caption": clean_caption(status.get("content", "")),
+                "tags": status.get("tags", []),
+                "media_url": media_url,
+                "media_type": media_type,
+                "media_description": attachment.get("description", "") or "",
+                "media_meta": attachment.get("meta", {}) or {},
+            }
+
+            candidate["canonical_key"] = canonical_key(candidate)
+            candidates.append(candidate)
+
+    return candidates
+
+
+def deduplicate_candidates(candidates):
+    by_key = {}
 
     for candidate in candidates:
-        if len(selected) >= MAX_SELECTED:
-            break
+        key = candidate.get("canonical_key") or canonical_key(candidate)
 
-        key = canonical_status_key(candidate)
-
-        if not key or key in seen_keys:
+        if not key:
             continue
 
-        account = (
-            candidate.get("account")
-            or candidate.get("account_display_name")
-            or "unknown-account"
-        )
+        existing = by_key.get(key)
 
-        instance = (
-            candidate.get("instance")
-            or "unknown-instance"
-        )
-
-        if account_counts.get(account, 0) >= MAX_VIDEOS_PER_ACCOUNT:
+        if existing is None:
+            by_key[key] = candidate
             continue
 
-        if instance_counts.get(instance, 0) >= MAX_VIDEOS_PER_INSTANCE:
+        # Prefer a copy with richer media metadata and then the shorter
+        # media URL. We only want one copy of a federated post.
+        old_meta = existing.get("media_meta") or {}
+        new_meta = candidate.get("media_meta") or {}
+
+        old_bitrate = (
+            old_meta.get("video", {}).get("bitrate", 0)
+            if isinstance(old_meta.get("video"), dict)
+            else 0
+        )
+        new_bitrate = (
+            new_meta.get("video", {}).get("bitrate", 0)
+            if isinstance(new_meta.get("video"), dict)
+            else 0
+        )
+
+        if new_bitrate > old_bitrate:
+            by_key[key] = candidate
+
+    return list(by_key.values())
+
+
+def advertised_size(candidate):
+    meta = candidate.get("media_meta") or {}
+
+    for key in ("size", "file_size", "filesize"):
+        value = meta.get(key)
+        if isinstance(value, (int, float)) and value > 0:
+            return int(value)
+
+    original = meta.get("original")
+    if isinstance(original, dict):
+        value = original.get("size") or original.get("filesize")
+        if isinstance(value, (int, float)) and value > 0:
+            return int(value)
+
+    return None
+
+
+def preflight_size(candidate):
+    known = advertised_size(candidate)
+    if known is not None:
+        candidate["advertised_file_size"] = known
+        if known > MAX_FILE_SIZE:
+            return False, "file too large"
+        return True, ""
+
+    try:
+        response = requests.head(
+            candidate["media_url"],
+            allow_redirects=True,
+            headers={"User-Agent": "UTCutieDiscovery/1.0"},
+            timeout=REQUEST_TIMEOUT,
+        )
+
+        if response.ok:
+            value = response.headers.get("Content-Length")
+            if value and value.isdigit():
+                size = int(value)
+                candidate["advertised_file_size"] = size
+                if size > MAX_FILE_SIZE:
+                    return False, "file too large"
+
+    except Exception:
+        pass
+
+    return True, ""
+
+
+def ffprobe_video(path):
+    command = [
+        "ffprobe",
+        "-v", "error",
+        "-select_streams", "v:0",
+        "-show_entries", "stream=duration,width,height,codec_name",
+        "-of", "json",
+        str(path),
+    ]
+
+    result = subprocess.run(
+        command,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+
+    if result.returncode != 0:
+        return None
+
+    try:
+        payload = json.loads(result.stdout)
+        streams = payload.get("streams", [])
+        return streams[0] if streams else None
+    except Exception:
+        return None
+
+
+def download_and_validate(candidate):
+    media_url = candidate["media_url"]
+
+    with tempfile.TemporaryDirectory(prefix="utcutie_") as tmp:
+        path = Path(tmp) / "video.mp4"
+
+        try:
+            with requests.get(
+                media_url,
+                stream=True,
+                allow_redirects=True,
+                headers={"User-Agent": "UTCutieDiscovery/1.0"},
+                timeout=REQUEST_TIMEOUT,
+            ) as response:
+                if response.status_code != 200:
+                    return None, f"HTTP {response.status_code}"
+
+                content_type = response.headers.get("Content-Type", "").casefold()
+                if "video" not in content_type and "octet-stream" not in content_type:
+                    return None, "not video content"
+
+                content_length = response.headers.get("Content-Length")
+                if content_length and content_length.isdigit():
+                    if int(content_length) > MAX_FILE_SIZE:
+                        return None, "file too large"
+
+                total = 0
+                with path.open("wb") as output:
+                    for chunk in response.iter_content(chunk_size=1024 * 1024):
+                        if not chunk:
+                            continue
+                        total += len(chunk)
+                        if total > MAX_FILE_SIZE:
+                            return None, "file too large"
+                        output.write(chunk)
+
+            if total > MAX_FILE_SIZE:
+                return None, "file too large"
+
+            stream = ffprobe_video(path)
+            if not stream:
+                return None, "invalid video"
+
+            duration = float(stream.get("duration") or 0)
+            if duration < MIN_DURATION:
+                return None, f"too short: {duration:.2f}s"
+
+            if duration > MAX_DURATION:
+                return None, f"too long: {duration:.2f}s"
+
+            candidate["duration"] = round(duration, 3)
+            candidate["file_size"] = total
+            candidate["width"] = int(stream.get("width") or 0)
+            candidate["height"] = int(stream.get("height") or 0)
+            candidate["codec"] = stream.get("codec_name") or ""
+
+            candidate["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+
+            return candidate, ""
+
+        except subprocess.TimeoutExpired:
+            return None, "ffprobe timeout"
+        except requests.RequestException as exc:
+            return None, f"download error: {exc}"
+        except Exception as exc:
+            return None, f"validation error: {exc}"
+
+
+def quality_score(candidate):
+    width = int(candidate.get("width") or 0)
+    height = int(candidate.get("height") or 0)
+    size = int(candidate.get("file_size") or 0)
+    duration = float(candidate.get("duration") or 0)
+
+    score = float(candidate.get("content_score") or 0)
+
+    if width >= 1920 or height >= 1080:
+        score += 18
+    elif width >= 1280 or height >= 720:
+        score += 13
+    elif width >= 854 or height >= 480:
+        score += 7
+    else:
+        score -= 5
+
+    if size and duration:
+        mb_per_minute = (size / 1024 / 1024) / max(duration / 60, 0.25)
+        if mb_per_minute <= 12:
+            score += 8
+        elif mb_per_minute <= 24:
+            score += 4
+        elif mb_per_minute > 100:
+            score -= 5
+
+    if 18 <= duration <= 120:
+        score += 5
+
+    return round(score, 3)
+
+
+def selection_score(candidate):
+    age = float(candidate.get("age_days") or 9999)
+    fresh_bonus = max(0.0, 25.0 - age)
+
+    return round(
+        float(candidate.get("quality_score") or 0)
+        + fresh_bonus,
+        3,
+    )
+
+
+def sort_for_selection(items):
+    return sorted(
+        items,
+        key=lambda x: (
+            x.get("freshness_tier") == "primary",
+            x.get("selection_score", 0),
+            x.get("content_score", 0),
+            -x.get("age_days", 9999),
+        ),
+        reverse=True,
+    )
+
+
+def select_diverse(items):
+    primary = [x for x in items if x.get("freshness_tier") == "primary"]
+    secondary = [x for x in items if x.get("freshness_tier") == "secondary"]
+    emergency = [x for x in items if x.get("freshness_tier") == "emergency"]
+
+    ordered = (
+        sort_for_selection(primary)
+        + sort_for_selection(secondary)
+        + sort_for_selection(emergency)
+    )
+
+    selected = []
+    account_counts = {}
+    canonical_seen = set()
+
+    # First pass: no more than two from the same account.
+    for candidate in ordered:
+        key = candidate.get("canonical_key") or canonical_key(candidate)
+        if key in canonical_seen:
+            continue
+
+        account = candidate.get("account") or "unknown"
+        if account_counts.get(account, 0) >= 2:
             continue
 
         selected.append(candidate)
-        seen_keys.add(key)
+        canonical_seen.add(key)
+        account_counts[account] = account_counts.get(account, 0) + 1
 
-        account_counts[account] = (
-            account_counts.get(account, 0) + 1
-        )
+        if len(selected) >= MAX_SELECTED:
+            return selected
 
-        instance_counts[instance] = (
-            instance_counts.get(instance, 0) + 1
-        )
+    # Second pass: if fewer than 20 remain, fill from the best leftovers.
+    for candidate in ordered:
+        key = candidate.get("canonical_key") or canonical_key(candidate)
+        if key in canonical_seen:
+            continue
 
-    # Diversity is a preference. If the pool is smaller, use all remaining
-    # unique candidates rather than manufacturing a quota.
-    if len(selected) < MAX_SELECTED:
-        for candidate in candidates:
-            if len(selected) >= MAX_SELECTED:
-                break
-
-            key = canonical_status_key(candidate)
-
-            if not key or key in seen_keys:
-                continue
-
-            selected.append(candidate)
-            seen_keys.add(key)
-
-    return selected
-
-
-# DIVERSE FINAL SELECTION
-# ============================================================
-
-def select_diverse_candidates(
-    candidates
-):
-
-    selected = []
-
-    account_counts = {}
-    instance_counts = {}
-
-    # --------------------------------------------------------
-    # First pass:
-    #
-    # Take the highest-ranked candidates while respecting
-    # diversity limits.
-    # --------------------------------------------------------
-
-    for candidate in candidates:
+        selected.append(candidate)
+        canonical_seen.add(key)
 
         if len(selected) >= MAX_SELECTED:
             break
 
-        account = (
-            candidate.get(
-                "account"
-            )
-            or candidate.get(
-                "account_display_name"
-            )
-            or "unknown-account"
-        )
-
-        instance = (
-            candidate.get(
-                "instance"
-            )
-            or "unknown-instance"
-        )
-
-        account_count = account_counts.get(
-            account,
-            0
-        )
-
-        instance_count = instance_counts.get(
-            instance,
-            0
-        )
-
-        if (
-            account_count
-            >= MAX_VIDEOS_PER_ACCOUNT
-        ):
-            continue
-
-        if (
-            instance_count
-            >= MAX_VIDEOS_PER_INSTANCE
-        ):
-            continue
-
-        selected.append(
-            candidate
-        )
-
-        account_counts[
-            account
-        ] = account_count + 1
-
-        instance_counts[
-            instance
-        ] = instance_count + 1
-
-    # --------------------------------------------------------
-    # Second pass:
-    #
-    # If diversity limits prevented us from reaching 20,
-    # fill remaining positions with the highest-ranked
-    # candidates not already selected.
-    #
-    # This means diversity is a preference, NOT a quota.
-    # --------------------------------------------------------
-
-    if len(selected) < MAX_SELECTED:
-
-        selected_ids = {
-            candidate.get(
-                "sha256"
-            )
-            for candidate in selected
-        }
-
-        for candidate in candidates:
-
-            if len(selected) >= MAX_SELECTED:
-                break
-
-            candidate_id = candidate.get(
-                "sha256"
-            )
-
-            if candidate_id in selected_ids:
-                continue
-
-            selected.append(
-                candidate
-            )
-
-            selected_ids.add(
-                candidate_id
-            )
-
     return selected
 
 
-# ============================================================
-# MAIN
-# ============================================================
+def write_json(path, data):
+    path.write_text(
+        json.dumps(data, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
 
 def main():
     print("=" * 70)
     print("UTCutie Mastodon Video Discovery")
     print("=" * 70)
     print()
-
     print("Starting discovery...")
-    raw_candidates = discover_candidates()
+    print()
+
+    raw_candidates = []
+
+    for instance in INSTANCES:
+        print("=" * 70)
+        print(f"INSTANCE: {instance}")
+        print("=" * 70)
+
+        for tag in HASHTAGS:
+            max_id = None
+
+            for page in range(MAX_PAGES_PER_TAG):
+                statuses = get_statuses(instance, tag, max_id=max_id)
+
+                if not statuses:
+                    break
+
+                raw_candidates.extend(
+                    extract_video_candidates(statuses, instance)
+                )
+
+                next_ids = [
+                    str(item.get("id"))
+                    for item in statuses
+                    if item.get("id")
+                ]
+
+                if not next_ids:
+                    break
+
+                next_max_id = min(next_ids, key=lambda value: int(value))
+
+                if next_max_id == max_id:
+                    break
+
+                max_id = next_max_id
 
     print()
     print(f"RAW VIDEO CANDIDATES: {len(raw_candidates)}")
 
-    # Canonical post dedup happens BEFORE expensive media validation.
-    candidates = deduplicate_candidates(raw_candidates)
+    unique = deduplicate_candidates(raw_candidates)
 
-    print(
-        f"UNIQUE CANONICAL POST CANDIDATES: {len(candidates)}"
-    )
+    print(f"UNIQUE CANONICAL POST CANDIDATES: {len(unique)}")
 
-    save_json(
-        CANDIDATES_FILE,
-        candidates
-    )
+    write_json(DISCOVERY_FILE, unique)
 
-    # Content gate before download: this removes false positives such as
-    # business/workplace posts and rescue campaigns without wasting bandwidth.
-    gated = []
-    rejected_reasons = {}
+    passed = []
+    rejection_counts = {}
 
-    for candidate in candidates:
-        accepted, content_value, reason = content_gate(candidate)
+    for candidate in unique:
+        age = freshness_days(candidate.get("created_at"))
+        candidate["age_days"] = round(age, 3)
+        candidate["freshness_tier"] = freshness_tier(age)
 
-        candidate = dict(candidate)
-        candidate["content_value"] = content_value
-
-        if not accepted:
-            rejected_reasons[reason] = (
-                rejected_reasons.get(reason, 0) + 1
-            )
+        if candidate["freshness_tier"] == "reject":
+            rejection_counts["too old"] = rejection_counts.get("too old", 0) + 1
             continue
 
-        gated.append(candidate)
+        ok, content_score, reason = content_gate(candidate)
+
+        if not ok:
+            rejection_counts[reason] = rejection_counts.get(reason, 0) + 1
+            continue
+
+        candidate["content_score"] = content_score
+
+        size_ok, size_reason = preflight_size(candidate)
+        if not size_ok:
+            rejection_counts[size_reason] = rejection_counts.get(size_reason, 0) + 1
+            continue
+
+        passed.append(candidate)
 
     print()
-    print(
-        f"CONTENT-GATE PASSED: {len(gated)}"
-    )
+    print(f"CONTENT-GATE PASSED: {len(passed)}")
+    print("CONTENT-GATE / PREFLIGHT REJECTIONS:")
 
-    if rejected_reasons:
-        print("CONTENT-GATE REJECTIONS:")
-        for reason, count in sorted(
-            rejected_reasons.items(),
-            key=lambda item: item[1],
-            reverse=True
-        ):
-            print(f"  {reason}: {count}")
+    for reason, count in sorted(rejection_counts.items()):
+        print(f"  {reason}: {count}")
+
+    history = load_history()
+    published_keys = history_keys(history)
+
+    fresh_for_history = []
+    history_rejections = 0
+
+    for candidate in passed:
+        key = candidate.get("canonical_key") or canonical_key(candidate)
+
+        if key in published_keys:
+            history_rejections += 1
+            continue
+
+        if candidate.get("sha256") and f"sha:{candidate['sha256']}" in published_keys:
+            history_rejections += 1
+            continue
+
+        fresh_for_history.append(candidate)
 
     print()
     print("Starting media validation...")
+    print()
 
     validated = []
+    attempts = 0
 
-    for index, candidate in enumerate(
-        gated,
-        start=1
-    ):
-        print(
-            f"[{index}/{len(gated)}]"
-        )
-
-        result = download_and_validate(
-            candidate
-        )
-
-        if result is None:
-            continue
-
-        scored = score_candidate(
-            result
-        )
-
-        # Re-run the content gate after caption cleanup/media validation.
-        accepted, content_value, reason = content_gate(
-            scored
-        )
-
-        if not accepted:
-            print(
-                "  Rejected after validation:",
-                reason
-            )
-            continue
-
-        scored["content_value"] = content_value
-
-        days = scored.get(
-            "freshness_days",
-            9999
-        )
-
-        tier = scored.get(
-            "freshness_tier",
-            "reject"
-        )
-
-        if tier == "reject":
-            print("  Too old.")
-            continue
-
-        if tier == "emergency":
-            if (
-                content_value < EMERGENCY_MIN_CONTENT_VALUE
-                or scored.get("total_score", 0) < EMERGENCY_MIN_SCORE
-            ):
-                print(
-                    "  Emergency-age candidate is not strong enough."
-                )
-                continue
-
-        elif content_value < MIN_CONTENT_VALUE:
-            print(
-                "  Content value too low."
-            )
-            continue
-
-        validated.append(scored)
-
-    print()
-    print(
-        f"VALIDATED VIDEOS: {len(validated)}"
-    )
-
-    # Final canonical post dedup after validation. If different media copies
-    # of the same post survived, retain the best one only.
-    best_by_key = {}
-
-    for candidate in validated:
-        key = canonical_status_key(candidate)
-
-        if not key:
-            continue
-
-        current = best_by_key.get(key)
-
-        if current is None:
-            best_by_key[key] = candidate
-            continue
-
-        candidate_rank = (
-            candidate.get("quality_score", 0),
-            candidate.get("content_value", 0),
-            candidate.get("total_score", 0),
-            -candidate.get("file_size", 10**18),
-        )
-
-        current_rank = (
-            current.get("quality_score", 0),
-            current.get("content_value", 0),
-            current.get("total_score", 0),
-            -current.get("file_size", 10**18),
-        )
-
-        if candidate_rank > current_rank:
-            best_by_key[key] = candidate
-
-    validated = list(best_by_key.values())
-
-    save_json(
-        VALIDATED_FILE,
-        validated
-    )
-
-    print(
-        f"UNIQUE VALIDATED VIDEOS: {len(validated)}"
-    )
-
-    history = load_json(
-        HISTORY_FILE,
-        []
-    )
-
-    if not isinstance(history, list):
-        history = []
-
-    seen_keys = history_keys(history)
-
-    # Also compare normalized canonical status URLs against history.
-    historical_statuses = {
-        normalize_status_url(item.get("status_url"))
-        for item in history
-        if isinstance(item, dict)
-        and item.get("status_url")
-    }
-
-    fresh = []
-
-    for candidate in validated:
-        if already_seen(candidate, seen_keys):
-            continue
-
-        canonical = normalize_status_url(
-            candidate.get("status_url")
-        )
-
-        if canonical and canonical in historical_statuses:
-            continue
-
-        fresh.append(candidate)
-
-    print(
-        f"FRESH VIDEOS AFTER HISTORY FILTER: {len(fresh)}"
-    )
-
-    # Rank freshness tiers separately. We never let an old mediocre video
-    # outrank a fresh good one merely because it has more engagement.
-    primary = sorted(
-        [
-            x for x in fresh
-            if x.get("freshness_tier") == "primary"
-        ],
+    # Prefer newer candidates and higher content relevance before downloading.
+    validation_order = sorted(
+        fresh_for_history,
         key=lambda x: (
-            x.get("total_score", 0),
-            x.get("content_value", 0),
-            x.get("quality_score", 0),
-            x.get("engagement_score", 0),
+            x.get("freshness_tier") == "primary",
+            x.get("content_score", 0),
+            -x.get("age_days", 9999),
         ),
         reverse=True,
     )
 
-    secondary = sorted(
-        [
-            x for x in fresh
-            if x.get("freshness_tier") == "secondary"
-        ],
-        key=lambda x: (
-            x.get("total_score", 0),
-            x.get("content_value", 0),
-            x.get("quality_score", 0),
-            x.get("engagement_score", 0),
-        ),
-        reverse=True,
-    )
-
-    emergency = sorted(
-        [
-            x for x in fresh
-            if x.get("freshness_tier") == "emergency"
-        ],
-        key=lambda x: (
-            x.get("total_score", 0),
-            x.get("content_value", 0),
-            x.get("quality_score", 0),
-            x.get("engagement_score", 0),
-        ),
-        reverse=True,
-    )
-
-    print(
-        f"PRIMARY (0-{PRIMARY_DAYS} days): {len(primary)}"
-    )
-    print(
-        f"SECONDARY ({PRIMARY_DAYS + 1}-{SECONDARY_DAYS} days): {len(secondary)}"
-    )
-    print(
-        f"EMERGENCY ({SECONDARY_DAYS + 1}-{EMERGENCY_DAYS} days): {len(emergency)}"
-    )
-
-    selected = select_diverse_candidates(
-        primary + secondary + emergency
-    )
-
-    # One last absolute canonical-status guarantee.
-    final_selected = []
-    final_keys = set()
-
-    for candidate in selected:
-        key = canonical_status_key(candidate)
-
-        if not key or key in final_keys:
-            continue
-
-        final_keys.add(key)
-        final_selected.append(candidate)
-
-        if len(final_selected) >= MAX_SELECTED:
+    for candidate in validation_order:
+        if attempts >= MAX_DOWNLOAD_ATTEMPTS:
             break
 
-    save_json(
-        SELECTED_FILE,
-        final_selected
-    )
+        attempts += 1
+        print(f"[{attempts}/{min(MAX_DOWNLOAD_ATTEMPTS, len(validation_order))}]")
+        print()
+        print(f"Downloading media: {candidate['media_url']}")
+        print(f"Source post: {candidate.get('url', '')}")
+
+        result, reason = download_and_validate(candidate)
+
+        if result is None:
+            print(f"  {reason}.")
+            continue
+
+        result["quality_score"] = quality_score(result)
+        result["selection_score"] = selection_score(result)
+
+        validated.append(result)
+
+    validated = deduplicate_candidates(validated)
+
+    for candidate in validated:
+        candidate["quality_score"] = quality_score(candidate)
+        candidate["selection_score"] = selection_score(candidate)
+
+    write_json(VALIDATED_FILE, validated)
+
+    selected = select_diverse(validated)
+
+    for candidate in selected:
+        candidate["telegram_caption"] = (
+            f"{candidate.get('caption', '').strip()}\n\n@utcutie"
+            if candidate.get("caption", "").strip()
+            else "@utcutie"
+        )
+
+        if len(candidate["telegram_caption"]) > 1024:
+            candidate["telegram_caption"] = (
+                candidate["telegram_caption"][:1018].rstrip()
+                + "\n\n@utcutie"
+            )
+
+    write_json(SELECTED_FILE, selected)
+
+    print()
+    print(f"VALIDATED VIDEOS: {len(validated)}")
+    print(f"UNIQUE VALIDATED VIDEOS: {len(validated)}")
+    print(f"FRESH VIDEOS AFTER HISTORY FILTER: {len(fresh_for_history)}")
+
+    tiers = {"primary": 0, "secondary": 0, "emergency": 0}
+    for item in selected:
+        tier = item.get("freshness_tier")
+        if tier in tiers:
+            tiers[tier] += 1
+
+    print(f"PRIMARY (0-14 days): {tiers['primary']}")
+    print(f"SECONDARY (15-30 days): {tiers['secondary']}")
+    print(f"EMERGENCY (31-60 days): {tiers['emergency']}")
 
     print()
     print("=" * 70)
-    print(
-        f"SELECTED UNIQUE VIDEOS: {len(final_selected)}"
-    )
+    print(f"SELECTED UNIQUE VIDEOS: {len(selected)}")
     print("=" * 70)
 
-    for index, candidate in enumerate(
-        final_selected,
-        start=1
-    ):
+    for index, candidate in enumerate(selected, start=1):
         print()
         print(
             f"{index}. "
-            f"score={candidate.get('total_score')} "
-            f"content={candidate.get('content_value')} "
-            f"age={candidate.get('freshness_days')}d "
+            f"score={candidate.get('selection_score')} "
+            f"content={candidate.get('content_score')} "
+            f"age={candidate.get('age_days')}d "
             f"duration={candidate.get('duration')}s "
-            f"size={candidate.get('file_size_mb')}MB"
+            f"size={candidate.get('file_size', 0) / 1024 / 1024:.3f}MB"
         )
-
-        print(
-            "   Account:",
-            candidate.get("account")
-        )
-
-        print(
-            "   Instance:",
-            candidate.get("instance")
-        )
-
-        print(
-            "   URL:",
-            candidate.get("status_url")
-        )
-
-        print(
-            "   SHA256:",
-            candidate.get("sha256")
-        )
-
-        print(
-            "   Caption:",
-            candidate.get("caption", "")[:300]
-        )
+        print(f"   Account: {candidate.get('account', '')}")
+        print(f"   Instance: {candidate.get('instance', '')}")
+        print(f"   URL: {candidate.get('url', '')}")
+        print(f"   SHA256: {candidate.get('sha256', '')}")
+        print(f"   Caption: {candidate.get('caption', '')}")
 
     print()
-    print(
-        "Publication history was NOT modified."
-    )
-
+    print("Publication history was NOT modified.")
     print()
     print("=" * 70)
     print("DISCOVERY COMPLETE")
     print("=" * 70)
-    print(
-        f"Raw candidates: {len(raw_candidates)}"
-    )
-    print(
-        f"Canonical candidates: {len(candidates)}"
-    )
-    print(
-        f"Content-gate passed: {len(gated)}"
-    )
-    print(
-        f"Validated videos: {len(validated)}"
-    )
-    print(
-        f"Fresh videos: {len(fresh)}"
-    )
-    print(
-        f"Selected unique videos: {len(final_selected)}"
-    )
-    print(
-        f"Published-history entries: {len(history)}"
-    )
+    print(f"Raw candidates: {len(raw_candidates)}")
+    print(f"Canonical candidates: {len(unique)}")
+    print(f"Content-gate passed: {len(passed)}")
+    print(f"Validated videos: {len(validated)}")
+    print(f"Fresh videos: {len(fresh_for_history)}")
+    print(f"Selected unique videos: {len(selected)}")
+    print(f"Published-history entries: {len(history)}")
 
 
 if __name__ == "__main__":
