@@ -8,8 +8,6 @@ on:
         required: true
         default: true
         type: boolean
-  schedule:
-    - cron: "*/5 * * * *"
 
 permissions:
   contents: write
