@@ -9,7 +9,10 @@ QUEUE_FILE = Path("daily_queue.json")
 HISTORY_FILE = Path("history.json")
 TEHRAN = ZoneInfo("Asia/Tehran")
 
-RENDER_URL = os.environ.get("RENDER_API_URL", "https://x-video-downloader-api.onrender.com/send-media-and-send")
+RENDER_URL = os.environ.get(
+    "RENDER_API_URL",
+    "https://x-video-downloader-api.onrender.com/send-media-and-send",
+)
 RENDER_API_KEY = os.environ.get("RENDER_API_KEY", "").strip()
 DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
 
@@ -22,11 +25,8 @@ def load_json(path, default):
 
 def save_json(path, value):
     tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(
-        json.dumps(value, ensure_ascii=False, indent=2) + "
-",
-        encoding="utf-8",
-    )
+    content = json.dumps(value, ensure_ascii=False, indent=2) + chr(10)
+    tmp.write_text(content, encoding="utf-8")
     tmp.replace(path)
 
 
@@ -45,11 +45,13 @@ def history_key(item):
 def due_items(queue):
     now = datetime.now(TEHRAN)
     due = []
+
     for item in queue:
         if item.get("status") != "pending" or not item.get("scheduled_at"):
             continue
 
         scheduled = datetime.fromisoformat(item["scheduled_at"])
+
         if scheduled.tzinfo is None:
             scheduled = scheduled.replace(tzinfo=TEHRAN)
 
@@ -125,6 +127,7 @@ def main():
         queue_id = item.get("queue_id")
         source_url = str(item.get("source_url") or "").strip()
         media_url = str(item.get("media_url") or "").strip()
+
         key = "url:" + source_url if source_url else "media:" + media_url
 
         if key in keys or (media_url and "media:" + media_url in keys):
@@ -179,6 +182,7 @@ def main():
             keys.add("media:" + media_url)
 
         changed = True
+
         print(
             f"{queue_id}: PUBLISHED — "
             f"Telegram message {result.get('telegram_message_id')}"
