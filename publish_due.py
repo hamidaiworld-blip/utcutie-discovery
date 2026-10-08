@@ -77,7 +77,7 @@ def send_item(item):
     response = requests.get(
         RENDER_URL,
         params={
-            "url": media_url,
+            "media_url": media_url,
             "caption": caption,
             "x-api-key": RENDER_API_KEY,
         },
