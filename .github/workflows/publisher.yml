@@ -1,0 +1,53 @@
+name: UTCutie Publisher
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Do not upload; only show which queue items are due"
+        required: true
+        default: true
+        type: boolean
+  schedule:
+    - cron: "*/5 * * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: utcutie-publisher
+  cancel-in-progress: false
+
+jobs:
+  publish-due:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Publish due queue items
+        env:
+          RENDER_API_KEY: \${{ secrets.RENDER_API_KEY }}
+          RENDER_API_URL: https://x-video-downloader-api.onrender.com/send-media-and-send
+          DRY_RUN: \${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+        run: python publish_due.py
+
+      - name: Commit successful publications
+        run: |
+          git config user.name "UTCutie Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add daily_queue.json history.json
+          if git diff --cached --quiet; then
+            echo "No publication changes to commit."
+          else
+            git commit -m "Record UTCutie publications"
+            git push
+          fi
