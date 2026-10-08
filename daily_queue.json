@@ -23,8 +23,8 @@
       "score": null,
       "instance": "https://mastodon.social",
       "account": "elperronegro@khumbu.social",
-      "last_error": "HTTP 422: {\"detail\":[{\"type\":\"missing\",\"loc\":[\"query\",\"media_url\"],\"msg\":\"Field required\",\"input\":null}]}",
-      "last_attempt_at": "2026-10-08T12:34:02.812010+03:30"
+      "last_error": "HTTP 401: {\"detail\":\"Invalid API key\"}",
+      "last_attempt_at": "2026-10-08T12:35:00.641525+03:30"
     },
     {
       "queue_id": 2,
@@ -38,8 +38,8 @@
       "score": null,
       "instance": "https://mastodon.online",
       "account": "pughollow@mastodon.social",
-      "last_error": "HTTP 422: {\"detail\":[{\"type\":\"missing\",\"loc\":[\"query\",\"media_url\"],\"msg\":\"Field required\",\"input\":null}]}",
-      "last_attempt_at": "2026-10-08T12:34:02.812010+03:30"
+      "last_error": "HTTP 401: {\"detail\":\"Invalid API key\"}",
+      "last_attempt_at": "2026-10-08T12:35:00.641525+03:30"
     },
     {
       "queue_id": 3,
@@ -53,8 +53,8 @@
       "score": null,
       "instance": "https://mastodon.online",
       "account": "muhnin@mastodon.social",
-      "last_error": "HTTP 422: {\"detail\":[{\"type\":\"missing\",\"loc\":[\"query\",\"media_url\"],\"msg\":\"Field required\",\"input\":null}]}",
-      "last_attempt_at": "2026-10-08T12:34:02.812010+03:30"
+      "last_error": "HTTP 401: {\"detail\":\"Invalid API key\"}",
+      "last_attempt_at": "2026-10-08T12:35:00.641525+03:30"
     },
     {
       "queue_id": 4,
@@ -239,6 +239,6 @@
       "account": "fonecokid@c.im"
     }
   ],
-  "updated_at": "2026-10-08T12:34:02.812010+03:30",
+  "updated_at": "2026-10-08T12:35:00.641525+03:30",
   "published_count": 0
 }
