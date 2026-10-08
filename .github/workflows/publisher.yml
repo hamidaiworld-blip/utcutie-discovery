@@ -8,7 +8,8 @@ on:
         required: true
         default: true
         type: boolean
-  # Scheduled publishing will be enabled only after the Render API secret is confirmed.
+  schedule:
+    - cron: "*/5 * * * *"
 
 permissions:
   contents: write
@@ -34,9 +35,9 @@ jobs:
 
       - name: Publish due queue items
         env:
-          RENDER_API_KEY: \${{ secrets.RENDER_API_KEY }}
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
           RENDER_API_URL: https://x-video-downloader-api.onrender.com/send-media-and-send
-          DRY_RUN: \${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
         run: python publish_due.py
 
       - name: Commit successful publications
