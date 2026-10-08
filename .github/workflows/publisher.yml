@@ -8,8 +8,7 @@ on:
         required: true
         default: true
         type: boolean
-  schedule:
-    - cron: "*/5 * * * *"
+  # Scheduled publishing will be enabled only after the Render API secret is confirmed.
 
 permissions:
   contents: write
