@@ -4,10 +4,9 @@ on:
   workflow_dispatch:
 
   # GitHub Actions cron uses UTC.
-  # These two triggers cover the 10:00 Tehran window.
+  # 10:00 Tehran = 06:30 UTC (Tehran is UTC+03:30 year-round).
   schedule:
     - cron: "30 6 * * *"
-    - cron: "30 7 * * *"
 
 permissions:
   contents: write
@@ -25,15 +24,10 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install FFmpeg
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg
-
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests
+          pip install requests opencv-python-headless==4.10.0.84 numpy
 
       - name: Determine trigger type and Tehran time
         id: time_check
