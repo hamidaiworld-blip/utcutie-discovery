@@ -22,7 +22,9 @@
       "file_size": 16205118,
       "score": null,
       "instance": "https://mastodon.social",
-      "account": "elperronegro@khumbu.social"
+      "account": "elperronegro@khumbu.social",
+      "last_error": "HTTP 405: {\"detail\":\"Method Not Allowed\"}",
+      "last_attempt_at": "2026-10-08T12:31:25.243274+03:30"
     },
     {
       "queue_id": 2,
@@ -35,7 +37,9 @@
       "file_size": 38935385,
       "score": null,
       "instance": "https://mastodon.online",
-      "account": "pughollow@mastodon.social"
+      "account": "pughollow@mastodon.social",
+      "last_error": "HTTP 405: {\"detail\":\"Method Not Allowed\"}",
+      "last_attempt_at": "2026-10-08T12:31:25.243274+03:30"
     },
     {
       "queue_id": 3,
@@ -48,7 +52,9 @@
       "file_size": 11586923,
       "score": null,
       "instance": "https://mastodon.online",
-      "account": "muhnin@mastodon.social"
+      "account": "muhnin@mastodon.social",
+      "last_error": "HTTP 405: {\"detail\":\"Method Not Allowed\"}",
+      "last_attempt_at": "2026-10-08T12:31:25.243274+03:30"
     },
     {
       "queue_id": 4,
@@ -232,5 +238,7 @@
       "instance": "https://mastodon.social",
       "account": "fonecokid@c.im"
     }
-  ]
+  ],
+  "updated_at": "2026-10-08T12:31:25.243274+03:30",
+  "published_count": 0
 }
