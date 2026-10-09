@@ -183,7 +183,7 @@
     {
       "queue_id": 10,
       "scheduled_at": "2026-10-09T18:17:48+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/367/966/136/041/725/original/774c17e385ec079d.mp4",
       "caption": "kitten loving\n\n@utcutie",
       "source_url": "",
@@ -191,7 +191,14 @@
       "file_size": 23480462,
       "score": null,
       "instance": "https://mastodon.social",
-      "account": "sultmhoor@christmas.tattoo"
+      "account": "sultmhoor@christmas.tattoo",
+      "last_attempt_at": "2026-10-09T18:29:12.270817+03:30",
+      "published_at": "2026-10-09T18:29:12.270817+03:30",
+      "telegram_message_id": 8098,
+      "render_response": {
+        "duration": 47.599,
+        "file_size": 23480462
+      }
     },
     {
       "queue_id": 11,
@@ -285,6 +292,6 @@
       "account": "fonecokid@c.im"
     }
   ],
-  "updated_at": "2026-10-09T17:51:47.622794+03:30",
-  "published_count": 8
+  "updated_at": "2026-10-09T18:29:12.270817+03:30",
+  "published_count": 9
 }
