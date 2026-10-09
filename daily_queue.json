@@ -203,7 +203,7 @@
     {
       "queue_id": 11,
       "scheduled_at": "2026-10-09T18:58:07+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/382/868/750/109/413/original/5a39c25223220103.mp4",
       "caption": "AHOY MARINE BIOLOGISTS! We have discovered a VERY DANGEROUS new shark species: Carcharadon Pembrokensis!\nWe went for swimming lessons at the Canine Dip and Dive today, and it turns out Corgis are very competent, if reluctant, swimmers.\n\n@utcutie",
       "source_url": "",
@@ -211,7 +211,14 @@
       "file_size": 10842847,
       "score": null,
       "instance": "https://mastodon.online",
-      "account": "bark_maul@mas.to"
+      "account": "bark_maul@mas.to",
+      "last_attempt_at": "2026-10-09T19:03:57.491122+03:30",
+      "published_at": "2026-10-09T19:03:57.491122+03:30",
+      "telegram_message_id": 8099,
+      "render_response": {
+        "duration": 24.311,
+        "file_size": 10842847
+      }
     },
     {
       "queue_id": 12,
@@ -292,6 +299,6 @@
       "account": "fonecokid@c.im"
     }
   ],
-  "updated_at": "2026-10-09T18:29:12.270817+03:30",
-  "published_count": 9
+  "updated_at": "2026-10-09T19:03:57.491122+03:30",
+  "published_count": 10
 }
