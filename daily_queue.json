@@ -283,7 +283,7 @@
     {
       "queue_id": 15,
       "scheduled_at": "2026-10-09T21:39:22+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/259/743/715/805/148/original/9ec6c25567752e11.mp4",
       "caption": "I am now getting regular video updates from my sister… it's dinner time for the kittens!\n\n@utcutie",
       "source_url": "",
@@ -291,7 +291,14 @@
       "file_size": 10729092,
       "score": null,
       "instance": "https://mastodon.social",
-      "account": "dan@durrans.com"
+      "account": "dan@durrans.com",
+      "last_attempt_at": "2026-10-09T21:56:01.574797+03:30",
+      "published_at": "2026-10-09T21:56:01.574797+03:30",
+      "telegram_message_id": 8103,
+      "render_response": {
+        "duration": 44.076,
+        "file_size": 10729092
+      }
     },
     {
       "queue_id": 16,
@@ -320,6 +327,6 @@
       "account": "fonecokid@c.im"
     }
   ],
-  "updated_at": "2026-10-09T21:09:43.429042+03:30",
-  "published_count": 13
+  "updated_at": "2026-10-09T21:56:01.574797+03:30",
+  "published_count": 14
 }
