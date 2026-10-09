@@ -1,9 +1,12 @@
 import hashlib
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
+
+import requests
+
 
 QUEUE_FILE = Path("daily_queue.json")
 HISTORY_FILE = Path("history.json")
@@ -16,18 +19,40 @@ RENDER_URL = os.environ.get(
 RENDER_API_KEY = os.environ.get("RENDER_API_KEY", "").strip()
 DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
 
+# Guardrails: one post per run; no catch-up bursts.
+MAX_POSTS_PER_RUN = 1
+MAX_LATE_MINUTES = 20
+RETRY_COOLDOWN_MINUTES = 15
+PUBLISH_START_MINUTE = 11 * 60
+PUBLISH_END_MINUTE = 23 * 60
+
 
 def load_json(path, default):
     if not path.exists():
         return default
-    return json.loads(path.read_text(encoding="utf-8"))
+    with path.open("r", encoding="utf-8") as handle:
+        return json.load(handle)
 
 
 def save_json(path, value):
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    content = json.dumps(value, ensure_ascii=False, indent=2) + chr(10)
-    tmp.write_text(content, encoding="utf-8")
-    tmp.replace(path)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(value, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(path)
+
+
+def parse_datetime(value):
+    if not value:
+        return None
+    try:
+        result = datetime.fromisoformat(str(value))
+    except (TypeError, ValueError):
+        return None
+    if result.tzinfo is None:
+        result = result.replace(tzinfo=TEHRAN)
+    return result.astimezone(TEHRAN)
 
 
 def history_key(item):
@@ -35,61 +60,46 @@ def history_key(item):
         value = str(item.get(field) or "").strip()
         if value:
             return "url:" + value
-    if item.get("sha256"):
-        return "sha:" + str(item["sha256"])
-    if item.get("media_url"):
-        return "media:" + str(item["media_url"])
+    sha = item.get("sha256")
+    if sha:
+        return "sha:" + str(sha)
+    media_url = str(item.get("media_url") or "").strip()
+    if media_url:
+        return "media:" + media_url
     return ""
 
 
-def due_items(queue):
-    now = datetime.now(TEHRAN)
-    due = []
-
-    for item in queue:
-        if item.get("status") != "pending" or not item.get("scheduled_at"):
-            continue
-
-        scheduled = datetime.fromisoformat(item["scheduled_at"])
-
-        if scheduled.tzinfo is None:
-            scheduled = scheduled.replace(tzinfo=TEHRAN)
-
-        if scheduled <= now:
-            due.append(item)
-
-    due.sort(key=lambda x: x.get("scheduled_at", ""))
-    return due, now
-
-
 def send_item(item):
-    import requests
-
     media_url = str(item.get("media_url") or "").strip()
-    caption = str(item.get("caption") or "@utcutie")
-
+    caption = str(item.get("caption") or "").strip()
     if not media_url:
         return False, "missing media_url"
-
+    if not caption:
+        caption = "@utcutie"
+    if not caption.endswith("@utcutie"):
+        caption = caption.rstrip() + "\n\n@utcutie"
     if not RENDER_API_KEY:
         return False, "RENDER_API_KEY is not configured"
 
-    response = requests.get(
-        RENDER_URL,
-        params={
-            "media_url": media_url,
-            "caption": caption,
-            "x-api-key": RENDER_API_KEY,
-        },
-        timeout=240,
-    )
+    try:
+        response = requests.get(
+            RENDER_URL,
+            params={
+                "media_url": media_url,
+                "caption": caption,
+                "x-api-key": RENDER_API_KEY,
+            },
+            timeout=240,
+        )
+    except requests.RequestException as exc:
+        return False, f"request error: {exc}"
 
     if not response.ok:
         return False, f"HTTP {response.status_code}: {response.text[:500]}"
 
     try:
         data = response.json()
-    except Exception:
+    except ValueError:
         return False, f"non-JSON response: {response.text[:500]}"
 
     if not data.get("success") or not data.get("telegram_sent"):
@@ -100,60 +110,104 @@ def send_item(item):
 
 def main():
     payload = load_json(QUEUE_FILE, None)
-
     if not isinstance(payload, dict) or not isinstance(payload.get("queue"), list):
         raise RuntimeError("daily_queue.json is missing or invalid")
 
     queue = payload["queue"]
     history = load_json(HISTORY_FILE, [])
-
     if not isinstance(history, list):
         raise RuntimeError("history.json is invalid")
 
-    due, now = due_items(queue)
-
+    now = datetime.now(TEHRAN)
     print(f"Tehran now: {now.isoformat()}")
-    print(f"Due pending items: {len(due)}")
     print(f"Mode: {'DRY RUN' if DRY_RUN else 'LIVE'}")
+    print(f"Queue created_at: {payload.get('created_at')}")
+    print(f"Target channel: {payload.get('target_channel')}")
 
-    if not due:
-        print("Nothing is due.")
+    created_at = parse_datetime(payload.get("created_at"))
+    if not created_at or created_at.date() != now.date():
+        print("SAFETY STOP: queue is missing a valid created_at for today's Tehran date.")
         return
 
-    keys = {history_key(x) for x in history if isinstance(x, dict)}
+    target = str(payload.get("target_channel") or "").strip()
+    if target.lower() != "@utcutie":
+        print("SAFETY STOP: queue target is not @utcutie.")
+        return
+
+    minute_of_day = now.hour * 60 + now.minute
+    if minute_of_day < PUBLISH_START_MINUTE or minute_of_day > PUBLISH_END_MINUTE + 10:
+        print("Outside the allowed Tehran publishing window (11:00–23:10); nothing will be sent.")
+        return
+
+    history_keys = {
+        history_key(entry)
+        for entry in history
+        if isinstance(entry, dict) and history_key(entry)
+    }
+
+    due = []
     changed = False
+    for item in queue:
+        if not isinstance(item, dict) or item.get("status") != "pending":
+            continue
+        scheduled = parse_datetime(item.get("scheduled_at"))
+        if not scheduled or scheduled > now:
+            continue
 
-    for item in due:
-        queue_id = item.get("queue_id")
-        source_url = str(item.get("source_url") or "").strip()
-        media_url = str(item.get("media_url") or "").strip()
-
-        key = "url:" + source_url if source_url else "media:" + media_url
-
-        if key in keys or (media_url and "media:" + media_url in keys):
+        key = history_key(item)
+        if key and key in history_keys:
             item["status"] = "published"
             item["published_at"] = now.isoformat()
             item["result"] = "already_in_history"
             changed = True
-            print(f"{queue_id}: already in history; marked published")
+            print(f"{item.get('queue_id')}: already in history; marked published.")
             continue
 
-        if DRY_RUN:
-            print(
-                f"{queue_id}: DRY RUN — "
-                f"scheduled={item.get('scheduled_at')} source={source_url}"
-            )
-            continue
-
-        ok, result = send_item(item)
-
-        if not ok:
-            item["last_error"] = result
-            item["last_attempt_at"] = now.isoformat()
+        lateness = now - scheduled
+        if lateness > timedelta(minutes=MAX_LATE_MINUTES):
+            item["status"] = "skipped"
+            item["result"] = "schedule_expired_safety_guard"
+            item["skipped_at"] = now.isoformat()
             changed = True
-            print(f"{queue_id}: FAILED — {result}")
+            print(f"{item.get('queue_id')}: skipped; scheduled time is more than {MAX_LATE_MINUTES} minutes old.")
             continue
 
+        last_attempt = parse_datetime(item.get("last_attempt_at"))
+        if last_attempt and now - last_attempt < timedelta(minutes=RETRY_COOLDOWN_MINUTES):
+            print(f"{item.get('queue_id')}: retry cooldown active.")
+            continue
+
+        due.append((scheduled, item))
+
+    due.sort(key=lambda pair: pair[0])
+    print(f"Eligible due items: {len(due)}")
+
+    if DRY_RUN:
+        for scheduled, item in due[:MAX_POSTS_PER_RUN]:
+            print(
+                f"DRY RUN — queue_id={item.get('queue_id')} "
+                f"scheduled={scheduled.isoformat()} source={item.get('source_url', '')}"
+            )
+        print("No Telegram uploads performed.")
+        return
+
+    if not due:
+        if changed:
+            payload["updated_at"] = now.isoformat()
+            save_json(QUEUE_FILE, payload)
+        print("Nothing eligible to publish.")
+        return
+
+    # Exactly one actual upload per run, even if several items are overdue.
+    _, item = due[0]
+    ok, result = send_item(item)
+    item["last_attempt_at"] = now.isoformat()
+
+    if not ok:
+        item["last_error"] = str(result)
+        changed = True
+        print(f"{item.get('queue_id')}: FAILED — {result}")
+    else:
         item["status"] = "published"
         item["published_at"] = now.isoformat()
         item["telegram_message_id"] = result.get("telegram_message_id")
@@ -161,43 +215,37 @@ def main():
             "duration": result.get("duration"),
             "file_size": result.get("file_size"),
         }
-
+        item.pop("last_error", None)
+        key = history_key(item)
+        media_url = str(item.get("media_url") or "")
         history.append(
             {
                 "published_at": now.isoformat(),
                 "sha256": item.get("sha256")
-                or hashlib.sha256(media_url.encode()).hexdigest(),
+                or hashlib.sha256(media_url.encode("utf-8")).hexdigest(),
                 "media_url": media_url,
-                "status_url": source_url,
+                "status_url": item.get("source_url", ""),
                 "duration": result.get("duration", item.get("duration")),
                 "file_size": result.get("file_size", item.get("file_size")),
-                "total_score": item.get("score"),
+                "score": item.get("score"),
                 "telegram_message_id": result.get("telegram_message_id"),
+                "history_key": key,
             }
         )
-
-        keys.add(key)
-
-        if media_url:
-            keys.add("media:" + media_url)
-
         changed = True
-
         print(
-            f"{queue_id}: PUBLISHED — "
-            f"Telegram message {result.get('telegram_message_id')}"
+            f"{item.get('queue_id')}: PUBLISHED successfully; "
+            f"Telegram message ID={result.get('telegram_message_id')}"
         )
 
-    if changed and not DRY_RUN:
+    if changed:
         payload["updated_at"] = now.isoformat()
         payload["published_count"] = sum(
-            1 for x in queue if x.get("status") == "published"
+            1 for entry in queue if entry.get("status") == "published"
         )
         save_json(QUEUE_FILE, payload)
         save_json(HISTORY_FILE, history)
         print("Queue and history saved.")
-    else:
-        print("No persistent changes made.")
 
 
 if __name__ == "__main__":
