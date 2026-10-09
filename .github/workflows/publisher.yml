@@ -15,7 +15,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: utcutie-publisher
+  group: utcutie-repo-state
   cancel-in-progress: false
 
 jobs:
@@ -50,5 +50,6 @@ jobs:
             echo "No publication changes to commit."
           else
             git commit -m "Record UTCutie publications"
+            git pull --rebase origin main
             git push
           fi
