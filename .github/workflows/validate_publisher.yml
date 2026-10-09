@@ -1,0 +1,30 @@
+name: UTCutie Publisher Validation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install runtime dependency
+        run: python -m pip install requests
+
+      - name: Compile publisher
+        run: python -m py_compile publish_due.py
+
+      - name: Run no-send dry-run safety check
+        env:
+          DRY_RUN: "true"
+        run: python publish_due.py
