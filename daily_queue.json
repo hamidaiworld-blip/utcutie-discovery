@@ -21,7 +21,9 @@
       "file_size": 8822565,
       "score": null,
       "instance": "https://mastodon.social",
-      "account": "oksana_lukerya"
+      "account": "oksana_lukerya",
+      "last_attempt_at": "2026-10-09T12:18:36.328039+03:30",
+      "last_error": "HTTP 401: {\"detail\":\"Invalid API key\"}"
     },
     {
       "queue_id": 2,
@@ -232,6 +234,6 @@
       "account": "fonecokid@c.im"
     }
   ],
-  "updated_at": "2026-10-09T08:48:15.391Z",
+  "updated_at": "2026-10-09T12:18:36.328039+03:30",
   "published_count": 0
 }
