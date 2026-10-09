@@ -19,7 +19,6 @@ RENDER_URL = os.environ.get(
 RENDER_API_KEY = os.environ.get("RENDER_API_KEY", "").strip()
 DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
 
-# Guardrails: one post per run; no catch-up bursts.
 MAX_POSTS_PER_RUN = 1
 MAX_LATE_MINUTES = 20
 RETRY_COOLDOWN_MINUTES = 15
@@ -55,18 +54,16 @@ def parse_datetime(value):
     return result.astimezone(TEHRAN)
 
 
-def history_key(item):
-    for field in ("canonical_url", "url", "source_url"):
+def item_history_keys(item):
+    keys = set()
+    for field in ("canonical_url", "url", "source_url", "media_url"):
         value = str(item.get(field) or "").strip()
         if value:
-            return "url:" + value
-    sha = item.get("sha256")
+            keys.add("url:" + value if field != "media_url" else "media:" + value)
+    sha = str(item.get("sha256") or "").strip()
     if sha:
-        return "sha:" + str(sha)
-    media_url = str(item.get("media_url") or "").strip()
-    if media_url:
-        return "media:" + media_url
-    return ""
+        keys.add("sha:" + sha)
+    return keys
 
 
 def send_item(item):
@@ -129,8 +126,7 @@ def main():
         print("SAFETY STOP: queue is missing a valid created_at for today's Tehran date.")
         return
 
-    target = str(payload.get("target_channel") or "").strip()
-    if target.lower() != "@utcutie":
+    if str(payload.get("target_channel") or "").strip().lower() != "@utcutie":
         print("SAFETY STOP: queue target is not @utcutie.")
         return
 
@@ -139,11 +135,10 @@ def main():
         print("Outside the allowed Tehran publishing window (11:00–23:10); nothing will be sent.")
         return
 
-    history_keys = {
-        history_key(entry)
-        for entry in history
-        if isinstance(entry, dict) and history_key(entry)
-    }
+    history_keys = set()
+    for entry in history:
+        if isinstance(entry, dict):
+            history_keys.update(item_history_keys(entry))
 
     due = []
     changed = False
@@ -154,8 +149,7 @@ def main():
         if not scheduled or scheduled > now:
             continue
 
-        key = history_key(item)
-        if key and key in history_keys:
+        if item_history_keys(item) & history_keys:
             item["status"] = "published"
             item["published_at"] = now.isoformat()
             item["result"] = "already_in_history"
@@ -163,8 +157,7 @@ def main():
             print(f"{item.get('queue_id')}: already in history; marked published.")
             continue
 
-        lateness = now - scheduled
-        if lateness > timedelta(minutes=MAX_LATE_MINUTES):
+        if now - scheduled > timedelta(minutes=MAX_LATE_MINUTES):
             item["status"] = "skipped"
             item["result"] = "schedule_expired_safety_guard"
             item["skipped_at"] = now.isoformat()
@@ -198,7 +191,6 @@ def main():
         print("Nothing eligible to publish.")
         return
 
-    # Exactly one actual upload per run, even if several items are overdue.
     _, item = due[0]
     ok, result = send_item(item)
     item["last_attempt_at"] = now.isoformat()
@@ -216,7 +208,6 @@ def main():
             "file_size": result.get("file_size"),
         }
         item.pop("last_error", None)
-        key = history_key(item)
         media_url = str(item.get("media_url") or "")
         history.append(
             {
@@ -229,7 +220,6 @@ def main():
                 "file_size": result.get("file_size", item.get("file_size")),
                 "score": item.get("score"),
                 "telegram_message_id": result.get("telegram_message_id"),
-                "history_key": key,
             }
         )
         changed = True
