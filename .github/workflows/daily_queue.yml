@@ -11,6 +11,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: utcutie-repo-state
+  cancel-in-progress: false
+
 jobs:
   prepare-daily-queue:
     runs-on: ubuntu-latest
