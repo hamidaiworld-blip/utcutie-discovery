@@ -165,14 +165,17 @@ PROMO_TERMS = {
     "subscribe", "follow us", "follow me", "link in bio",
     "wishlist", "buy now", "shop now", "limited edition",
     "available now", "order now", "support my patreon",
+    "learn more", "my real life", "more about me", "visit my",
+    "check out my", "my website", "my site", "allmylinks",
 }
 
 MUSIC_TERMS = {
-    "kevin macleod", "incompetech", "creative commons",
-    "music by", "licensed music", "royalty free music",
+    "kevin macleod", "incompetech", "creative commons", "creativecommons",
+    "music by", "licensed music", "royalty free music", "licensed under",
+    "cc-by", "cc by", "attribution 4.0",
 }
 
-URL_RE = re.compile(r"https?://\S+|www\.\S+", re.I)
+URL_RE = re.compile(r"https?://[ \t]*\S+|www\.[ \t]*\S+|(?:\b[a-z0-9-]+\.)+(?:com|org|net|io|co|tv|me|info|xyz|ly|gg|edu|gov)\b(?:/\S*)?", re.I)
 HASHTAG_RE = re.compile(r"(?u)(?<!\w)#\s*\w+")
 PHONE_RE = re.compile(r"(?<!\w)(?:\+?\d[\d\s().-]{7,}\d)(?!\w)")
 
