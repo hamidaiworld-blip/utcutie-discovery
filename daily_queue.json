@@ -103,7 +103,7 @@
     {
       "queue_id": 6,
       "scheduled_at": "2026-10-09T15:36:33+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://files.mastodon.social/media_attachments/files/117/407/826/680/708/796/original/761ba395482ee192.mp4",
       "caption": "Some Ivy Jean Bean silliness for your Thursday.\nA fawn chug playing tug with a towel.\n\n@utcutie",
       "source_url": "",
@@ -111,7 +111,14 @@
       "file_size": 23915692,
       "score": null,
       "instance": "https://mastodon.social",
-      "account": "pughollow"
+      "account": "pughollow",
+      "last_attempt_at": "2026-10-09T15:54:34.452832+03:30",
+      "published_at": "2026-10-09T15:54:34.452832+03:30",
+      "telegram_message_id": 8094,
+      "render_response": {
+        "duration": 15.733,
+        "file_size": 23915692
+      }
     },
     {
       "queue_id": 7,
@@ -257,6 +264,6 @@
       "account": "fonecokid@c.im"
     }
   ],
-  "updated_at": "2026-10-09T15:05:25.768306+03:30",
-  "published_count": 3
+  "updated_at": "2026-10-09T15:54:34.452832+03:30",
+  "published_count": 5
 }

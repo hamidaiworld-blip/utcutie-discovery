@@ -379,5 +379,15 @@
     "file_size": 38935385,
     "score": null,
     "telegram_message_id": 8093
+  },
+  {
+    "published_at": "2026-10-09T15:54:34.452832+03:30",
+    "sha256": "2dd2844243c4aa41a0241843774173ec6f5cd7873b81e13737d5d6b0a7000a84",
+    "media_url": "https://files.mastodon.social/media_attachments/files/117/407/826/680/708/796/original/761ba395482ee192.mp4",
+    "status_url": "",
+    "duration": 15.733,
+    "file_size": 23915692,
+    "score": null,
+    "telegram_message_id": 8094
   }
 ]
