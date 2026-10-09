@@ -240,9 +240,6 @@ jobs:
               "timezone_display": "Tehran",
               "target_channel": "@utcutie",
 
-              # Test destination remains unchanged.
-              "test_chat_id": "333331538",
-
               "max_items": 20,
               "selected_count": len(queue),
 
