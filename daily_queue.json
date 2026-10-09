@@ -243,7 +243,7 @@
     {
       "queue_id": 13,
       "scheduled_at": "2026-10-09T20:18:45+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/278/198/153/308/364/original/1de543a637ab179b.mp4",
       "caption": "I spent about 45 minutes with my crew on my side of the back door glass, and the lil mom and her four kittens outside on the deck. And then this happened. Just try telling me this isn’t Jinx’s mom and his next-gen little brothers and sisters.\n\n@utcutie",
       "source_url": "",
@@ -251,7 +251,14 @@
       "file_size": 15689291,
       "score": null,
       "instance": "https://mastodon.social",
-      "account": "adtothebone@universeodon.com"
+      "account": "adtothebone@universeodon.com",
+      "last_attempt_at": "2026-10-09T20:26:05.904331+03:30",
+      "published_at": "2026-10-09T20:26:05.904331+03:30",
+      "telegram_message_id": 8101,
+      "render_response": {
+        "duration": 39.433,
+        "file_size": 15689291
+      }
     },
     {
       "queue_id": 14,
@@ -306,6 +313,6 @@
       "account": "fonecokid@c.im"
     }
   ],
-  "updated_at": "2026-10-09T19:52:54.552268+03:30",
-  "published_count": 11
+  "updated_at": "2026-10-09T20:26:05.904331+03:30",
+  "published_count": 12
 }
