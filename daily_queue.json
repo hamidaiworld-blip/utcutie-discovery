@@ -88,7 +88,7 @@
     {
       "queue_id": 5,
       "scheduled_at": "2026-10-09T14:56:15+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/382/190/326/208/914/original/8e2685d1f6689e50.mp4",
       "caption": "Happy Banana Sunday.\n\n@utcutie",
       "source_url": "",
@@ -96,7 +96,9 @@
       "file_size": 12559719,
       "score": null,
       "instance": "https://mastodon.social",
-      "account": "fonecokid@c.im"
+      "account": "fonecokid@c.im",
+      "published_at": "2026-10-09T15:05:25.768306+03:30",
+      "result": "already_in_history"
     },
     {
       "queue_id": 6,
@@ -255,6 +257,6 @@
       "account": "fonecokid@c.im"
     }
   ],
-  "updated_at": "2026-10-09T14:21:30.658220+03:30",
+  "updated_at": "2026-10-09T15:05:25.768306+03:30",
   "published_count": 3
 }
