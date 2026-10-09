@@ -123,7 +123,7 @@
     {
       "queue_id": 7,
       "scheduled_at": "2026-10-09T16:16:52+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://files.mastodon.social/media_attachments/files/117/391/019/909/315/771/original/d11cffea42d9219e.mp4",
       "caption": "stew the raccoon:))\n\n@utcutie",
       "source_url": "",
@@ -131,7 +131,14 @@
       "file_size": 27824438,
       "score": null,
       "instance": "https://mastodon.social",
-      "account": "crittersnackstation"
+      "account": "crittersnackstation",
+      "last_attempt_at": "2026-10-09T16:34:28.923019+03:30",
+      "published_at": "2026-10-09T16:34:28.923019+03:30",
+      "telegram_message_id": 8095,
+      "render_response": {
+        "duration": 31.5,
+        "file_size": 27824438
+      }
     },
     {
       "queue_id": 8,
@@ -264,6 +271,6 @@
       "account": "fonecokid@c.im"
     }
   ],
-  "updated_at": "2026-10-09T15:54:34.452832+03:30",
-  "published_count": 5
+  "updated_at": "2026-10-09T16:34:28.923019+03:30",
+  "published_count": 6
 }
