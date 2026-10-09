@@ -56,7 +56,7 @@ def parse_datetime(value):
 
 def item_history_keys(item):
     keys = set()
-    for field in ("canonical_url", "url", "source_url", "media_url"):
+    for field in ("canonical_url", "url", "source_url", "status_url", "media_url"):
         value = str(item.get(field) or "").strip()
         if value:
             keys.add("url:" + value if field != "media_url" else "media:" + value)
