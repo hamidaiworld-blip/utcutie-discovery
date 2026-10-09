@@ -263,7 +263,7 @@
     {
       "queue_id": 14,
       "scheduled_at": "2026-10-09T20:59:03+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/262/124/145/582/394/original/8a1253b83c5f5b54.mp4",
       "caption": "Emma is going to want one of these little furry friends, isn't she? We might end up with a third cat!\n\n@utcutie",
       "source_url": "",
@@ -271,7 +271,14 @@
       "file_size": 22997353,
       "score": null,
       "instance": "https://mastodon.social",
-      "account": "dan@durrans.com"
+      "account": "dan@durrans.com",
+      "last_attempt_at": "2026-10-09T21:09:43.429042+03:30",
+      "published_at": "2026-10-09T21:09:43.429042+03:30",
+      "telegram_message_id": 8102,
+      "render_response": {
+        "duration": 112.135,
+        "file_size": 22997353
+      }
     },
     {
       "queue_id": 15,
@@ -313,6 +320,6 @@
       "account": "fonecokid@c.im"
     }
   ],
-  "updated_at": "2026-10-09T20:26:05.904331+03:30",
-  "published_count": 12
+  "updated_at": "2026-10-09T21:09:43.429042+03:30",
+  "published_count": 13
 }
