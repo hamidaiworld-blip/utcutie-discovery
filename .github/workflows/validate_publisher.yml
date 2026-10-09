@@ -24,6 +24,11 @@ jobs:
       - name: Compile publisher
         run: python -m py_compile publish_due.py
 
+      - name: Verify API-key synchronization fingerprint
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: python -c 'import os,hashlib; print("RENDER_API_KEY_SHA256_PREFIX=" + hashlib.sha256(os.environ["RENDER_API_KEY"].encode()).hexdigest()[:16])'
+
       - name: Run no-send dry-run safety check
         env:
           DRY_RUN: "true"
