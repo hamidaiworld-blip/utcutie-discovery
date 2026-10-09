@@ -84,8 +84,8 @@ def send_item(item):
             params={
                 "media_url": media_url,
                 "caption": caption,
-                "x-api-key": RENDER_API_KEY,
             },
+            headers={"x-api-key": RENDER_API_KEY},
             timeout=240,
         )
     except requests.RequestException as exc:
