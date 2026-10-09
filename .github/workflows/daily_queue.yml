@@ -304,6 +304,7 @@ jobs:
             echo "No queue changes to commit."
           else
             git commit -m "Update daily UTCutie queue"
+            git stash push --include-untracked -m "Generated discovery artifacts"
             git pull --rebase origin main
             git push
           fi
