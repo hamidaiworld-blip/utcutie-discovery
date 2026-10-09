@@ -323,7 +323,7 @@
     {
       "queue_id": 17,
       "scheduled_at": "2026-10-09T23:00:00+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/383/380/719/739/254/original/1dd14cb28b51ded4.mp4",
       "caption": "Sunday afternoon niki playtime\n\n@utcutie",
       "source_url": "",
@@ -331,9 +331,11 @@
       "file_size": 6937607,
       "score": null,
       "instance": "https://mastodon.social",
-      "account": "fonecokid@c.im"
+      "account": "fonecokid@c.im",
+      "published_at": "2026-10-09T23:02:30.829142+03:30",
+      "result": "already_in_history"
     }
   ],
-  "updated_at": "2026-10-09T22:30:09.473236+03:30",
+  "updated_at": "2026-10-09T23:02:30.829142+03:30",
   "published_count": 15
 }
