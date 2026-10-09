@@ -223,7 +223,7 @@
     {
       "queue_id": 12,
       "scheduled_at": "2026-10-09T19:38:26+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://s3.eu-central-2.wasabisys.com/mastodonworld/cache/media_attachments/files/117/375/946/350/624/488/original/36fa5e9bcf6323da.mp4",
       "caption": "Sea and dog 😁\n\n@utcutie",
       "source_url": "",
@@ -231,7 +231,14 @@
       "file_size": 7149841,
       "score": null,
       "instance": "https://mastodon.world",
-      "account": "Fareon@loops.video"
+      "account": "Fareon@loops.video",
+      "last_attempt_at": "2026-10-09T19:52:54.552268+03:30",
+      "published_at": "2026-10-09T19:52:54.552268+03:30",
+      "telegram_message_id": 8100,
+      "render_response": {
+        "duration": 17.901,
+        "file_size": 7149841
+      }
     },
     {
       "queue_id": 13,
@@ -299,6 +306,6 @@
       "account": "fonecokid@c.im"
     }
   ],
-  "updated_at": "2026-10-09T19:03:57.491122+03:30",
-  "published_count": 10
+  "updated_at": "2026-10-09T19:52:54.552268+03:30",
+  "published_count": 11
 }
