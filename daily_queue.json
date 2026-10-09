@@ -143,7 +143,7 @@
     {
       "queue_id": 8,
       "scheduled_at": "2026-10-09T16:57:11+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/378/826/630/025/721/original/c06c2a30204939d9.mp4",
       "caption": "If my dog Rufus was Ahnuld in Predator\n\n@utcutie",
       "source_url": "",
@@ -151,7 +151,14 @@
       "file_size": 31017723,
       "score": null,
       "instance": "https://mastodon.online",
-      "account": "jamesjoelrussell@kolektiva.social"
+      "account": "jamesjoelrussell@kolektiva.social",
+      "last_attempt_at": "2026-10-09T17:14:11.910839+03:30",
+      "published_at": "2026-10-09T17:14:11.910839+03:30",
+      "telegram_message_id": 8096,
+      "render_response": {
+        "duration": 37.2,
+        "file_size": 31017723
+      }
     },
     {
       "queue_id": 9,
@@ -271,6 +278,6 @@
       "account": "fonecokid@c.im"
     }
   ],
-  "updated_at": "2026-10-09T16:34:28.923019+03:30",
-  "published_count": 6
+  "updated_at": "2026-10-09T17:14:11.910839+03:30",
+  "published_count": 7
 }
