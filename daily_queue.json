@@ -303,7 +303,7 @@
     {
       "queue_id": 16,
       "scheduled_at": "2026-10-09T22:19:41+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/376/443/336/948/478/original/7046f7867c080704.mp4",
       "caption": "Happy Saturday to ALL.\n\n@utcutie",
       "source_url": "",
@@ -311,7 +311,14 @@
       "file_size": 13358743,
       "score": null,
       "instance": "https://mastodon.online",
-      "account": "fonecokid@c.im"
+      "account": "fonecokid@c.im",
+      "last_attempt_at": "2026-10-09T22:30:09.473236+03:30",
+      "published_at": "2026-10-09T22:30:09.473236+03:30",
+      "telegram_message_id": 8104,
+      "render_response": {
+        "duration": 34.333,
+        "file_size": 13358743
+      }
     },
     {
       "queue_id": 17,
@@ -327,6 +334,6 @@
       "account": "fonecokid@c.im"
     }
   ],
-  "updated_at": "2026-10-09T21:56:01.574797+03:30",
-  "published_count": 14
+  "updated_at": "2026-10-09T22:30:09.473236+03:30",
+  "published_count": 15
 }
