@@ -303,5 +303,6 @@ jobs:
             echo "No queue changes to commit."
           else
             git commit -m "Update daily UTCutie queue"
+            git pull --rebase origin main
             git push
           fi
