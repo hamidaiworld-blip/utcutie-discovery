@@ -33,7 +33,7 @@
     {
       "queue_id": 2,
       "scheduled_at": "2026-10-09T12:55:18+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/405/377/521/481/835/original/c1507453de83a7af.mp4",
       "caption": "Happy Thursday to all.\n\n@utcutie",
       "source_url": "",
@@ -41,7 +41,14 @@
       "file_size": 9824265,
       "score": null,
       "instance": "https://mastodon.social",
-      "account": "fonecokid@c.im"
+      "account": "fonecokid@c.im",
+      "last_attempt_at": "2026-10-09T12:55:35.696949+03:30",
+      "published_at": "2026-10-09T12:55:35.696949+03:30",
+      "telegram_message_id": 8092,
+      "render_response": {
+        "duration": 23.867,
+        "file_size": 9824265
+      }
     },
     {
       "queue_id": 3,
@@ -239,6 +246,6 @@
       "account": "fonecokid@c.im"
     }
   ],
-  "updated_at": "2026-10-09T12:25:06.869589+03:30",
-  "published_count": 1
+  "updated_at": "2026-10-09T12:55:35.696949+03:30",
+  "published_count": 2
 }
