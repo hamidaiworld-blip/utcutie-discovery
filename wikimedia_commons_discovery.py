@@ -137,6 +137,11 @@ def main():
         # still checks representative frames after download.
         if not any(term in content.casefold() for term in validation.ANIMAL_TERMS):
             continue
+        gate_candidate = {"content": content, "media_url": item["media_url"], "tags": []}
+        content_ok, content_score, content_reason = validation.content_gate(gate_candidate)
+        if not content_ok:
+            print(f"  Rejected by content gate: {content_reason}")
+            continue
         source_url = item["source_url"]
         if validation.canonical_status_url(source_url) in published or source_url in published:
             continue
@@ -150,7 +155,7 @@ def main():
             "instance": "Wikimedia Commons", "created_at": datetime.now(timezone.utc).isoformat(),
             "content": content[:1200], "caption": caption[:260],
             "media_description": item["description"][:1000], "media_url": item["media_url"],
-            "media_type": "video", "content_score": 25, "age_days": 0,
+            "media_type": "video", "content_score": content_score, "age_days": 0,
             "freshness_tier": "licensed_evergreen", "rights_verified": True,
             "rights_basis": item["rights_basis"], "license_url": item["license_url"],
             "attribution": attribution, "license_short_name": item["license_short_name"],
