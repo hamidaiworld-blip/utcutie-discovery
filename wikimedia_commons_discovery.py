@@ -72,7 +72,7 @@ def search_titles():
         try:
             payload = api_get({
                 "action": "query", "list": "search", "srnamespace": 6,
-                "srlimit": RESULTS_PER_TERM, "srsearch": f'filetype:video filemime:mp4 {term}',
+                "srlimit": RESULTS_PER_TERM, "srsearch": f'filetype:video {term}',
             })
             for item in payload.get("query", {}).get("search", []):
                 title = str(item.get("title", ""))
@@ -87,6 +87,7 @@ def search_titles():
 
 def file_metadata(titles):
     found = []
+    mime_counts = {}
     for start in range(0, len(titles), MAX_METADATA_BATCH):
         batch = titles[start:start + MAX_METADATA_BATCH]
         try:
@@ -100,6 +101,7 @@ def file_metadata(titles):
                     continue
                 info = info_list[0]
                 mime = str(info.get("mime", "")).casefold()
+                mime_counts[mime] = mime_counts.get(mime, 0) + 1
                 size = int(info.get("size", 0) or 0)
                 media_url = str(info.get("url", ""))
                 from urllib.parse import urlsplit
@@ -130,6 +132,7 @@ def file_metadata(titles):
         except Exception as exc:
             print(f"Metadata batch skipped: {type(exc).__name__}: {exc}")
         time.sleep(0.15)
+    print(f"Media MIME distribution: {mime_counts}")
     print(f"MP4 files with an allowed explicit license and attribution: {len(found)}.")
     return found
 
