@@ -78,7 +78,7 @@
     {
       "queue_id": 5,
       "scheduled_at": "2026-10-10T15:32:43.636364+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://files.mastodon.social/media_attachments/files/117/391/019/909/315/771/original/d11cffea42d9219e.mp4",
       "caption": "stew the raccoon:))\n\n@utcutie",
       "source_url": "",
@@ -86,7 +86,9 @@
       "file_size": 27824438,
       "score": null,
       "instance": "https://mastodon.social",
-      "account": "crittersnackstation"
+      "account": "crittersnackstation",
+      "published_at": "2026-10-10T15:48:17.388694+03:30",
+      "result": "already_in_history"
     },
     {
       "queue_id": 6,
@@ -195,6 +197,6 @@
   ],
   "schedule_adjusted_at": "2026-10-10T12:40:55.552273+03:30",
   "schedule_note": "First new item scheduled on next five-minute boundary; already-published item preserved; one post per run.",
-  "updated_at": "2026-10-10T14:47:36.030751+03:30",
+  "updated_at": "2026-10-10T15:48:17.388694+03:30",
   "published_count": 2
 }
