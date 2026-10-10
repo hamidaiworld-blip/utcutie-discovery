@@ -24,8 +24,12 @@ jobs:
       - name: Compile publisher and reference registry
         run: python -m py_compile publish_due.py editorial_source_leads.py mastodon_test.py wikimedia_commons_discovery.py
 
-      - name: Verify FFmpeg availability
+      - name: Ensure FFmpeg is available
         run: |
+          if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v ffprobe >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
           ffmpeg -version | head -n 1
           ffprobe -version | head -n 1
 
