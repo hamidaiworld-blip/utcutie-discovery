@@ -24,6 +24,11 @@ jobs:
       - name: Compile publisher and reference registry
         run: python -m py_compile publish_due.py editorial_source_leads.py mastodon_test.py wikimedia_commons_discovery.py
 
+      - name: Verify FFmpeg availability
+        run: |
+          ffmpeg -version | head -n 1
+          ffprobe -version | head -n 1
+
       - name: Validate reference registry without network access
         run: |
           python editorial_source_leads.py
