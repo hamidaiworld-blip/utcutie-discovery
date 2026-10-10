@@ -13,7 +13,7 @@
     {
       "queue_id": 1,
       "scheduled_at": "2026-10-10T11:00:00+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/410/889/396/656/221/original/3eb8920296db7c16.mp4",
       "caption": "Happy Friday to All.\n\n@utcutie",
       "source_url": "",
@@ -21,7 +21,14 @@
       "file_size": 36122880,
       "score": null,
       "instance": "https://mastodon.social",
-      "account": "fonecokid@c.im"
+      "account": "fonecokid@c.im",
+      "last_attempt_at": "2026-10-10T11:01:34.023505+03:30",
+      "published_at": "2026-10-10T11:01:34.023505+03:30",
+      "telegram_message_id": 8105,
+      "render_response": {
+        "duration": 33.4,
+        "file_size": 36122880
+      }
     },
     {
       "queue_id": 2,
@@ -244,5 +251,7 @@
       "instance": "https://mastodon.online",
       "account": "fonecokid@c.im"
     }
-  ]
+  ],
+  "updated_at": "2026-10-10T11:01:34.023505+03:30",
+  "published_count": 1
 }
