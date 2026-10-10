@@ -108,7 +108,7 @@
     {
       "queue_id": 7,
       "scheduled_at": "2026-10-10T17:24:32.727273+03:30",
-      "status": "pending",
+      "status": "skipped",
       "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/375/770/203/093/869/original/736610a5cc020e67.mp4",
       "caption": "Hello Mastodon! Here's an old video of me trying to steal Vilma's shark toy\n\n@utcutie",
       "source_url": "",
@@ -116,7 +116,9 @@
       "file_size": 15117531,
       "score": null,
       "instance": "https://mastodon.online",
-      "account": "VilmaTheKitty@retro-gaiden.com"
+      "account": "VilmaTheKitty@retro-gaiden.com",
+      "result": "already_in_history",
+      "skipped_at": "2026-10-10T17:30:23.614882+03:30"
     },
     {
       "queue_id": 8,
@@ -199,6 +201,6 @@
   ],
   "schedule_adjusted_at": "2026-10-10T12:40:55.552273+03:30",
   "schedule_note": "First new item scheduled on next five-minute boundary; already-published item preserved; one post per run.",
-  "updated_at": "2026-10-10T16:32:46.934231+03:30",
+  "updated_at": "2026-10-10T17:30:23.614882+03:30",
   "published_count": 1
 }
