@@ -196,9 +196,13 @@ def normalize_text(value):
 def clean_caption(caption):
     text = normalize_text(caption)
     text = URL_RE.sub(" ", text)
+    # Mastodon sometimes leaves the tail of a split Creative Commons URL
+    # after HTML extraction (for example, "y/4.0/"). Remove that residue.
+    text = re.sub(r"(?i)\b(?:b\s*)?y\s*/\s*4\.0\s*/?", " ", text)
     text = HASHTAG_RE.sub(" ", text)
     text = PHONE_RE.sub(" ", text)
 
+    weekday = r"(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)"
     lines = []
     for raw_line in text.splitlines():
         line = re.sub(r"\s+", " ", raw_line).strip()
@@ -207,10 +211,28 @@ def clean_caption(caption):
 
         low = line.casefold()
 
+        # Strip date-specific social greetings so old posts do not look stale
+        # when re-shared on another day. Keep the useful remainder of a line.
+        line = re.sub(
+            rf"(?i)\bhappy\s+(?:banana\s+)?{weekday}"
+            rf"(?:\s+(?:to\s+)?(?:all|everyone|everybody|you all))?"
+            rf"[!.,…]*",
+            " ",
+            line,
+        )
+        line = re.sub(rf"(?i)\bfor your\s+{weekday}\b", " ", line)
+        line = re.sub(r"\s+", " ", line).strip(" \t.,;:-")
+        if not line:
+            continue
+        low = line.casefold()
+
         if any(term in low for term in MUSIC_TERMS):
             continue
 
         if any(term in low for term in PROMO_TERMS):
+            continue
+
+        if any(term in low for term in ("creative commons", "creativecommons", "licensed under", "attribution 4.0", "incompetech.com")):
             continue
 
         lines.append(line)
