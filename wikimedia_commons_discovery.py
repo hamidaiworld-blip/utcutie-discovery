@@ -72,7 +72,7 @@ def search_titles():
         try:
             payload = api_get({
                 "action": "query", "list": "search", "srnamespace": 6,
-                "srlimit": RESULTS_PER_TERM, "srsearch": f'filetype:video filemime:"video/mp4" {term}',
+                "srlimit": RESULTS_PER_TERM, "srsearch": f'filetype:video filemime:mp4 {term}',
             })
             for item in payload.get("query", {}).get("search", []):
                 title = str(item.get("title", ""))
