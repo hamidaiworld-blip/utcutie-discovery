@@ -545,5 +545,23 @@
     "file_size": 34910068,
     "score": 59.0,
     "telegram_message_id": 8108
+  },
+  {
+    "published_at": "2026-10-10T21:17:47.008065+03:30",
+    "sha256": "04ded7d7e8a89594178851aa80bdd184e86c1a84a07611e61da6067a17e9d2a5",
+    "media_url": "https://upload.wikimedia.org/wikipedia/commons/7/78/%22Arya%22_Cat_plays_with_Acalypha_indica-Pilangsari-2019.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "status_url": "https://commons.wikimedia.org/wiki/File:%22Arya%22_Cat_plays_with_Acalypha_indica-Pilangsari-2019.webm",
+    "source_url": "https://commons.wikimedia.org/wiki/File:%22Arya%22_Cat_plays_with_Acalypha_indica-Pilangsari-2019.webm",
+    "queue_id": 3,
+    "rights_basis": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution": "Aris Riyanto · Title: \"Arya\" Cat plays with Acalypha indica-Pilangsari-2019.webm · Source: https://commons.wikimedia.org/wiki/File:%22Arya%22_Cat_plays_with_Acalypha_indica-Pilangsari-2019.webm · License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)",
+    "permission_reference": "",
+    "caption": "Cat plays with Acalypha indica\nCredit: Aris Riyanto · Title: \"Arya\" Cat plays with Acalypha indica-Pilangsari-2019.webm · Source: https://commons.wikimedia.org/wiki/File:%22Arya%22_Cat_plays_with_Acalypha_indica-Pilangsari-2019.webm · License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)\n\n@utcutie",
+    "telegram_channel": "@utcutie",
+    "duration": 38.267,
+    "file_size": 11684076,
+    "score": 57.0,
+    "telegram_message_id": 8109
   }
 ]
