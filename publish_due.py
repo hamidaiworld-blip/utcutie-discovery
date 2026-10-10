@@ -14,7 +14,7 @@ TEHRAN = ZoneInfo("Asia/Tehran")
 
 RENDER_URL = os.environ.get(
     "RENDER_API_URL",
-    "https://x-video-downloader-api.onrender.com/send-media-and-send",
+    "https://x-video-downloader-api.onrender.com/upload-and-send",
 )
 RENDER_API_KEY = os.environ.get("RENDER_API_KEY", "").strip()
 DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
@@ -81,42 +81,150 @@ def send_item(item):
         return False, "license URL missing; upload blocked"
 
     media_url = str(item.get("media_url") or "").strip()
+    source_url = str(item.get("source_url") or "").strip()
     caption = str(item.get("caption") or "").strip()
     if not media_url:
         return False, "missing media_url"
     if not caption:
         caption = "@utcutie"
     if not caption.endswith("@utcutie"):
-        caption = caption.rstrip() + "\n\n@utcutie"
+        caption = caption.rstrip() + chr(10) + chr(10) + "@utcutie"
     if not RENDER_API_KEY:
         return False, "RENDER_API_KEY is not configured"
+    if not media_url.startswith("https://"):
+        return False, "media URL must use HTTPS"
 
-    try:
-        response = requests.get(
-            RENDER_URL,
-            params={
-                "media_url": media_url,
-                "caption": caption,
-            },
-            headers={"x-api-key": RENDER_API_KEY},
-            timeout=240,
-        )
-    except requests.RequestException as exc:
-        return False, f"request error: {exc}"
+    media_host = (urlsplit(media_url).hostname or "").casefold()
+    source_host = (urlsplit(source_url).hostname or "").casefold()
+    if source_host == "commons.wikimedia.org" and media_host != "upload.wikimedia.org":
+        return False, "Commons media host is not the expected Wikimedia upload host"
 
-    if not response.ok:
-        return False, f"HTTP {response.status_code}: {response.text[:500]}"
+    max_size = 48 * 1024 * 1024
+    suffix = Path(urlsplit(media_url).path).suffix.casefold()
+    if suffix not in {".mp4", ".webm"}:
+        return False, f"unsupported source video extension: {suffix or 'missing'}"
 
-    try:
-        data = response.json()
-    except ValueError:
-        return False, f"non-JSON response: {response.text[:500]}"
+    with tempfile.TemporaryDirectory(prefix="utcutie_publish_") as temp_dir:
+        temp = Path(temp_dir)
+        source_path = temp / ("source" + suffix)
+        output_path = temp / "video.mp4"
+        response = None
+        try:
+            for attempt in range(3):
+                response = requests.get(
+                    media_url,
+                    stream=True,
+                    allow_redirects=True,
+                    headers={"User-Agent": "UTCutiePublisher/1.0 (+https://github.com/hamidaiworld-blip/utcutie-discovery)"},
+                    timeout=(15, 120),
+                )
+                if response.status_code != 429 or attempt == 2:
+                    break
+                retry_after = response.headers.get("Retry-After", "")
+                response.close()
+                try:
+                    delay = float(retry_after)
+                except (TypeError, ValueError):
+                    delay = 2 ** (attempt + 1)
+                time.sleep(min(8.0, max(1.0, delay)))
 
-    if not data.get("success") or not data.get("telegram_sent"):
-        return False, f"Render rejected upload: {data}"
+            if response is None or response.status_code != 200:
+                status = response.status_code if response is not None else "no response"
+                if response is not None:
+                    response.close()
+                return False, f"source download failed: HTTP {status}"
 
-    return True, data
+            final_host = (urlsplit(response.url).hostname or "").casefold()
+            if source_host == "commons.wikimedia.org" and final_host != "upload.wikimedia.org":
+                response.close()
+                return False, "Commons download redirected to an unexpected host"
 
+            content_type = response.headers.get("Content-Type", "").casefold()
+            if "video/" not in content_type and "application/octet-stream" not in content_type:
+                response.close()
+                return False, f"source did not return a supported video content type: {content_type[:80]}"
+
+            content_length = response.headers.get("Content-Length", "")
+            if content_length.isdigit() and int(content_length) > max_size:
+                response.close()
+                return False, "source video exceeds the 48 MB limit"
+
+            total = 0
+            with source_path.open("wb") as output:
+                for chunk in response.iter_content(chunk_size=1024 * 1024):
+                    if not chunk:
+                        continue
+                    total += len(chunk)
+                    if total > max_size:
+                        response.close()
+                        return False, "source video exceeds the 48 MB limit"
+                    output.write(chunk)
+            response.close()
+            if total == 0:
+                return False, "source video is empty"
+
+            command = [
+                "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
+                "-i", str(source_path),
+                "-map", "0:v:0", "-map", "0:a?",
+                "-vf", "scale=w='min(1280,iw)':h=-2",
+                "-c:v", "libx264", "-preset", "ultrafast", "-crf", "23",
+                "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "128k",
+                "-movflags", "+faststart", str(output_path),
+            ]
+            try:
+                converted = subprocess.run(command, capture_output=True, text=True, timeout=180)
+            except subprocess.TimeoutExpired:
+                return False, "MP4 conversion timed out after 180 seconds"
+            if converted.returncode != 0 or not output_path.exists():
+                detail = (converted.stderr or "ffmpeg conversion failed").strip()[-800:]
+                return False, "MP4 conversion failed: " + detail
+
+            output_size = output_path.stat().st_size
+            if output_size <= 0 or output_size > max_size:
+                return False, "converted MP4 is empty or exceeds the 48 MB limit"
+
+            try:
+                probe = subprocess.run(
+                    ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", str(output_path)],
+                    capture_output=True, text=True, timeout=30,
+                )
+                duration = float(probe.stdout.strip()) if probe.returncode == 0 else 0.0
+            except (subprocess.TimeoutExpired, ValueError):
+                duration = 0.0
+            if not 15 <= duration <= 180:
+                return False, f"converted MP4 duration is invalid: {duration:.2f}s"
+
+            try:
+                with output_path.open("rb") as video_file:
+                    response = requests.post(
+                        RENDER_URL,
+                        data={"caption": caption},
+                        files={"video": ("video.mp4", video_file, "video/mp4")},
+                        headers={"x-api-key": RENDER_API_KEY},
+                        timeout=240,
+                    )
+            except requests.RequestException as exc:
+                return False, f"Render upload request failed: {str(exc)[:300]}"
+
+            if not response.ok:
+                return False, f"Render upload HTTP {response.status_code}: {response.text[:500]}"
+            try:
+                data = response.json()
+            except ValueError:
+                return False, f"Render returned non-JSON response: {response.text[:300]}"
+            if not data.get("success") or not data.get("telegram_sent"):
+                return False, f"Render rejected upload: {data}"
+            return True, data
+
+        except requests.RequestException as exc:
+            return False, f"source download error: {str(exc)[:300]}"
+        finally:
+            if response is not None:
+                try:
+                    response.close()
+                except Exception:
+                    pass
 
 def main():
     payload = load_json(QUEUE_FILE, None)
