@@ -105,9 +105,10 @@ def file_metadata(titles):
                 size = int(info.get("size", 0) or 0)
                 media_url = str(info.get("url", ""))
                 from urllib.parse import urlsplit
-                # Render currently uploads with sendVideo as video.mp4; never
-                # relabel WebM or another container as MP4.
-                if mime != "video/mp4" or not urlsplit(media_url).path.casefold().endswith(".mp4"):
+                # Accept supported source containers; publish_due.py transcodes
+                # WebM/MP4 to a Telegram-compatible H.264 MP4 before upload.
+                media_suffix = urlsplit(media_url).path.casefold()
+                if mime not in {"video/mp4", "video/webm"} or not media_suffix.endswith((".mp4", ".webm")):
                     continue
                 if not media_url or size <= 0 or size > MAX_BYTES:
                     continue
@@ -133,7 +134,7 @@ def file_metadata(titles):
             print(f"Metadata batch skipped: {type(exc).__name__}: {exc}")
         time.sleep(0.15)
     print(f"Media MIME distribution: {mime_counts}")
-    print(f"MP4 files with an allowed explicit license and attribution: {len(found)}.")
+    print(f"MP4/WebM files with an allowed explicit license and attribution: {len(found)}.")
     return found
 
 def main():
