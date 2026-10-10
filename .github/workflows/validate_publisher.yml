@@ -52,6 +52,28 @@ jobs:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: python -c 'import os,hashlib; print("RENDER_API_KEY_SHA256_PREFIX=" + hashlib.sha256(os.environ["RENDER_API_KEY"].encode()).hexdigest()[:16])'
 
+      - name: Safe Render upload endpoint probe
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_API_URL: https://x-video-downloader-api.onrender.com/upload-and-send
+        run: |
+          python - <<'PY'
+          import io
+          import os
+          import requests
+
+          response = requests.post(
+              os.environ["RENDER_API_URL"],
+              headers={"x-api-key": os.environ["RENDER_API_KEY"]},
+              data={"caption": "validation probe; this must not publish"},
+              files={"video": ("empty.mp4", io.BytesIO(b""), "video/mp4")},
+              timeout=180,
+          )
+          if response.status_code != 422 or "Uploaded video is empty" not in response.text:
+              raise SystemExit(f"Unexpected safe-probe response: HTTP {response.status_code} {response.text[:300]}")
+          print("Authenticated upload endpoint verified; empty probe was rejected before Telegram send.")
+          PY
+
       - name: Run no-send dry-run safety check
         env:
           DRY_RUN: "true"
