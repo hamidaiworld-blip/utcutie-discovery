@@ -4,7 +4,7 @@
   "timezone_display": "Tehran",
   "target_channel": "@utcutie",
   "max_items": 20,
-  "selected_count": 18,
+  "selected_count": 13,
   "publishing_window": {
     "start": "11:00",
     "end": "23:00"
@@ -12,19 +12,6 @@
   "queue": [
     {
       "queue_id": 1,
-      "scheduled_at": "2026-10-10T12:40:00+03:30",
-      "status": "pending",
-      "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/410/889/396/656/221/original/3eb8920296db7c16.mp4",
-      "caption": "@utcutie",
-      "source_url": "",
-      "duration": 33.4,
-      "file_size": 36122880,
-      "score": null,
-      "instance": "https://mastodon.social",
-      "account": "fonecokid@c.im"
-    },
-    {
-      "queue_id": 2,
       "scheduled_at": "2026-10-10T13:16:28.235294+03:30",
       "status": "pending",
       "media_url": "https://files.mastodon.social/media_attachments/files/117/409/305/749/616/081/original/3fe5ac3614b9cbad.mp4",
@@ -37,21 +24,8 @@
       "account": "oksana_lukerya"
     },
     {
-      "queue_id": 3,
-      "scheduled_at": "2026-10-10T13:52:56.470588+03:30",
-      "status": "pending",
-      "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/405/377/521/481/835/original/c1507453de83a7af.mp4",
-      "caption": "@utcutie",
-      "source_url": "",
-      "duration": 23.867,
-      "file_size": 9824265,
-      "score": null,
-      "instance": "https://mastodon.social",
-      "account": "fonecokid@c.im"
-    },
-    {
-      "queue_id": 4,
-      "scheduled_at": "2026-10-10T14:29:24.705882+03:30",
+      "queue_id": 2,
+      "scheduled_at": "2026-10-10T14:05:05.882353+03:30",
       "status": "pending",
       "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/400/803/966/388/677/original/d13ea73a30ed7159.mp4",
       "caption": "Arko, our mad husky has just discovered some new noises to make after dinner, when he settles down on the sofa to watch TV\n\n@utcutie",
@@ -63,8 +37,8 @@
       "account": "elperronegro@khumbu.social"
     },
     {
-      "queue_id": 5,
-      "scheduled_at": "2026-10-10T15:05:52.941176+03:30",
+      "queue_id": 3,
+      "scheduled_at": "2026-10-10T14:53:43.529412+03:30",
       "status": "pending",
       "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/388/718/103/391/136/original/cbca48fe751bae72.mp4",
       "caption": "“Come little Hazel, I'll take thee away, into a land of enchantment...\" Sometimes we catch the Scribe singing to the dogs…\n\n@utcutie",
@@ -76,7 +50,7 @@
       "account": "pughollow@mastodon.social"
     },
     {
-      "queue_id": 6,
+      "queue_id": 4,
       "scheduled_at": "2026-10-10T15:42:21.176471+03:30",
       "status": "pending",
       "media_url": "https://files.mastodon.social/media_attachments/files/117/407/826/680/708/796/original/761ba395482ee192.mp4",
@@ -89,8 +63,8 @@
       "account": "pughollow"
     },
     {
-      "queue_id": 7,
-      "scheduled_at": "2026-10-10T16:18:49.411765+03:30",
+      "queue_id": 5,
+      "scheduled_at": "2026-10-10T16:30:58.823529+03:30",
       "status": "pending",
       "media_url": "https://files.mastodon.social/media_attachments/files/117/391/019/909/315/771/original/d11cffea42d9219e.mp4",
       "caption": "stew the raccoon:))\n\n@utcutie",
@@ -102,8 +76,8 @@
       "account": "crittersnackstation"
     },
     {
-      "queue_id": 8,
-      "scheduled_at": "2026-10-10T16:55:17.647059+03:30",
+      "queue_id": 6,
+      "scheduled_at": "2026-10-10T17:19:36.470588+03:30",
       "status": "pending",
       "media_url": "https://s3.eu-central-2.wasabisys.com/mastodonworld/cache/media_attachments/files/117/378/826/703/904/127/original/9363e4d68f2d5ce5.mp4",
       "caption": "If my dog Rufus was Ahnuld in Predator\n\n@utcutie",
@@ -115,8 +89,8 @@
       "account": "jamesjoelrussell@kolektiva.social"
     },
     {
-      "queue_id": 9,
-      "scheduled_at": "2026-10-10T17:31:45.882353+03:30",
+      "queue_id": 7,
+      "scheduled_at": "2026-10-10T18:08:14.117647+03:30",
       "status": "pending",
       "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/375/770/203/093/869/original/736610a5cc020e67.mp4",
       "caption": "Hello Mastodon! Here's an old video of me trying to steal Vilma's shark toy\n\n@utcutie",
@@ -128,8 +102,8 @@
       "account": "VilmaTheKitty@retro-gaiden.com"
     },
     {
-      "queue_id": 10,
-      "scheduled_at": "2026-10-10T18:08:14.117647+03:30",
+      "queue_id": 8,
+      "scheduled_at": "2026-10-10T18:56:51.764706+03:30",
       "status": "pending",
       "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/367/966/136/041/725/original/774c17e385ec079d.mp4",
       "caption": "kitten loving\n\n@utcutie",
@@ -141,8 +115,8 @@
       "account": "sultmhoor@christmas.tattoo"
     },
     {
-      "queue_id": 11,
-      "scheduled_at": "2026-10-10T18:44:42.352941+03:30",
+      "queue_id": 9,
+      "scheduled_at": "2026-10-10T19:45:29.411765+03:30",
       "status": "pending",
       "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/382/868/750/109/413/original/5a39c25223220103.mp4",
       "caption": "AHOY MARINE BIOLOGISTS! We have discovered a VERY DANGEROUS new shark species: Carcharadon Pembrokensis!\nWe went for swimming lessons at the Canine Dip and Dive today, and it turns out Corgis are very competent, if reluctant, swimmers\n\n@utcutie",
@@ -154,8 +128,8 @@
       "account": "bark_maul@mas.to"
     },
     {
-      "queue_id": 12,
-      "scheduled_at": "2026-10-10T19:21:10.588235+03:30",
+      "queue_id": 10,
+      "scheduled_at": "2026-10-10T20:34:07.058824+03:30",
       "status": "pending",
       "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/278/198/153/308/364/original/1de543a637ab179b.mp4",
       "caption": "I spent about 45 minutes with my crew on my side of the back door glass, and the lil mom and her four kittens outside on the deck. And then this happened. Just try telling me this isn’t Jinx’s mom and his next-gen little brothers and sisters\n\n@utcutie",
@@ -167,8 +141,8 @@
       "account": "adtothebone@universeodon.com"
     },
     {
-      "queue_id": 13,
-      "scheduled_at": "2026-10-10T19:57:38.823529+03:30",
+      "queue_id": 11,
+      "scheduled_at": "2026-10-10T21:22:44.705882+03:30",
       "status": "pending",
       "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/262/124/145/582/394/original/8a1253b83c5f5b54.mp4",
       "caption": "Emma is going to want one of these little furry bastards isn't she.... we are going to end up with a third cat\n\n@utcutie",
@@ -180,8 +154,8 @@
       "account": "dan@durrans.com"
     },
     {
-      "queue_id": 14,
-      "scheduled_at": "2026-10-10T20:34:07.058824+03:30",
+      "queue_id": 12,
+      "scheduled_at": "2026-10-10T22:11:22.352941+03:30",
       "status": "pending",
       "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/259/743/715/805/148/original/9ec6c25567752e11.mp4",
       "caption": "I am now getting regular video updates from my sister… it's dinner time for the kittens!\n\n@utcutie",
@@ -193,46 +167,7 @@
       "account": "dan@durrans.com"
     },
     {
-      "queue_id": 15,
-      "scheduled_at": "2026-10-10T21:10:35.294118+03:30",
-      "status": "pending",
-      "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/410/871/457/315/286/original/2931b22045aeee5f.mp4",
-      "caption": "@utcutie",
-      "source_url": "",
-      "duration": 16.308,
-      "file_size": 6348535,
-      "score": null,
-      "instance": "https://mastodon.social",
-      "account": "fonecokid@c.im"
-    },
-    {
-      "queue_id": 16,
-      "scheduled_at": "2026-10-10T21:47:03.529412+03:30",
-      "status": "pending",
-      "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/382/190/387/254/592/original/4905850ab0cc567b.mp4",
-      "caption": "@utcutie",
-      "source_url": "",
-      "duration": 30.533,
-      "file_size": 12559719,
-      "score": null,
-      "instance": "https://mastodon.online",
-      "account": "fonecokid@c.im"
-    },
-    {
-      "queue_id": 17,
-      "scheduled_at": "2026-10-10T22:23:31.764706+03:30",
-      "status": "pending",
-      "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/376/443/336/948/478/original/7046f7867c080704.mp4",
-      "caption": "@utcutie",
-      "source_url": "",
-      "duration": 34.333,
-      "file_size": 13358743,
-      "score": null,
-      "instance": "https://mastodon.online",
-      "account": "fonecokid@c.im"
-    },
-    {
-      "queue_id": 18,
+      "queue_id": 13,
       "scheduled_at": "2026-10-10T23:00:00+03:30",
       "status": "pending",
       "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/383/380/753/231/614/original/a39894bd099ccc35.mp4",
@@ -245,6 +180,6 @@
       "account": "fonecokid@c.im"
     }
   ],
-  "schedule_adjusted_at": "2026-10-10T12:29:13.051410+03:30",
-  "schedule_note": "Manual rebuild: future slots only; one item per publisher run."
+  "schedule_adjusted_at": "2026-10-10T12:30:14.628766+03:30",
+  "schedule_note": "Quality-first queue: captionless items removed; remaining posts evenly spaced through 23:00 Tehran."
 }
