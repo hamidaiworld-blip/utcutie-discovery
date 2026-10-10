@@ -159,6 +159,16 @@ jobs:
                   tzinfo=TEHRAN,
               )
 
+              # Manual rebuilds can happen after 11:00 Tehran. Never create
+              # a queue full of already-due posts: start at least 5 minutes
+              # from now, while preserving the normal 11:00–23:00 window.
+              if now + timedelta(minutes=5) >= end_time:
+                  raise SystemExit(
+                      "Queue rebuild is too late for today's publishing window. "
+                      "Refusing to create a stale same-day queue."
+                  )
+              start_time = max(start_time, now + timedelta(minutes=5))
+
               if count == 1:
                   scheduled_times = [start_time]
 
@@ -192,6 +202,7 @@ jobs:
                   source_caption = (
                       candidate.get("caption")
                       or candidate.get("clean_caption")
+                      or candidate.get("media_description")
                       or ""
                   ).strip()
 
@@ -216,9 +227,11 @@ jobs:
                           "status": "pending",
                           "media_url": media_url,
                           "caption": final_caption,
-                          "source_url": candidate.get(
-                              "status_url",
-                              "",
+                          "source_url": (
+                              candidate.get("status_url")
+                              or candidate.get("url")
+                              or candidate.get("canonical_url")
+                              or ""
                           ),
                           "duration": candidate.get(
                               "duration"
@@ -226,8 +239,10 @@ jobs:
                           "file_size": candidate.get(
                               "file_size"
                           ),
-                          "score": candidate.get(
-                              "score"
+                          "score": (
+                              candidate.get("selection_score")
+                              or candidate.get("quality_score")
+                              or candidate.get("content_score")
                           ),
                           "instance": candidate.get(
                               "instance"
