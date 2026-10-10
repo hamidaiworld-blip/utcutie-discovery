@@ -104,10 +104,35 @@ jobs:
           import json
           from datetime import datetime, timedelta
           from pathlib import Path
+          from urllib.parse import urlsplit
           from zoneinfo import ZoneInfo
 
           SOURCE = Path("selected_candidates.json")
+          APPROVALS_FILE = Path("rights_approvals.json")
           OUTPUT = Path("daily_queue.json")
+
+          def normalize_source_url(value):
+              value = str(value or "").strip()
+              if not value:
+                  return ""
+              try:
+                  parsed = urlsplit(value)
+              except ValueError:
+                  return ""
+              if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+                  return ""
+              return f"{parsed.scheme.lower()}://{parsed.netloc.lower()}{parsed.path.rstrip('/')}"
+
+          def valid_approval(record):
+              if not isinstance(record, dict) or record.get("reuse_allowed") is not True:
+                  return False
+              basis = str(record.get("rights_basis") or "").strip().casefold()
+              allowed = {"cc0", "public domain", "cc by 4.0", "cc by-sa 4.0", "written permission"}
+              if basis not in allowed or not str(record.get("attribution") or "").strip():
+                  return False
+              if basis == "written permission":
+                  return bool(str(record.get("permission_reference") or "").strip())
+              return bool(normalize_source_url(record.get("license_url")))
 
           TEHRAN = ZoneInfo("Asia/Tehran")
 
@@ -127,8 +152,48 @@ jobs:
                   "ERROR: selected_candidates.json is not a list."
               )
 
-          # Maximum daily selection.
-          candidates = candidates[:20]
+          # Fail closed: public availability is not a reuse license. Only exact
+          # source URLs with an explicit, reviewed rights approval may be queued.
+          if APPROVALS_FILE.exists():
+              with APPROVALS_FILE.open("r", encoding="utf-8") as f:
+                  approval_payload = json.load(f)
+          else:
+              approval_payload = {"approvals": []}
+
+          approval_by_url = {}
+          for record in approval_payload.get("approvals", []):
+              if not valid_approval(record):
+                  continue
+              key = normalize_source_url(record.get("source_url"))
+              if key:
+                  approval_by_url[key] = record
+
+          approved_candidates = []
+          for candidate in candidates:
+              source_url = (
+                  candidate.get("status_url")
+                  or candidate.get("url")
+                  or candidate.get("canonical_url")
+                  or ""
+              )
+              approval = approval_by_url.get(normalize_source_url(source_url))
+              if not approval:
+                  print(
+                      "RIGHTS GATE: blocked candidate without verified reuse approval: "
+                      + (str(source_url) if source_url else "missing source URL")
+                  )
+                  continue
+              candidate = dict(candidate)
+              candidate["source_url"] = source_url
+              candidate["rights_verified"] = True
+              candidate["rights_basis"] = approval["rights_basis"]
+              candidate["license_url"] = str(approval.get("license_url") or "")
+              candidate["attribution"] = str(approval.get("attribution") or "").strip()
+              candidate["permission_reference"] = str(approval.get("permission_reference") or "").strip()
+              approved_candidates.append(candidate)
+
+          candidates = approved_candidates[:20]
+          print(f"RIGHTS GATE: {len(candidates)} candidates have verified reuse approval.")
 
           queue = []
           count = len(candidates)
@@ -208,15 +273,18 @@ jobs:
 
                   # mastodon_test.py already removes hashtags
                   # and cleans the source caption.
+                  attribution = str(candidate.get("attribution") or "").strip()
+                  caption_lines = []
                   if source_caption:
-                      final_caption = (
-                          f"{source_caption}\n\n@utcutie"
-                      )
+                      caption_lines.append(source_caption)
+                  if attribution and attribution.casefold() not in source_caption.casefold():
+                      caption_lines.append(f"Credit: {attribution}")
+                  caption_body = "\n".join(caption_lines).strip()
+                  suffix = "\n\n@utcutie"
+                  if caption_body:
+                      final_caption = caption_body[: 1024 - len(suffix)].rstrip() + suffix
                   else:
                       final_caption = "@utcutie"
-
-                  # Telegram caption maximum.
-                  final_caption = final_caption[:1024]
 
                   scheduled_at = scheduled_times[index - 1]
 
@@ -227,12 +295,12 @@ jobs:
                           "status": "pending",
                           "media_url": media_url,
                           "caption": final_caption,
-                          "source_url": (
-                              candidate.get("status_url")
-                              or candidate.get("url")
-                              or candidate.get("canonical_url")
-                              or ""
-                          ),
+                          "source_url": candidate.get("source_url", ""),
+                          "rights_verified": candidate.get("rights_verified") is True,
+                          "rights_basis": candidate.get("rights_basis", ""),
+                          "license_url": candidate.get("license_url", ""),
+                          "attribution": candidate.get("attribution", ""),
+                          "permission_reference": candidate.get("permission_reference", ""),
                           "duration": candidate.get(
                               "duration"
                           ),
@@ -261,6 +329,7 @@ jobs:
 
               "max_items": 20,
               "selected_count": len(queue),
+              "rights_gate": "Only explicitly approved source URLs with a verified license or written permission can enter the queue.",
 
               "publishing_window": {
                   "start": "11:00",

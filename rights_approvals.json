@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "purpose": "Exact-source allowlist for media that may be reposted to @utcutie.",
+  "instructions": "Do not add an entry merely because a video is publicly viewable. Verify that the uploader/rightsholder has granted reuse rights for Telegram redistribution. Allowed rights_basis values: CC0, Public Domain, CC BY 4.0, CC BY-SA 4.0, Written Permission. Every entry requires exact source_url, reuse_allowed=true, attribution, and either a license_url or permission_reference for written permission.",
+  "approvals": []
+}

@@ -67,6 +67,19 @@ def item_history_keys(item):
 
 
 def send_item(item):
+    if item.get("rights_verified") is not True:
+        return False, "rights not verified; upload blocked"
+    rights_basis = str(item.get("rights_basis") or "").strip().casefold()
+    if rights_basis not in {"cc0", "public domain", "cc by 4.0", "cc by-sa 4.0", "written permission"}:
+        return False, "unsupported or missing rights basis; upload blocked"
+    if not str(item.get("attribution") or "").strip():
+        return False, "missing required attribution; upload blocked"
+    if rights_basis == "written permission":
+        if not str(item.get("permission_reference") or "").strip():
+            return False, "written permission reference missing; upload blocked"
+    elif not str(item.get("license_url") or "").strip():
+        return False, "license URL missing; upload blocked"
+
     media_url = str(item.get("media_url") or "").strip()
     caption = str(item.get("caption") or "").strip()
     if not media_url:
@@ -145,6 +158,28 @@ def main():
     for item in queue:
         if not isinstance(item, dict) or item.get("status") != "pending":
             continue
+
+        # Defense in depth: block any legacy or manually edited item whose
+        # reuse rights are not explicitly documented in the queue.
+        rights_basis = str(item.get("rights_basis") or "").strip().casefold()
+        rights_valid = (
+            item.get("rights_verified") is True
+            and rights_basis in {"cc0", "public domain", "cc by 4.0", "cc by-sa 4.0", "written permission"}
+            and bool(str(item.get("attribution") or "").strip())
+            and (
+                bool(str(item.get("permission_reference") or "").strip())
+                if rights_basis == "written permission"
+                else bool(str(item.get("license_url") or "").strip())
+            )
+        )
+        if not rights_valid:
+            item["status"] = "blocked_rights_unverified"
+            item["result"] = "blocked: verified license or written permission and attribution are required"
+            item["blocked_at"] = now.isoformat()
+            changed = True
+            print(f"{item.get('queue_id')}: blocked; reuse rights not verified.")
+            continue
+
         scheduled = parse_datetime(item.get("scheduled_at"))
         if not scheduled or scheduled > now:
             continue
