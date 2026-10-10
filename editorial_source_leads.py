@@ -29,6 +29,7 @@ SOURCES = [
 
 ANIMAL_OR_VIDEO = re.compile(r"\b(video|watch|animal|animals|pet|pets|cute|cat|cats|kitten|dog|dogs|puppy|puppies|wildlife|bird|birds|puppies|amazing|funny|adorable|squirrel|raccoon|horse|farm|wild|rescue|puppet|otter|owl|elephant|fox|bear|penguin|monkey|turtle|fish)\b", re.I)
 EXCLUDE = re.compile(r"\b(shop|store|subscribe|newsletter|advertis|privacy|terms|cookie|login|sign.?in|account|donate|merch|product|sweepstakes|contest|career|job)\b", re.I)
+GENERIC_NAV = {"pets", "dogs", "cats", "travel", "wellness", "dog wellness", "cat wellness", "adoption", "wildlife", "environment", "video", "videos", "shop", "family", "kids & pets", "parenting", "celebration", "animal encounters", "see all", "see more", "watch now", "newsletter"}
 
 class PageParser(HTMLParser):
     def __init__(self):
@@ -86,18 +87,35 @@ def main():
                 continue
             parser = PageParser()
             parser.feed(response.text[:2_000_000])
-            result["status"] = "page_metadata_read"
             result["page_title"] = " ".join(parser.title_parts).strip()[:300]
+            if not result["page_title"] and not parser.anchors:
+                result["status"] = "challenge_or_empty_page"
+                result["detail"] = "HTTP response contained no usable page metadata; no media downloaded"
+                output["sources"].append(result)
+                continue
+            result["status"] = "page_metadata_read"
             count = 0
             base = response.url
-            for anchor in parser.anchors:
+            ranked_anchors = sorted(
+                parser.anchors,
+                key=lambda a: (
+                    0 if re.search(r"/videos?/|/stories/|/video/|/watch/", a.get("href", ""), re.I) else 1,
+                    -len(" ".join(a.get("text", []))),
+                ),
+            )
+            for anchor in ranked_anchors:
                 raw_url = urljoin(base, anchor["href"])
                 raw_url, _ = urldefrag(raw_url)
                 if urlparse(raw_url).scheme != "https" or not host_allowed(raw_url, source["domain"]):
                     continue
                 text = " ".join(anchor["text"]).strip()
                 title = (anchor.get("title") or text).strip()
-                if len(title) < 5 or EXCLUDE.search(title) or not ANIMAL_OR_VIDEO.search(title + " " + raw_url):
+                normalized_title = re.sub(r"\s+", " ", title).strip().casefold()
+                if normalized_title in GENERIC_NAV:
+                    continue
+                if any(part in urlparse(raw_url).path.casefold() for part in ("/topics/", "/category/", "/paw-of-approval/", "/dodowell/", "/shop/", "/products/", "/product/")):
+                    continue
+                if len(title) < 8 or EXCLUDE.search(title) or not ANIMAL_OR_VIDEO.search(title + " " + raw_url):
                     continue
                 key = raw_url.rstrip("/")
                 if key in seen:
@@ -109,6 +127,7 @@ def main():
                     "title": title[:300],
                     "url": raw_url,
                     "observed_at": now,
+                    "lead_type": "video_page" if re.search(r"/videos?/|/video/|/watch/", urlparse(raw_url).path, re.I) else "story_or_reference_page",
                     "rights_status": "permission_required_or_unverified",
                     "eligible_for_auto_publish": False,
                     "note": source["rights_note"],
