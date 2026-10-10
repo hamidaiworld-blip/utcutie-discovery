@@ -19,7 +19,7 @@ import mastodon_test as validation
 API = "https://commons.wikimedia.org/w/api.php"
 USER_AGENT = "UTCutieDiscovery/1.0 (animal-video curation; respectful API use)"
 SEARCH_TERMS = ["cat", "dog", "kitten", "puppy", "bird", "rabbit", "pet", "animal playing"]
-RESULTS_PER_TERM = 15
+RESULTS_PER_TERM = 25
 MAX_METADATA_BATCH = 40
 MAX_DOWNLOAD_ATTEMPTS = 30
 MAX_SELECTED = 20
@@ -72,7 +72,7 @@ def search_titles():
         try:
             payload = api_get({
                 "action": "query", "list": "search", "srnamespace": 6,
-                "srlimit": RESULTS_PER_TERM, "srsearch": f"filetype:video {term}",
+                "srlimit": RESULTS_PER_TERM, "srsearch": f'filetype:video filemime:"video/mp4" {term}',
             })
             for item in payload.get("query", {}).get("search", []):
                 title = str(item.get("title", ""))
@@ -102,7 +102,12 @@ def file_metadata(titles):
                 mime = str(info.get("mime", "")).casefold()
                 size = int(info.get("size", 0) or 0)
                 media_url = str(info.get("url", ""))
-                if not mime.startswith("video/") or not media_url or size <= 0 or size > MAX_BYTES:
+                from urllib.parse import urlsplit
+                # Render currently uploads with sendVideo as video.mp4; never
+                # relabel WebM or another container as MP4.
+                if mime != "video/mp4" or not urlsplit(media_url).path.casefold().endswith(".mp4"):
+                    continue
+                if not media_url or size <= 0 or size > MAX_BYTES:
                     continue
                 ext = info.get("extmetadata", {}) or {}
                 short_name = metadata_value(ext, "LicenseShortName")
@@ -125,7 +130,7 @@ def file_metadata(titles):
         except Exception as exc:
             print(f"Metadata batch skipped: {type(exc).__name__}: {exc}")
         time.sleep(0.15)
-    print(f"Files with an allowed explicit license and attribution: {len(found)}.")
+    print(f"MP4 files with an allowed explicit license and attribution: {len(found)}.")
     return found
 
 def main():
