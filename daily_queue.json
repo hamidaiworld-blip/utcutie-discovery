@@ -48,7 +48,7 @@
     {
       "queue_id": 3,
       "scheduled_at": "2026-10-10T13:40:54.545455+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://files.mastodon.online/cache/media_attachments/files/117/388/718/103/391/136/original/cbca48fe751bae72.mp4",
       "caption": "“Come little Hazel, I'll take thee away, into a land of enchantment...\" Sometimes we catch the Scribe singing to the dogs…\n\n@utcutie",
       "source_url": "",
@@ -56,7 +56,9 @@
       "file_size": 38935385,
       "score": null,
       "instance": "https://mastodon.online",
-      "account": "pughollow@mastodon.social"
+      "account": "pughollow@mastodon.social",
+      "published_at": "2026-10-10T13:50:56.219578+03:30",
+      "result": "already_in_history"
     },
     {
       "queue_id": 4,
@@ -191,6 +193,6 @@
   ],
   "schedule_adjusted_at": "2026-10-10T12:40:55.552273+03:30",
   "schedule_note": "First new item scheduled on next five-minute boundary; already-published item preserved; one post per run.",
-  "updated_at": "2026-10-10T12:45:34.220033+03:30",
+  "updated_at": "2026-10-10T13:50:56.219578+03:30",
   "published_count": 2
 }
