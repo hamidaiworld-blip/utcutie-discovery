@@ -114,7 +114,7 @@
     {
       "queue_id": 5,
       "scheduled_at": "2026-10-10T22:24:00.608751+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://upload.wikimedia.org/wikipedia/commons/a/ac/Cat_lapping_water_off_ground_in_slow_motion.gk.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "caption": "No spills. Just perfect little sips. 🐱\nCredit: Grendelkhan · Title: Cat lapping water off ground in slow motion.gk.webm · Source: https://commons.wikimedia.org/wiki/File:Cat_lapping_water_off_ground_in_slow_motion.gk.webm · License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)\n\n@utcutie",
       "source_url": "https://commons.wikimedia.org/wiki/File:Cat_lapping_water_off_ground_in_slow_motion.gk.webm",
@@ -127,7 +127,14 @@
       "file_size": 10359422,
       "score": 51.0,
       "instance": "Wikimedia Commons",
-      "account": "Grendelkhan"
+      "account": "Grendelkhan",
+      "last_attempt_at": "2026-10-10T22:28:05.939800+03:30",
+      "published_at": "2026-10-10T22:28:05.939800+03:30",
+      "telegram_message_id": 8111,
+      "render_response": {
+        "duration": 23.667,
+        "file_size": 12779849
+      }
     },
     {
       "queue_id": 6,
@@ -148,6 +155,6 @@
       "account": "Grendelkhan"
     }
   ],
-  "updated_at": "2026-10-10T21:56:28.353092+03:30",
-  "published_count": 4
+  "updated_at": "2026-10-10T22:28:05.939800+03:30",
+  "published_count": 5
 }

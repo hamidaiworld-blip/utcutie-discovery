@@ -581,5 +581,23 @@
     "file_size": 20990271,
     "score": 56.0,
     "telegram_message_id": 8110
+  },
+  {
+    "published_at": "2026-10-10T22:28:05.939800+03:30",
+    "sha256": "ec0d26f9e8dacf0c62d49010afe0757df40f06d9d5b09b5b040e47365cd36d3b",
+    "media_url": "https://upload.wikimedia.org/wikipedia/commons/a/ac/Cat_lapping_water_off_ground_in_slow_motion.gk.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "status_url": "https://commons.wikimedia.org/wiki/File:Cat_lapping_water_off_ground_in_slow_motion.gk.webm",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Cat_lapping_water_off_ground_in_slow_motion.gk.webm",
+    "queue_id": 5,
+    "rights_basis": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution": "Grendelkhan · Title: Cat lapping water off ground in slow motion.gk.webm · Source: https://commons.wikimedia.org/wiki/File:Cat_lapping_water_off_ground_in_slow_motion.gk.webm · License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)",
+    "permission_reference": "",
+    "caption": "No spills. Just perfect little sips. 🐱\nCredit: Grendelkhan · Title: Cat lapping water off ground in slow motion.gk.webm · Source: https://commons.wikimedia.org/wiki/File:Cat_lapping_water_off_ground_in_slow_motion.gk.webm · License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)\n\n@utcutie",
+    "telegram_channel": "@utcutie",
+    "duration": 23.667,
+    "file_size": 12779849,
+    "score": 51.0,
+    "telegram_message_id": 8111
   }
 ]
