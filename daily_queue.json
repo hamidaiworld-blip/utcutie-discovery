@@ -139,7 +139,7 @@
     {
       "queue_id": 6,
       "scheduled_at": "2026-10-10T23:00:00+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Cat_kneading_blanket_in_slow_motion.gk.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "caption": "A striped male cat kneading a blanket with his claws in 4x slow motion\nCredit: Grendelkhan · Title: Cat kneading blanket in slow motion.gk.webm · Source: https://commons.wikimedia.org/wiki/File:Cat_kneading_blanket_in_slow_motion.gk.webm · License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)\n\n@utcutie",
       "source_url": "https://commons.wikimedia.org/wiki/File:Cat_kneading_blanket_in_slow_motion.gk.webm",
@@ -152,9 +152,16 @@
       "file_size": 13947520,
       "score": 46.0,
       "instance": "Wikimedia Commons",
-      "account": "Grendelkhan"
+      "account": "Grendelkhan",
+      "last_attempt_at": "2026-10-10T23:06:15.734167+03:30",
+      "published_at": "2026-10-10T23:06:15.734167+03:30",
+      "telegram_message_id": 8112,
+      "render_response": {
+        "duration": 17.933,
+        "file_size": 13803026
+      }
     }
   ],
-  "updated_at": "2026-10-10T22:28:05.939800+03:30",
-  "published_count": 5
+  "updated_at": "2026-10-10T23:06:15.734167+03:30",
+  "published_count": 6
 }
