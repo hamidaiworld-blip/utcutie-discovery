@@ -24,6 +24,14 @@ MAX_METADATA_BATCH = 40
 MAX_DOWNLOAD_ATTEMPTS = 30
 MAX_SELECTED = 20
 MAX_BYTES = 48 * 1024 * 1024
+ENGAGEMENT_TERMS = (
+    "cute", "adorable", "funny", "hilarious", "play", "playing", "groom",
+    "grooming", "kitten", "puppy", "baby", "sleep", "sleeping", "cuddle",
+    "snuggle", "hug", "trick", "chase", "zoomies", "silly", "quirky",
+    "friend", "friendship", "gentle", "curious", "bathing", "drinking",
+    "feeding", "dancing", "rolling", "jumping", "happy", "lapping water",
+    "slow motion", "playing together", "kissing", "napping", "yawning",
+)
 OUT_CANDIDATES = Path("commons_selected_candidates.json")
 OUT_APPROVALS = Path("commons_rights_approvals.json")
 
@@ -135,7 +143,11 @@ def main():
         content = (item["title"] + " " + item["description"]).strip()
         # Avoid irrelevant videos before downloading; the existing visual gate
         # still checks representative frames after download.
-        if not any(term in content.casefold() for term in validation.ANIMAL_TERMS):
+        lowered_content = content.casefold()
+        if not any(term in lowered_content for term in validation.ANIMAL_TERMS):
+            continue
+        if not any(term in lowered_content for term in ENGAGEMENT_TERMS):
+            print("  Rejected: no clear cute/funny/wholesome engagement signal in title or description")
             continue
         gate_candidate = {"content": content, "media_url": item["media_url"], "tags": []}
         content_ok, content_score, content_reason = validation.content_gate(gate_candidate)
@@ -145,10 +157,18 @@ def main():
         source_url = item["source_url"]
         if validation.canonical_status_url(source_url) in published or source_url in published:
             continue
-        caption = validation.clean_caption(item["description"] or item["title"])
+        title_lower = item["title"].casefold()
+        if "groom" in title_lower:
+            caption = "Self-care is serious business. 🐱"
+        elif "lapping water" in title_lower or "water off ground" in title_lower:
+            caption = "No spills. Just perfect little sips. 🐱"
+        elif "colorful bird" in title_lower and "ledge" in title_lower:
+            caption = "A tiny stroll, a full performance. 🐦"
+        else:
+            caption = validation.clean_caption(item["description"] or item["title"])
         if not caption:
             caption = item["title"][:220]
-        attribution = f"{item['author'][:140]} · Source: {source_url} · License: {item['rights_basis']} ({item['license_url']})"
+        attribution = f"{item['author'][:100]} · Title: {item['title'][:100]} · Source: {source_url} · License: {item['rights_basis']} ({item['license_url']})"
         candidate = {
             "id": source_url, "url": source_url, "canonical_url": source_url,
             "source_url": source_url, "account": item["author"],
