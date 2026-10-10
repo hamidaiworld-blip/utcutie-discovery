@@ -1,150 +1,113 @@
 #!/usr/bin/env python3
-"""Collect public animal-video discovery leads without downloading or republishing media.
+"""Maintain a reference-only registry of animal-video inspiration sites.
 
-These sites are editorial/reference sources only. A lead is NOT eligible for the
-Telegram queue unless separate, documented permission or a suitable reuse license
-is verified. This script stores page titles and links only; it never fetches video files.
+This script deliberately performs no HTTP requests, crawling, scraping, media
+downloads, or uploads. These sites can inspire search terms and manual research,
+but their hosted videos are not eligible for automatic Telegram publication
+unless explicit written permission or a license authorizes that exact use.
 """
 
 import json
-import re
 from datetime import datetime, timezone
-from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import urljoin, urlparse, urldefrag
-
-import requests
 
 OUTPUT = Path("source_leads.json")
-TIMEOUT = 12
-MAX_LEADS_PER_SITE = 20
-HEADERS = {"User-Agent": "UTCutieDiscovery/1.0 (+public-page metadata; no media downloads)"}
+
 SOURCES = [
-    {"name": "Shutterstock Cute Animals", "url": "https://www.shutterstock.com/video/search/cute-animals", "domain": "shutterstock.com", "rights_note": "Stock footage; requires an applicable paid license. Comp/watermarked previews are not for public distribution."},
-    {"name": "The Dodo", "url": "https://www.thedodo.com/", "domain": "thedodo.com", "rights_note": "Publisher-produced/editorial videos; permission or a license is required for re-uploading."},
-    {"name": "National Geographic Kids Videos", "url": "https://kids.nationalgeographic.com/videos", "domain": "kids.nationalgeographic.com", "rights_note": "Publisher-owned/licensed videos; do not re-upload without explicit permission."},
-    {"name": "National Geographic Kids Amazing Animals", "url": "https://kids.nationalgeographic.com/videos/topic/amazing-animals", "domain": "kids.nationalgeographic.com", "rights_note": "Publisher-owned/licensed videos; do not re-upload without explicit permission."},
-    {"name": "SomePets Cute Videos", "url": "https://www.somepets.com/category/cute/cute-videos/", "domain": "somepets.com", "rights_note": "Ownership and reuse terms not verified; do not re-upload until rights are confirmed."},
+    {
+        "name": "Shutterstock Cute Animals",
+        "url": "https://www.shutterstock.com/video/search/cute-animals",
+        "use": "Manual inspiration / licensed-stock research only",
+        "automated_access": False,
+        "media_download_allowed": False,
+        "auto_publish_allowed": False,
+        "rights_status": "license_required",
+        "reason": (
+            "Stock footage requires a suitable license. A standard video license "
+            "does not authorize redistributing the raw clip as a standalone video "
+            "post; comp/watermarked previews are not for public distribution."
+        ),
+    },
+    {
+        "name": "The Dodo",
+        "url": "https://www.thedodo.com/",
+        "use": "Manual inspiration and link-sharing only",
+        "automated_access": False,
+        "media_download_allowed": False,
+        "auto_publish_allowed": False,
+        "rights_status": "permission_required",
+        "reason": (
+            "Vox Media's terms prohibit automated scraping and copying/reposting "
+            "content without permission. Its licensing guidance allows linking and "
+            "integrated share/embed tools where available, not raw-video reuploads."
+        ),
+    },
+    {
+        "name": "National Geographic Kids Videos",
+        "url": "https://kids.nationalgeographic.com/videos",
+        "use": "Manual inspiration and link-sharing only",
+        "automated_access": False,
+        "media_download_allowed": False,
+        "auto_publish_allowed": False,
+        "rights_status": "written_permission_required",
+        "reason": (
+            "National Geographic content terms restrict automated scraping and "
+            "reposting/redistribution without specific written authorization."
+        ),
+    },
+    {
+        "name": "National Geographic Kids Amazing Animals",
+        "url": "https://kids.nationalgeographic.com/videos/topic/amazing-animals",
+        "use": "Manual inspiration and link-sharing only",
+        "automated_access": False,
+        "media_download_allowed": False,
+        "auto_publish_allowed": False,
+        "rights_status": "written_permission_required",
+        "reason": (
+            "National Geographic content terms restrict automated scraping and "
+            "reposting/redistribution without specific written authorization."
+        ),
+    },
+    {
+        "name": "SomePets Cute Videos",
+        "url": "https://www.somepets.com/category/cute/cute-videos/",
+        "use": "Manual inspiration / original-source tracing only",
+        "automated_access": False,
+        "media_download_allowed": False,
+        "auto_publish_allowed": False,
+        "rights_status": "ownership_unverified",
+        "reason": (
+            "The site states it does not own exclusive rights to all published "
+            "videos and includes material with unknown authors. Find the original "
+            "creator and verify permission before considering reuse."
+        ),
+    },
 ]
 
-ANIMAL_OR_VIDEO = re.compile(r"\b(video|watch|animal|animals|pet|pets|cute|cat|cats|kitten|dog|dogs|puppy|puppies|wildlife|bird|birds|puppies|amazing|funny|adorable|squirrel|raccoon|horse|farm|wild|rescue|puppet|otter|owl|elephant|fox|bear|penguin|monkey|turtle|fish)\b", re.I)
-EXCLUDE = re.compile(r"\b(shop|store|subscribe|newsletter|advertis|privacy|terms|cookie|login|sign.?in|account|donate|merch|product|sweepstakes|contest|career|job)\b", re.I)
-GENERIC_NAV = {"pets", "dogs", "cats", "travel", "wellness", "dog wellness", "cat wellness", "adoption", "wildlife", "environment", "video", "videos", "shop", "family", "kids & pets", "parenting", "celebration", "animal encounters", "see all", "see more", "watch now", "newsletter"}
-
-class PageParser(HTMLParser):
-    def __init__(self):
-        super().__init__(convert_charrefs=True)
-        self.title_parts = []
-        self.in_title = False
-        self.anchors = []
-        self.current = None
-    def handle_starttag(self, tag, attrs):
-        attrs = dict(attrs)
-        if tag == "title":
-            self.in_title = True
-        if tag == "a" and attrs.get("href"):
-            self.current = {"href": attrs["href"], "text": [], "title": attrs.get("title", "")}
-    def handle_endtag(self, tag):
-        if tag == "title":
-            self.in_title = False
-        if tag == "a" and self.current is not None:
-            self.anchors.append(self.current)
-            self.current = None
-    def handle_data(self, data):
-        text = " ".join(data.split())
-        if not text:
-            return
-        if self.in_title:
-            self.title_parts.append(text)
-        if self.current is not None:
-            self.current["text"].append(text)
-
-def host_allowed(url, domain):
-    host = (urlparse(url).hostname or "").lower()
-    return host == domain or host.endswith("." + domain)
-
 def main():
-    session = requests.Session()
-    session.headers.update(HEADERS)
-    now = datetime.now(timezone.utc).isoformat()
-    output = {
-        "generated_at": now,
-        "purpose": "reference-only source leads; not authorized for automatic republication",
+    payload = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "purpose": "Reference registry only; not an ingest or publishing feed.",
+        "automated_fetching_enabled": False,
+        "media_download_enabled": False,
         "auto_publish_enabled": False,
-        "sources": [],
+        "sources": SOURCES,
         "leads": [],
+        "lead_count": 0,
+        "safety_rule": (
+            "None of these websites may feed the Telegram queue directly. "
+            "Only independently verified media with documented reuse rights "
+            "can enter the publishing queue."
+        ),
     }
-    seen = set()
-    for source in SOURCES:
-        result = {"name": source["name"], "url": source["url"], "status": "not_checked", "http_status": None, "lead_count": 0, "rights_note": source["rights_note"]}
-        try:
-            response = session.get(source["url"], timeout=TIMEOUT, allow_redirects=True)
-            result["http_status"] = response.status_code
-            if not response.ok:
-                result["status"] = "unavailable_or_blocked"
-                result["detail"] = f"HTTP {response.status_code}; no media downloaded"
-                output["sources"].append(result)
-                continue
-            parser = PageParser()
-            parser.feed(response.text[:2_000_000])
-            result["page_title"] = " ".join(parser.title_parts).strip()[:300]
-            if not result["page_title"] and not parser.anchors:
-                result["status"] = "challenge_or_empty_page"
-                result["detail"] = "HTTP response contained no usable page metadata; no media downloaded"
-                output["sources"].append(result)
-                continue
-            result["status"] = "page_metadata_read"
-            count = 0
-            base = response.url
-            ranked_anchors = sorted(
-                parser.anchors,
-                key=lambda a: (
-                    0 if re.search(r"/videos?/|/stories/|/video/|/watch/", a.get("href", ""), re.I) else 1,
-                    -len(" ".join(a.get("text", []))),
-                ),
-            )
-            for anchor in ranked_anchors:
-                raw_url = urljoin(base, anchor["href"])
-                raw_url, _ = urldefrag(raw_url)
-                if urlparse(raw_url).scheme != "https" or not host_allowed(raw_url, source["domain"]):
-                    continue
-                text = " ".join(anchor["text"]).strip()
-                title = (anchor.get("title") or text).strip()
-                normalized_title = re.sub(r"\s+", " ", title).strip().casefold()
-                if normalized_title in GENERIC_NAV:
-                    continue
-                if any(part in urlparse(raw_url).path.casefold() for part in ("/topics/", "/category/", "/paw-of-approval/", "/dodowell/", "/shop/", "/products/", "/product/")):
-                    continue
-                if len(title) < 8 or EXCLUDE.search(title) or not ANIMAL_OR_VIDEO.search(title + " " + raw_url):
-                    continue
-                key = raw_url.rstrip("/")
-                if key in seen:
-                    continue
-                seen.add(key)
-                output["leads"].append({
-                    "source": source["name"],
-                    "discovery_page": source["url"],
-                    "title": title[:300],
-                    "url": raw_url,
-                    "observed_at": now,
-                    "lead_type": "video_page" if re.search(r"/videos?/|/video/|/watch/", urlparse(raw_url).path, re.I) else "story_or_reference_page",
-                    "rights_status": "permission_required_or_unverified",
-                    "eligible_for_auto_publish": False,
-                    "note": source["rights_note"],
-                })
-                count += 1
-                if count >= MAX_LEADS_PER_SITE:
-                    break
-            result["lead_count"] = count
-        except Exception as exc:
-            result["status"] = "fetch_error"
-            result["detail"] = f"{type(exc).__name__}: {str(exc)[:240]}"
-        output["sources"].append(result)
-        print(f"{source['name']}: {result['status']}; leads={result['lead_count']}")
-    output["lead_count"] = len(output["leads"])
-    OUTPUT.write_text(json.dumps(output, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"Reference-only leads saved: {len(output['leads'])} -> {OUTPUT}")
-    print("Safety rule: no lead from these websites is copied into the Telegram queue.")
+    OUTPUT.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    print(f"Reference registry saved: {OUTPUT}")
+    print(f"Sources catalogued: {len(SOURCES)}")
+    print("Network requests made: 0")
+    print("Media downloaded or published: 0")
 
 if __name__ == "__main__":
     main()
