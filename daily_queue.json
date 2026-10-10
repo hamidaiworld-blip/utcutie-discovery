@@ -93,7 +93,7 @@
     {
       "queue_id": 6,
       "scheduled_at": "2026-10-10T16:28:38.181818+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://s3.eu-central-2.wasabisys.com/mastodonworld/cache/media_attachments/files/117/378/826/703/904/127/original/9363e4d68f2d5ce5.mp4",
       "caption": "If my dog Rufus was Ahnuld in Predator\n\n@utcutie",
       "source_url": "",
@@ -101,7 +101,9 @@
       "file_size": 31017723,
       "score": null,
       "instance": "https://mastodon.world",
-      "account": "jamesjoelrussell@kolektiva.social"
+      "account": "jamesjoelrussell@kolektiva.social",
+      "published_at": "2026-10-10T16:32:46.934231+03:30",
+      "result": "already_in_history"
     },
     {
       "queue_id": 7,
@@ -197,6 +199,6 @@
   ],
   "schedule_adjusted_at": "2026-10-10T12:40:55.552273+03:30",
   "schedule_note": "First new item scheduled on next five-minute boundary; already-published item preserved; one post per run.",
-  "updated_at": "2026-10-10T15:48:17.388694+03:30",
+  "updated_at": "2026-10-10T16:32:46.934231+03:30",
   "published_count": 2
 }
