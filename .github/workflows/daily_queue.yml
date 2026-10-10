@@ -97,6 +97,11 @@ jobs:
         run: |
           python mastodon_test.py
 
+      - name: Run licensed Wikimedia Commons discovery
+        if: steps.time_check.outputs.run_now == 'true'
+        run: |
+          python wikimedia_commons_discovery.py
+
       - name: Build daily queue
         if: steps.time_check.outputs.run_now == 'true'
         run: |
@@ -108,7 +113,8 @@ jobs:
           from zoneinfo import ZoneInfo
 
           SOURCE = Path("selected_candidates.json")
-          APPROVALS_FILE = Path("rights_approvals.json")
+          COMMONS_SOURCE = Path("commons_selected_candidates.json")
+          APPROVALS_FILES = [Path("rights_approvals.json"), Path("commons_rights_approvals.json")]
           OUTPUT = Path("daily_queue.json")
 
           def normalize_source_url(value):
@@ -152,21 +158,29 @@ jobs:
                   "ERROR: selected_candidates.json is not a list."
               )
 
-          # Fail closed: public availability is not a reuse license. Only exact
-          # source URLs with an explicit, reviewed rights approval may be queued.
-          if APPROVALS_FILE.exists():
-              with APPROVALS_FILE.open("r", encoding="utf-8") as f:
-                  approval_payload = json.load(f)
-          else:
-              approval_payload = {"approvals": []}
+          # Add only candidates produced by the per-file licensed Commons API
+          # validator. The same exact-source approval check applies to all items.
+          if COMMONS_SOURCE.exists():
+              with COMMONS_SOURCE.open("r", encoding="utf-8") as f:
+                  commons_candidates = json.load(f)
+              if not isinstance(commons_candidates, list):
+                  raise SystemExit("ERROR: commons_selected_candidates.json is not a list.")
+              candidates.extend(commons_candidates)
 
+          # Fail closed: public availability is not a reuse license. Only exact
+          # source URLs with explicit, verified license metadata or written permission may be queued.
           approval_by_url = {}
-          for record in approval_payload.get("approvals", []):
-              if not valid_approval(record):
+          for approvals_file in APPROVALS_FILES:
+              if not approvals_file.exists():
                   continue
-              key = normalize_source_url(record.get("source_url"))
-              if key:
-                  approval_by_url[key] = record
+              with approvals_file.open("r", encoding="utf-8") as f:
+                  approval_payload = json.load(f)
+              for record in approval_payload.get("approvals", []):
+                  if not valid_approval(record):
+                      continue
+                  key = normalize_source_url(record.get("source_url"))
+                  if key:
+                      approval_by_url[key] = record
 
           approved_candidates = []
           for candidate in candidates:
