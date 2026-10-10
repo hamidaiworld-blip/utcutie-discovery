@@ -33,7 +33,7 @@
     {
       "queue_id": 2,
       "scheduled_at": "2026-10-10T11:42:21.176471+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://files.mastodon.social/media_attachments/files/117/409/305/749/616/081/original/3fe5ac3614b9cbad.mp4",
       "caption": "Settling In & Finding His Voice 🐾\nLooks like someone has officially claimed the best spot in the new apartment! He’s completely made himself at home on his favorite blanket, keeping a sharp eye on his toys and making the cutest little chatter sounds whenever he's in play mode.💬✨\n\n@utcutie",
       "source_url": "",
@@ -41,7 +41,9 @@
       "file_size": 8822565,
       "score": null,
       "instance": "https://mastodon.social",
-      "account": "oksana_lukerya"
+      "account": "oksana_lukerya",
+      "published_at": "2026-10-10T11:57:35.335529+03:30",
+      "result": "already_in_history"
     },
     {
       "queue_id": 3,
@@ -252,6 +254,6 @@
       "account": "fonecokid@c.im"
     }
   ],
-  "updated_at": "2026-10-10T11:01:34.023505+03:30",
+  "updated_at": "2026-10-10T11:57:35.335529+03:30",
   "published_count": 1
 }
