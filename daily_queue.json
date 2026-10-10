@@ -89,7 +89,7 @@
     {
       "queue_id": 4,
       "scheduled_at": "2026-10-10T21:48:01.217502+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Cat_yawning_in_slow_motion.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "caption": "A domestic housecat yawning, in 4X slow motion\nCredit: Grendelkhan · Title: Cat yawning in slow motion.webm · Source: https://commons.wikimedia.org/wiki/File:Cat_yawning_in_slow_motion.webm · License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)\n\n@utcutie",
       "source_url": "https://commons.wikimedia.org/wiki/File:Cat_yawning_in_slow_motion.webm",
@@ -102,7 +102,14 @@
       "file_size": 22465616,
       "score": 56.0,
       "instance": "Wikimedia Commons",
-      "account": "Grendelkhan"
+      "account": "Grendelkhan",
+      "last_attempt_at": "2026-10-10T21:56:28.353092+03:30",
+      "published_at": "2026-10-10T21:56:28.353092+03:30",
+      "telegram_message_id": 8110,
+      "render_response": {
+        "duration": 19.3,
+        "file_size": 20990271
+      }
     },
     {
       "queue_id": 5,
@@ -141,6 +148,6 @@
       "account": "Grendelkhan"
     }
   ],
-  "updated_at": "2026-10-10T21:17:47.008065+03:30",
-  "published_count": 3
+  "updated_at": "2026-10-10T21:56:28.353092+03:30",
+  "published_count": 4
 }

@@ -563,5 +563,23 @@
     "file_size": 11684076,
     "score": 57.0,
     "telegram_message_id": 8109
+  },
+  {
+    "published_at": "2026-10-10T21:56:28.353092+03:30",
+    "sha256": "5c67e69276f4de318c7327a33ef1ad5188b3b34e423ec51af7500c0f414416c6",
+    "media_url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Cat_yawning_in_slow_motion.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "status_url": "https://commons.wikimedia.org/wiki/File:Cat_yawning_in_slow_motion.webm",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Cat_yawning_in_slow_motion.webm",
+    "queue_id": 4,
+    "rights_basis": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution": "Grendelkhan · Title: Cat yawning in slow motion.webm · Source: https://commons.wikimedia.org/wiki/File:Cat_yawning_in_slow_motion.webm · License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)",
+    "permission_reference": "",
+    "caption": "A domestic housecat yawning, in 4X slow motion\nCredit: Grendelkhan · Title: Cat yawning in slow motion.webm · Source: https://commons.wikimedia.org/wiki/File:Cat_yawning_in_slow_motion.webm · License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)\n\n@utcutie",
+    "telegram_channel": "@utcutie",
+    "duration": 19.3,
+    "file_size": 20990271,
+    "score": 56.0,
+    "telegram_message_id": 8110
   }
 ]
