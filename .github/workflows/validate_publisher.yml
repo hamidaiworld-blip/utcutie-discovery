@@ -29,6 +29,51 @@ jobs:
           ffmpeg -version | head -n 1
           ffprobe -version | head -n 1
 
+      - name: Test source-to-MP4 conversion without sending
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          import tempfile
+          from pathlib import Path
+          from urllib.parse import urlsplit
+          import requests
+
+          queue = json.loads(Path("daily_queue.json").read_text(encoding="utf-8"))
+          item = next((x for x in queue.get("queue", []) if str(x.get("media_url", "")).casefold().endswith(".webm")), None)
+          if item is None:
+              raise SystemExit("No WebM item in current queue; conversion probe cannot run.")
+          media_url = item["media_url"]
+          if (urlsplit(media_url).hostname or "").casefold() != "upload.wikimedia.org":
+              raise SystemExit("Conversion probe blocked: unexpected source host.")
+          max_size = 48 * 1024 * 1024
+          with tempfile.TemporaryDirectory(prefix="utcutie_conversion_probe_") as temp_dir:
+              source = Path(temp_dir) / "source.webm"
+              output = Path(temp_dir) / "video.mp4"
+              total = 0
+              with requests.get(media_url, stream=True, timeout=(15, 120), headers={"User-Agent": "UTCutieValidation/1.0 (+https://github.com/hamidaiworld-blip/utcutie-discovery)"}) as response:
+                  response.raise_for_status()
+                  if "video/" not in response.headers.get("Content-Type", "").casefold():
+                      raise SystemExit("Conversion probe source is not a video content type.")
+                  with source.open("wb") as handle:
+                      for chunk in response.iter_content(chunk_size=1024 * 1024):
+                          if not chunk:
+                              continue
+                          total += len(chunk)
+                          if total > max_size:
+                              raise SystemExit("Conversion probe source exceeds 48 MB.")
+                          handle.write(chunk)
+              command = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", str(source), "-map", "0:v:0", "-map", "0:a?", "-vf", "scale=w='min(1280,iw)':h=-2", "-c:v", "libx264", "-preset", "ultrafast", "-crf", "23", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", str(output)]
+              result = subprocess.run(command, capture_output=True, text=True, timeout=180)
+              if result.returncode != 0 or not output.exists():
+                  raise SystemExit("FFmpeg conversion probe failed: " + (result.stderr or "no output")[-500:])
+              probe = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", str(output)], capture_output=True, text=True, timeout=30)
+              duration = float(probe.stdout.strip()) if probe.returncode == 0 else 0.0
+              if not 15 <= duration <= 180 or output.stat().st_size > max_size:
+                  raise SystemExit(f"Converted MP4 failed duration/size checks: {duration:.2f}s, {output.stat().st_size} bytes")
+              print(f"Conversion probe passed: {duration:.2f}s, {output.stat().st_size} bytes. Nothing was sent to Telegram.")
+          PY
+
       - name: Validate reference registry without network access
         run: |
           python editorial_source_leads.py
