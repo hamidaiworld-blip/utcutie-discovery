@@ -150,11 +150,13 @@ def main():
             continue
 
         if item_history_keys(item) & history_keys:
-            item["status"] = "published"
-            item["published_at"] = now.isoformat()
+            item["status"] = "skipped"
             item["result"] = "already_in_history"
+            item["skipped_at"] = now.isoformat()
+            item.pop("published_at", None)
+            item.pop("telegram_message_id", None)
             changed = True
-            print(f"{item.get('queue_id')}: already in history; marked published.")
+            print(f"{item.get('queue_id')}: already in history; skipped without upload.")
             continue
 
         if now - scheduled > timedelta(minutes=MAX_LATE_MINUTES):
@@ -231,7 +233,9 @@ def main():
     if changed:
         payload["updated_at"] = now.isoformat()
         payload["published_count"] = sum(
-            1 for entry in queue if entry.get("status") == "published"
+            1
+            for entry in queue
+            if entry.get("status") == "published" and entry.get("telegram_message_id")
         )
         save_json(QUEUE_FILE, payload)
         save_json(HISTORY_FILE, history)
