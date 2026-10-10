@@ -3,6 +3,7 @@ import html
 import json
 import re
 import tempfile
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlparse
@@ -415,7 +416,7 @@ def get_statuses(instance, tag, max_id=None):
         response = requests.get(
             url,
             params=params,
-            headers={"User-Agent": "UTCutieDiscovery/1.0"},
+            headers={"User-Agent": "UTCutieDiscovery/1.0 (+https://github.com/hamidaiworld-blip/utcutie-discovery)"},
             timeout=REQUEST_TIMEOUT,
         )
     except requests.exceptions.Timeout as exc:
@@ -567,7 +568,7 @@ def preflight_size(candidate):
             return False, "file too large"
         return True, ""
 
-    headers = {"User-Agent": "UTCutieDiscovery/1.0"}
+    headers = {"User-Agent": "UTCutieDiscovery/1.0 (+https://github.com/hamidaiworld-blip/utcutie-discovery)"}
 
     try:
         response = requests.head(
@@ -744,6 +745,30 @@ def video_info(path):
         capture.release()
 
 
+def request_video_response(media_url):
+    """Fetch media with a bounded retry for temporary host rate limits."""
+    headers = {"User-Agent": "UTCutieDiscovery/1.0 (+https://github.com/hamidaiworld-blip/utcutie-discovery)"}
+    response = None
+    for attempt in range(3):
+        response = requests.get(
+            media_url,
+            stream=True,
+            allow_redirects=True,
+            headers=headers,
+            timeout=REQUEST_TIMEOUT,
+        )
+        if response.status_code != 429 or attempt == 2:
+            return response
+        retry_after = response.headers.get("Retry-After", "")
+        response.close()
+        try:
+            delay = float(retry_after)
+        except (TypeError, ValueError):
+            delay = 2 ** (attempt + 1)
+        time.sleep(min(8.0, max(1.0, delay)))
+    return response
+
+
 def download_and_validate(candidate):
     media_url = candidate["media_url"]
 
@@ -755,7 +780,7 @@ def download_and_validate(candidate):
                 media_url,
                 stream=True,
                 allow_redirects=True,
-                headers={"User-Agent": "UTCutieDiscovery/1.0"},
+                headers={"User-Agent": "UTCutieDiscovery/1.0 (+https://github.com/hamidaiworld-blip/utcutie-discovery)"},
                 timeout=REQUEST_TIMEOUT,
             ) as response:
                 if response.status_code != 200:
