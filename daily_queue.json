@@ -28,7 +28,7 @@
     {
       "queue_id": 2,
       "scheduled_at": "2026-10-10T12:45:00+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://files.mastodon.social/cache/media_attachments/files/117/400/803/966/388/677/original/d13ea73a30ed7159.mp4",
       "caption": "Arko, our mad husky has just discovered some new noises to make after dinner, when he settles down on the sofa to watch TV\n\n@utcutie",
       "source_url": "",
@@ -36,7 +36,14 @@
       "file_size": 16205118,
       "score": null,
       "instance": "https://mastodon.social",
-      "account": "elperronegro@khumbu.social"
+      "account": "elperronegro@khumbu.social",
+      "last_attempt_at": "2026-10-10T12:45:34.220033+03:30",
+      "published_at": "2026-10-10T12:45:34.220033+03:30",
+      "telegram_message_id": 8106,
+      "render_response": {
+        "duration": 40.2,
+        "file_size": 16205118
+      }
     },
     {
       "queue_id": 3,
@@ -184,5 +191,6 @@
   ],
   "schedule_adjusted_at": "2026-10-10T12:40:55.552273+03:30",
   "schedule_note": "First new item scheduled on next five-minute boundary; already-published item preserved; one post per run.",
-  "updated_at": "2026-10-10T12:40:32.394877+03:30"
+  "updated_at": "2026-10-10T12:45:34.220033+03:30",
+  "published_count": 2
 }
