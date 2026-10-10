@@ -1,10 +1,10 @@
 {
-  "created_at": "2026-10-10T19:53:15.102549+03:30",
+  "created_at": "2026-10-10T19:55:03.043755+03:30",
   "timezone": "Asia/Tehran",
   "timezone_display": "Tehran",
   "target_channel": "@utcutie",
   "max_items": 20,
-  "selected_count": 7,
+  "selected_count": 6,
   "rights_gate": "Only explicitly approved source URLs with a verified license or written permission can enter the queue.",
   "publishing_window": {
     "start": "11:00",
@@ -13,25 +13,7 @@
   "queue": [
     {
       "queue_id": 1,
-      "scheduled_at": "2026-10-10T19:58:15.102549+03:30",
-      "status": "pending",
-      "media_url": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Puppiesplaying-tokyoarea-jan7-2020.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-      "caption": "Puppies playing. Left is a Toy Poodle (450,000 yen) and right is a Chihuahua (440,000 yen)\nCredit: Nesnad · Title: Puppiesplaying-tokyoarea-jan7-2020.webm · Source: https://commons.wikimedia.org/wiki/File:Puppiesplaying-tokyoarea-jan7-2020.webm · License: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0)\n\n@utcutie",
-      "source_url": "https://commons.wikimedia.org/wiki/File:Puppiesplaying-tokyoarea-jan7-2020.webm",
-      "rights_verified": true,
-      "rights_basis": "CC BY 4.0",
-      "license_url": "https://creativecommons.org/licenses/by/4.0",
-      "attribution": "Nesnad · Title: Puppiesplaying-tokyoarea-jan7-2020.webm · Source: https://commons.wikimedia.org/wiki/File:Puppiesplaying-tokyoarea-jan7-2020.webm · License: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0)",
-      "permission_reference": "",
-      "duration": 22.523,
-      "file_size": 5919795,
-      "score": 62.0,
-      "instance": "Wikimedia Commons",
-      "account": "Nesnad"
-    },
-    {
-      "queue_id": 2,
-      "scheduled_at": "2026-10-10T20:28:32.585458+03:30",
+      "scheduled_at": "2026-10-10T20:00:03.043755+03:30",
       "status": "pending",
       "media_url": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Housecat_Grooming_Itself.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "caption": "Self-care is serious business. 🐱\nCredit: Thebombzen · Title: Housecat Grooming Itself.webm · Source: https://commons.wikimedia.org/wiki/File:Housecat_Grooming_Itself.webm · License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)\n\n@utcutie",
@@ -48,8 +30,8 @@
       "account": "Thebombzen"
     },
     {
-      "queue_id": 3,
-      "scheduled_at": "2026-10-10T20:58:50.068366+03:30",
+      "queue_id": 2,
+      "scheduled_at": "2026-10-10T20:36:02.435004+03:30",
       "status": "pending",
       "media_url": "https://upload.wikimedia.org/wikipedia/commons/c/c3/Cat_behaviour_-_self-grooming.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "caption": "Self-care is serious business. 🐱\nCredit: Learnerktm · Title: Cat behaviour - self-grooming.webm · Source: https://commons.wikimedia.org/wiki/File:Cat_behaviour_-_self-grooming.webm · License: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0)\n\n@utcutie",
@@ -66,8 +48,8 @@
       "account": "Learnerktm"
     },
     {
-      "queue_id": 4,
-      "scheduled_at": "2026-10-10T21:29:07.551275+03:30",
+      "queue_id": 3,
+      "scheduled_at": "2026-10-10T21:12:01.826253+03:30",
       "status": "pending",
       "media_url": "https://upload.wikimedia.org/wikipedia/commons/7/78/%22Arya%22_Cat_plays_with_Acalypha_indica-Pilangsari-2019.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "caption": "Cat plays with Acalypha indica\nCredit: Aris Riyanto · Title: \"Arya\" Cat plays with Acalypha indica-Pilangsari-2019.webm · Source: https://commons.wikimedia.org/wiki/File:%22Arya%22_Cat_plays_with_Acalypha_indica-Pilangsari-2019.webm · License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)\n\n@utcutie",
@@ -84,8 +66,8 @@
       "account": "Aris Riyanto"
     },
     {
-      "queue_id": 5,
-      "scheduled_at": "2026-10-10T21:59:25.034183+03:30",
+      "queue_id": 4,
+      "scheduled_at": "2026-10-10T21:48:01.217502+03:30",
       "status": "pending",
       "media_url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Cat_yawning_in_slow_motion.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "caption": "A domestic housecat yawning, in 4X slow motion\nCredit: Grendelkhan · Title: Cat yawning in slow motion.webm · Source: https://commons.wikimedia.org/wiki/File:Cat_yawning_in_slow_motion.webm · License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)\n\n@utcutie",
@@ -102,8 +84,8 @@
       "account": "Grendelkhan"
     },
     {
-      "queue_id": 6,
-      "scheduled_at": "2026-10-10T22:29:42.517092+03:30",
+      "queue_id": 5,
+      "scheduled_at": "2026-10-10T22:24:00.608751+03:30",
       "status": "pending",
       "media_url": "https://upload.wikimedia.org/wikipedia/commons/a/ac/Cat_lapping_water_off_ground_in_slow_motion.gk.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "caption": "No spills. Just perfect little sips. 🐱\nCredit: Grendelkhan · Title: Cat lapping water off ground in slow motion.gk.webm · Source: https://commons.wikimedia.org/wiki/File:Cat_lapping_water_off_ground_in_slow_motion.gk.webm · License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)\n\n@utcutie",
@@ -120,7 +102,7 @@
       "account": "Grendelkhan"
     },
     {
-      "queue_id": 7,
+      "queue_id": 6,
       "scheduled_at": "2026-10-10T23:00:00+03:30",
       "status": "pending",
       "media_url": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Cat_kneading_blanket_in_slow_motion.gk.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
