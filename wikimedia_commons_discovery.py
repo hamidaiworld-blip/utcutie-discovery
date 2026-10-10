@@ -32,6 +32,11 @@ ENGAGEMENT_TERMS = (
     "feeding", "dancing", "rolling", "jumping", "happy", "lapping water",
     "slow motion", "playing together", "kissing", "napping", "yawning",
 )
+NEGATIVE_CONTEXT_TERMS = (
+    "yen", "price", "prices", "cost", "for sale", "selling", "buy now",
+    "purchase", "breeder", "puppy mill", "pet shop", "advertisement", "sponsored",
+    "animal meat trade", "dog meat trade", "animal cruelty", "animal testing",
+)
 OUT_CANDIDATES = Path("commons_selected_candidates.json")
 OUT_APPROVALS = Path("commons_rights_approvals.json")
 
@@ -153,6 +158,9 @@ def main():
         # Avoid irrelevant videos before downloading; the existing visual gate
         # still checks representative frames after download.
         lowered_content = content.casefold()
+        if any(term in lowered_content for term in NEGATIVE_CONTEXT_TERMS):
+            print("  Rejected: sales, advertising, or harmful-content context")
+            continue
         if not any(term in lowered_content for term in validation.ANIMAL_TERMS):
             continue
         if not any(term in lowered_content for term in ENGAGEMENT_TERMS):
