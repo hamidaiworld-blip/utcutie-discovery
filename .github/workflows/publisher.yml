@@ -34,10 +34,19 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
+      - name: Ensure FFmpeg is available
+        run: |
+          if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v ffprobe >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+          ffmpeg -version | head -n 1
+          ffprobe -version | head -n 1
+
       - name: Publish due queue items
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-          RENDER_API_URL: https://x-video-downloader-api.onrender.com/send-media-and-send
+          RENDER_API_URL: https://x-video-downloader-api.onrender.com/upload-and-send
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
         run: python publish_due.py
 
