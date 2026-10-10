@@ -92,10 +92,23 @@ jobs:
           echo "No queue preparation needed at this trigger."
           exit 0
 
-      - name: Run video discovery
+      - name: Run video discovery when an exact-source approval exists
         if: steps.time_check.outputs.run_now == 'true'
         run: |
-          python mastodon_test.py
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          approvals_path = Path("rights_approvals.json")
+          payload = json.loads(approvals_path.read_text(encoding="utf-8")) if approvals_path.exists() else {"approvals": []}
+          approvals = payload.get("approvals", []) if isinstance(payload, dict) else []
+          if not approvals:
+              Path("selected_candidates.json").write_text("[]\n", encoding="utf-8")
+              print("Skipping Mastodon scan: no exact-source reuse approvals exist, so all such candidates would be blocked anyway.")
+          else:
+              subprocess.run(["python", "mastodon_test.py"], check=True)
+          PY
 
       - name: Run licensed Wikimedia Commons discovery
         if: steps.time_check.outputs.run_now == 'true'
