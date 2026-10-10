@@ -135,7 +135,7 @@ def main():
         content = (item["title"] + " " + item["description"]).strip()
         # Avoid irrelevant videos before downloading; the existing visual gate
         # still checks representative frames after download.
-        if not validation.contains_phrase(content, validation.ANIMAL_TERMS):
+        if not any(term in content.casefold() for term in validation.ANIMAL_TERMS):
             continue
         source_url = item["source_url"]
         if validation.canonical_status_url(source_url) in published or source_url in published:
