@@ -14,7 +14,7 @@
     {
       "queue_id": 1,
       "scheduled_at": "2026-10-10T20:00:03.043755+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Housecat_Grooming_Itself.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "caption": "Self-care is serious business. 🐱\nCredit: Thebombzen · Title: Housecat Grooming Itself.webm · Source: https://commons.wikimedia.org/wiki/File:Housecat_Grooming_Itself.webm · License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)\n\n@utcutie",
       "source_url": "https://commons.wikimedia.org/wiki/File:Housecat_Grooming_Itself.webm",
@@ -27,7 +27,14 @@
       "file_size": 8868199,
       "score": 60.0,
       "instance": "Wikimedia Commons",
-      "account": "Thebombzen"
+      "account": "Thebombzen",
+      "last_attempt_at": "2026-10-10T20:02:24.528108+03:30",
+      "published_at": "2026-10-10T20:02:24.528108+03:30",
+      "telegram_message_id": 8107,
+      "render_response": {
+        "duration": 24.0,
+        "file_size": 10770053
+      }
     },
     {
       "queue_id": 2,
@@ -119,5 +126,7 @@
       "instance": "Wikimedia Commons",
       "account": "Grendelkhan"
     }
-  ]
+  ],
+  "updated_at": "2026-10-10T20:02:24.528108+03:30",
+  "published_count": 1
 }

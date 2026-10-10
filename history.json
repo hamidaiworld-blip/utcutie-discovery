@@ -509,5 +509,15 @@
     "file_size": 16205118,
     "score": null,
     "telegram_message_id": 8106
+  },
+  {
+    "published_at": "2026-10-10T20:02:24.528108+03:30",
+    "sha256": "d2a87695b7ea49108e688c64cf33e48dd99705730544b4f583a82a0e33abeaea",
+    "media_url": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Housecat_Grooming_Itself.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "status_url": "https://commons.wikimedia.org/wiki/File:Housecat_Grooming_Itself.webm",
+    "duration": 24.0,
+    "file_size": 10770053,
+    "score": 60.0,
+    "telegram_message_id": 8107
   }
 ]
