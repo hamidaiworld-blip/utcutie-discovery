@@ -34,7 +34,39 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
+      - name: Check whether a licensed item is due
+        id: due
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from datetime import datetime
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          queue = json.loads(Path("daily_queue.json").read_text(encoding="utf-8"))
+          now = datetime.now(ZoneInfo("Asia/Tehran"))
+          due = False
+          for item in queue.get("queue", []):
+              if item.get("status", "pending") != "pending" or item.get("rights_verified") is not True:
+                  continue
+              try:
+                  scheduled = datetime.fromisoformat(str(item.get("scheduled_at", "")))
+              except ValueError:
+                  continue
+              if scheduled.tzinfo is None:
+                  scheduled = scheduled.replace(tzinfo=ZoneInfo("Asia/Tehran"))
+              late_minutes = (now - scheduled).total_seconds() / 60
+              if 0 <= late_minutes <= 20:
+                  due = True
+                  break
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
+              handle.write(f"has_due={'true' if due else 'false'}\n")
+          print("A rights-verified queue item is due." if due else "No rights-verified item is due; skipping FFmpeg install.")
+          PY
+
       - name: Ensure FFmpeg is available
+        if: steps.due.outputs.has_due == 'true'
         run: |
           if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v ffprobe >/dev/null 2>&1; then
             sudo apt-get update
