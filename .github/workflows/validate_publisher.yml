@@ -21,8 +21,26 @@ jobs:
       - name: Install runtime dependency
         run: python -m pip install requests
 
-      - name: Compile publisher
-        run: python -m py_compile publish_due.py
+      - name: Compile publisher and reference registry
+        run: python -m py_compile publish_due.py editorial_source_leads.py
+
+      - name: Validate reference registry without network access
+        run: |
+          python editorial_source_leads.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          payload = json.loads(Path("source_leads.json").read_text(encoding="utf-8"))
+          assert payload["automated_fetching_enabled"] is False
+          assert payload["media_download_enabled"] is False
+          assert payload["auto_publish_enabled"] is False
+          assert payload["lead_count"] == 0
+          assert len(payload["sources"]) == 5
+          assert all(source["automated_access"] is False for source in payload["sources"])
+          assert all(source["auto_publish_allowed"] is False for source in payload["sources"])
+          print("Reference registry safety checks passed.")
+          PY
 
       - name: Verify API-key synchronization fingerprint
         env:
