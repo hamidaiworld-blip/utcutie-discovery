@@ -44,7 +44,7 @@ jobs:
           import requests
 
           queue = json.loads(Path("daily_queue.json").read_text(encoding="utf-8"))
-          item = next((x for x in queue.get("queue", []) if str(x.get("media_url", "")).casefold().endswith(".webm")), None)
+          item = next((x for x in queue.get("queue", []) if urlsplit(str(x.get("media_url", ""))).path.casefold().endswith(".webm")), None)
           if item is None:
               raise SystemExit("No WebM item in current queue; conversion probe cannot run.")
           media_url = item["media_url"]
