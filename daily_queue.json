@@ -39,7 +39,7 @@
     {
       "queue_id": 2,
       "scheduled_at": "2026-10-10T20:36:02.435004+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://upload.wikimedia.org/wikipedia/commons/c/c3/Cat_behaviour_-_self-grooming.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "caption": "Self-care is serious business. 🐱\nCredit: Learnerktm · Title: Cat behaviour - self-grooming.webm · Source: https://commons.wikimedia.org/wiki/File:Cat_behaviour_-_self-grooming.webm · License: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0)\n\n@utcutie",
       "source_url": "https://commons.wikimedia.org/wiki/File:Cat_behaviour_-_self-grooming.webm",
@@ -52,7 +52,14 @@
       "file_size": 15779377,
       "score": 59.0,
       "instance": "Wikimedia Commons",
-      "account": "Learnerktm"
+      "account": "Learnerktm",
+      "last_attempt_at": "2026-10-10T20:39:08.993906+03:30",
+      "published_at": "2026-10-10T20:39:08.993906+03:30",
+      "telegram_message_id": 8108,
+      "render_response": {
+        "duration": 79.3,
+        "file_size": 34910068
+      }
     },
     {
       "queue_id": 3,
@@ -127,6 +134,6 @@
       "account": "Grendelkhan"
     }
   ],
-  "updated_at": "2026-10-10T20:02:24.528108+03:30",
-  "published_count": 1
+  "updated_at": "2026-10-10T20:39:08.993906+03:30",
+  "published_count": 2
 }
