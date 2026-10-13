@@ -1,5 +1,5 @@
 {
-  "created_at": "2026-10-12T10:28:01.781679+03:30",
+  "created_at": "2026-10-13T10:27:20.398171+03:30",
   "timezone": "Asia/Tehran",
   "timezone_display": "Tehran",
   "target_channel": "@utcutie",
@@ -13,8 +13,8 @@
   "queue": [
     {
       "queue_id": 1,
-      "scheduled_at": "2026-10-12T11:00:00+03:30",
-      "status": "skipped",
+      "scheduled_at": "2026-10-13T11:00:00+03:30",
+      "status": "pending",
       "media_url": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Housecat_Grooming_Itself.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "caption": "Self-care is serious business. 🐱\nCredit: Thebombzen · Title: Housecat Grooming Itself.webm · Source: https://commons.wikimedia.org/wiki/File:Housecat_Grooming_Itself.webm · License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)\n\n@utcutie",
       "source_url": "https://commons.wikimedia.org/wiki/File:Housecat_Grooming_Itself.webm",
@@ -27,14 +27,12 @@
       "file_size": 8868199,
       "score": 60.0,
       "instance": "Wikimedia Commons",
-      "account": "Thebombzen",
-      "result": "already_in_history",
-      "skipped_at": "2026-10-12T11:08:10.419899+03:30"
+      "account": "Thebombzen"
     },
     {
       "queue_id": 2,
-      "scheduled_at": "2026-10-12T13:24:00+03:30",
-      "status": "skipped",
+      "scheduled_at": "2026-10-13T13:24:00+03:30",
+      "status": "pending",
       "media_url": "https://upload.wikimedia.org/wikipedia/commons/c/c3/Cat_behaviour_-_self-grooming.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "caption": "Self-care is serious business. 🐱\nCredit: Learnerktm · Title: Cat behaviour - self-grooming.webm · Source: https://commons.wikimedia.org/wiki/File:Cat_behaviour_-_self-grooming.webm · License: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0)\n\n@utcutie",
       "source_url": "https://commons.wikimedia.org/wiki/File:Cat_behaviour_-_self-grooming.webm",
@@ -47,14 +45,12 @@
       "file_size": 15779377,
       "score": 59.0,
       "instance": "Wikimedia Commons",
-      "account": "Learnerktm",
-      "result": "already_in_history",
-      "skipped_at": "2026-10-12T13:45:25.747174+03:30"
+      "account": "Learnerktm"
     },
     {
       "queue_id": 3,
-      "scheduled_at": "2026-10-12T15:48:00+03:30",
-      "status": "skipped",
+      "scheduled_at": "2026-10-13T15:48:00+03:30",
+      "status": "pending",
       "media_url": "https://upload.wikimedia.org/wikipedia/commons/7/78/%22Arya%22_Cat_plays_with_Acalypha_indica-Pilangsari-2019.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "caption": "Cat plays with Acalypha indica\nCredit: Aris Riyanto · Title: \"Arya\" Cat plays with Acalypha indica-Pilangsari-2019.webm · Source: https://commons.wikimedia.org/wiki/File:%22Arya%22_Cat_plays_with_Acalypha_indica-Pilangsari-2019.webm · License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)\n\n@utcutie",
       "source_url": "https://commons.wikimedia.org/wiki/File:%22Arya%22_Cat_plays_with_Acalypha_indica-Pilangsari-2019.webm",
@@ -67,14 +63,12 @@
       "file_size": 11187306,
       "score": 57.0,
       "instance": "Wikimedia Commons",
-      "account": "Aris Riyanto",
-      "result": "already_in_history",
-      "skipped_at": "2026-10-12T16:05:59.305779+03:30"
+      "account": "Aris Riyanto"
     },
     {
       "queue_id": 4,
-      "scheduled_at": "2026-10-12T18:12:00+03:30",
-      "status": "skipped",
+      "scheduled_at": "2026-10-13T18:12:00+03:30",
+      "status": "pending",
       "media_url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Cat_yawning_in_slow_motion.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "caption": "A domestic housecat yawning, in 4X slow motion\nCredit: Grendelkhan · Title: Cat yawning in slow motion.webm · Source: https://commons.wikimedia.org/wiki/File:Cat_yawning_in_slow_motion.webm · License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)\n\n@utcutie",
       "source_url": "https://commons.wikimedia.org/wiki/File:Cat_yawning_in_slow_motion.webm",
@@ -87,14 +81,12 @@
       "file_size": 22465616,
       "score": 56.0,
       "instance": "Wikimedia Commons",
-      "account": "Grendelkhan",
-      "result": "already_in_history",
-      "skipped_at": "2026-10-12T18:22:10.409878+03:30"
+      "account": "Grendelkhan"
     },
     {
       "queue_id": 5,
-      "scheduled_at": "2026-10-12T20:36:00+03:30",
-      "status": "skipped",
+      "scheduled_at": "2026-10-13T20:36:00+03:30",
+      "status": "pending",
       "media_url": "https://upload.wikimedia.org/wikipedia/commons/a/ac/Cat_lapping_water_off_ground_in_slow_motion.gk.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "caption": "No spills. Just perfect little sips. 🐱\nCredit: Grendelkhan · Title: Cat lapping water off ground in slow motion.gk.webm · Source: https://commons.wikimedia.org/wiki/File:Cat_lapping_water_off_ground_in_slow_motion.gk.webm · License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)\n\n@utcutie",
       "source_url": "https://commons.wikimedia.org/wiki/File:Cat_lapping_water_off_ground_in_slow_motion.gk.webm",
@@ -107,14 +99,12 @@
       "file_size": 10359422,
       "score": 51.0,
       "instance": "Wikimedia Commons",
-      "account": "Grendelkhan",
-      "result": "already_in_history",
-      "skipped_at": "2026-10-12T20:42:09.250146+03:30"
+      "account": "Grendelkhan"
     },
     {
       "queue_id": 6,
-      "scheduled_at": "2026-10-12T23:00:00+03:30",
-      "status": "skipped",
+      "scheduled_at": "2026-10-13T23:00:00+03:30",
+      "status": "pending",
       "media_url": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Cat_kneading_blanket_in_slow_motion.gk.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "caption": "A striped male cat kneading a blanket with his claws in 4x slow motion\nCredit: Grendelkhan · Title: Cat kneading blanket in slow motion.gk.webm · Source: https://commons.wikimedia.org/wiki/File:Cat_kneading_blanket_in_slow_motion.gk.webm · License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)\n\n@utcutie",
       "source_url": "https://commons.wikimedia.org/wiki/File:Cat_kneading_blanket_in_slow_motion.gk.webm",
@@ -127,10 +117,7 @@
       "file_size": 13947520,
       "score": 46.0,
       "instance": "Wikimedia Commons",
-      "account": "Grendelkhan",
-      "result": "already_in_history",
-      "skipped_at": "2026-10-12T23:07:36.952387+03:30"
+      "account": "Grendelkhan"
     }
-  ],
-  "updated_at": "2026-10-12T23:07:36.952387+03:30"
+  ]
 }
