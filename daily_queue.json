@@ -54,7 +54,7 @@
     {
       "queue_id": 3,
       "scheduled_at": "2026-10-13T15:48:00+03:30",
-      "status": "pending",
+      "status": "skipped",
       "media_url": "https://upload.wikimedia.org/wikipedia/commons/7/78/%22Arya%22_Cat_plays_with_Acalypha_indica-Pilangsari-2019.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "caption": "Cat plays with Acalypha indica\nCredit: Aris Riyanto · Title: \"Arya\" Cat plays with Acalypha indica-Pilangsari-2019.webm · Source: https://commons.wikimedia.org/wiki/File:%22Arya%22_Cat_plays_with_Acalypha_indica-Pilangsari-2019.webm · License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)\n\n@utcutie",
       "source_url": "https://commons.wikimedia.org/wiki/File:%22Arya%22_Cat_plays_with_Acalypha_indica-Pilangsari-2019.webm",
@@ -67,7 +67,9 @@
       "file_size": 11187306,
       "score": 57.0,
       "instance": "Wikimedia Commons",
-      "account": "Aris Riyanto"
+      "account": "Aris Riyanto",
+      "result": "already_in_history",
+      "skipped_at": "2026-10-13T15:57:46.023928+03:30"
     },
     {
       "queue_id": 4,
@@ -124,5 +126,5 @@
       "account": "Grendelkhan"
     }
   ],
-  "updated_at": "2026-10-13T13:25:23.606544+03:30"
+  "updated_at": "2026-10-13T15:57:46.023928+03:30"
 }
