@@ -219,7 +219,31 @@ jobs:
               candidate["permission_reference"] = str(approval.get("permission_reference") or "").strip()
               approved_candidates.append(candidate)
 
-          candidates = approved_candidates[:20]
+          # Exclude successful historical publications before filling the daily queue.
+          # Never recycle previously posted videos merely to meet a daily quota.
+          history_path = Path("history.json")
+          history = json.loads(history_path.read_text(encoding="utf-8")) if history_path.exists() else []
+          published_urls = set()
+          for entry in history:
+              if not isinstance(entry, dict) or not entry.get("telegram_message_id"):
+                  continue
+              for field in ("source_url", "status_url", "canonical_url", "url", "media_url"):
+                  normalized = normalize_source_url(entry.get(field))
+                  if normalized:
+                      published_urls.add(normalized)
+          unique_candidates = []
+          seen_urls = set()
+          for candidate in approved_candidates:
+              source = normalize_source_url(candidate.get("source_url"))
+              media = normalize_source_url(candidate.get("media_url"))
+              if not source or not media or source in published_urls or media in published_urls:
+                  print(f"HISTORY GATE: excluding previously published or invalid candidate: {source}")
+                  continue
+              if source in seen_urls or media in seen_urls:
+                  continue
+              seen_urls.update((source, media))
+              unique_candidates.append(candidate)
+          candidates = unique_candidates[:20]
           print(f"RIGHTS GATE: {len(candidates)} candidates have verified reuse approval.")
 
           queue = []
