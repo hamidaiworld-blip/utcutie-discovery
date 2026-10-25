@@ -209,16 +209,18 @@ def send_item(item):
                         timeout=240,
                     )
             except requests.RequestException as exc:
-                return False, f"Render upload request failed: {str(exc)[:300]}"
+                return None, f"Render delivery uncertain; manual reconciliation required: {str(exc)[:300]}"
 
             if not response.ok:
+                if response.status_code >= 500:
+                    return None, f"Render delivery uncertain (HTTP {response.status_code}); manual reconciliation required"
                 return False, f"Render upload HTTP {response.status_code}: {response.text[:500]}"
             try:
                 data = response.json()
             except ValueError:
-                return False, f"Render returned non-JSON response: {response.text[:300]}"
+                return None, "Render returned non-JSON response; manual reconciliation required"
             if not data.get("success") or not data.get("telegram_sent"):
-                return False, f"Render rejected upload: {data}"
+                return None, f"Render reported ambiguous delivery; manual reconciliation required: {data}"
             return True, data
 
         except requests.RequestException as exc:
@@ -344,7 +346,12 @@ def main():
     ok, result = send_item(item)
     item["last_attempt_at"] = now.isoformat()
 
-    if not ok:
+    if ok is None:
+        item["status"] = "delivery_uncertain"
+        item["last_error"] = str(result)
+        changed = True
+        print(f"{item.get('queue_id')}: DELIVERY UNCERTAIN — manual Telegram reconciliation required; automatic retry blocked.")
+    elif not ok:
         item["last_error"] = str(result)
         changed = True
         print(f"{item.get('queue_id')}: FAILED — {result}")
