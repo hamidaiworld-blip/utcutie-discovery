@@ -97,6 +97,12 @@ def build(records, history):
                 datetime.fromisoformat(str(published).replace("Z", "+00:00"))
             except ValueError:
                 published = None
+        # Discovery metadata is not proof of reuse rights. Never accept a caller-supplied verified flag.
+        # A known creator without documented permission is pending; unidentified ownership is excluded.
+        rights_status = "pending" if original and str(record.get("original_creator_name") or "").strip() else "excluded"
+        rights_reason = ("creator_identified_permission_missing" if rights_status == "pending" else "original_rightsholder_unidentified")
+        if score == 0:
+            rights_status, rights_reason = "excluded", reason
         out.append({
             "id": hashlib.sha256(url.encode()).hexdigest()[:20],
             "source": source,
@@ -112,9 +118,10 @@ def build(records, history):
             "relevance_status": reason,
             "visual_quality_status": "unverified",
             "duration_status": "unverified",
-            "rights_status": "pending_independent_verification",
+            "rights_status": rights_status,
+            "rights_reason": rights_reason,
             "rights_evidence": None,
-            "review_status": "rejected" if score == 0 else "manual_review_required",
+            "review_status": "rejected" if rights_status == "excluded" else "manual_review_required",
             "auto_publish_allowed": False,
             "download_allowed": False,
             "discovery_only": True,
