@@ -18,9 +18,9 @@ import mastodon_test as validation
 
 API = "https://commons.wikimedia.org/w/api.php"
 USER_AGENT = "UTCutieDiscovery/1.0 (animal-video curation; respectful API use)"
-SEARCH_TERMS = ["cat", "dog", "kitten", "puppy", "bird", "rabbit", "pet", "animal playing"]
+SEARCH_TERMS = ["cat", "dog", "kitten", "puppy", "bird", "rabbit", "pet", "animal playing", "kitten playing", "dog playing", "puppy playing", "cat sleeping", "dog swimming", "rabbit eating", "parrot playing", "animal cuddling", "funny cat", "funny dog"]
 RESULTS_PER_TERM = 25
-MAX_METADATA_BATCH = 40
+MAX_METADATA_BATCH = 15
 MAX_DOWNLOAD_ATTEMPTS = 30
 MAX_SELECTED = 20
 MAX_BYTES = 48 * 1024 * 1024
@@ -63,12 +63,26 @@ def classify_license(short_name, license_url):
     return ""
 
 def api_get(params):
-    response = session.get(API, params={"format": "json", "formatversion": 2, **params}, timeout=25)
-    response.raise_for_status()
-    payload = response.json()
-    if payload.get("error"):
-        raise RuntimeError(str(payload["error"]))
-    return payload
+    # Commons throttles bursty metadata requests. Retry only transient errors;
+    # never treat a throttled response as an empty search result.
+    for attempt in range(5):
+        response = session.get(API, params={"format": "json", "formatversion": 2, **params}, timeout=35)
+        if response.status_code in (429, 500, 502, 503, 504) and attempt < 4:
+            retry_after = response.headers.get("Retry-After", "")
+            try:
+                delay = float(retry_after)
+            except ValueError:
+                delay = 2 ** (attempt + 1)
+            print(f"Commons API transient HTTP {response.status_code}; retry {attempt + 1}/4 after {min(30, max(2, delay))}s")
+            response.close()
+            time.sleep(min(30, max(2, delay)))
+            continue
+        response.raise_for_status()
+        payload = response.json()
+        if payload.get("error"):
+            raise RuntimeError(str(payload["error"]))
+        return payload
+    raise RuntimeError("Commons API retry budget exhausted")
 
 def search_titles():
     titles = []
@@ -86,7 +100,7 @@ def search_titles():
                     titles.append(title)
         except Exception as exc:
             print(f"Search skipped for {term!r}: {type(exc).__name__}: {exc}")
-        time.sleep(0.15)
+        time.sleep(1.25)
     print(f"Commons search returned {len(titles)} unique file pages.")
     return titles
 
@@ -137,7 +151,7 @@ def file_metadata(titles):
                 })
         except Exception as exc:
             print(f"Metadata batch skipped: {type(exc).__name__}: {exc}")
-        time.sleep(0.15)
+        time.sleep(1.25)
     print(f"Media MIME distribution: {mime_counts}")
     print(f"MP4/WebM files with an allowed explicit license and attribution: {len(found)}.")
     return found
