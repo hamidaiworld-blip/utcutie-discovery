@@ -13,7 +13,7 @@ import requests
 import yt_dlp
 
 
-API_URL = "https://public.api.bsky.app/xrpc/app.bsky.feed.searchPosts"
+API_URL = "https://api.bsky.app/xrpc/app.bsky.feed.searchPosts"
 
 SEARCH_TERMS = [
     "cat",
@@ -35,7 +35,7 @@ SEARCH_TERMS = [
 ]
 
 SEARCH_LIMIT = 100
-MAX_PAGES_PER_TERM = 2
+MAX_PAGES_PER_TERM = 1  # First-page API diagnostic; no cursor pagination
 
 MIN_DURATION = 15
 MAX_DURATION = 180
@@ -229,8 +229,10 @@ def search_bluesky(term, cursor=None):
         },
     )
 
+    if not response.ok:
+        print(f"API ERROR: HTTP {response.status_code}; URL: {response.url}")
+        print(f"API RESPONSE: {response.text[:1000]}")
     response.raise_for_status()
-
     return response.json()
 
 
@@ -564,6 +566,7 @@ def already_in_history(candidate, keys):
 
 def process_search_results():
     all_posts = {}
+    successful_searches = 0
 
     for term in SEARCH_TERMS:
         print()
@@ -584,6 +587,7 @@ def process_search_results():
                 )
                 break
 
+            successful_searches += 1
             posts = data.get("posts") or []
 
             print(
@@ -602,6 +606,8 @@ def process_search_results():
             if not cursor:
                 break
 
+    if successful_searches == 0:
+        raise RuntimeError("All Bluesky searches failed; refusing to write empty result files")
     return list(all_posts.values())
 
 
