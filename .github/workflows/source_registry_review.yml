@@ -1,0 +1,40 @@
+name: Source Registry Review
+
+on:
+  pull_request:
+    paths:
+      - "source_registry.json"
+      - "source_registry.py"
+      - "source_qualification.py"
+      - "SOURCE_REGISTRY_PROCESS.md"
+      - "tests/test_source_registry.py"
+      - "tests/test_source_qualification.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-registry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate registry
+        run: python source_registry.py --input source_registry.json --report source_registry_report.json
+      - name: Run qualification layer
+        run: python source_qualification.py --input source_registry.json --output source_qualification_report.json
+      - name: Run tests
+        run: python -m unittest discover -s tests -v
+      - name: Upload review reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-registry-review
+          path: |
+            source_registry_report.json
+            source_qualification_report.json
+          if-no-files-found: error
