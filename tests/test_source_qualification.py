@@ -75,6 +75,11 @@ class SourceQualificationTests(unittest.TestCase):
         self.assertFalse(result["discovery_eligible"])
         self.assertEqual(result["qualification_status"], "manual_review_required")
 
+    def test_source_ids_distinguish_paths_on_same_domain(self):
+        base = {"name": "NatGeo", "url": "https://kids.example.org/videos"}
+        other = {"name": "NatGeo animals", "url": "https://kids.example.org/videos/topic/animals"}
+        self.assertNotEqual(qualify_source(base)["source_id"], qualify_source(other)["source_id"])
+
 
 if __name__ == "__main__":
     unittest.main()

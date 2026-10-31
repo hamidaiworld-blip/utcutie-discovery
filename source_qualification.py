@@ -27,16 +27,16 @@ def _permission(source, key):
     return status, evidence.strip() if isinstance(evidence, str) and evidence.strip() else None
 
 
-def _host(url):
+def _parsed_url(url):
     try:
         parsed = urlparse(str(url))
         if parsed.scheme not in {"http", "https"} or not parsed.hostname:
-            return ""
+            return None
         if parsed.username or parsed.password:
-            return ""
-        return parsed.hostname.lower().removeprefix("www.")
+            return None
+        return parsed
     except ValueError:
-        return ""
+        return None
 
 
 def qualify_source(source):
@@ -44,7 +44,8 @@ def qualify_source(source):
         raise ValueError("Each source entry must be a JSON object.")
     name = str(source.get("name") or "Unnamed source").strip()
     url = str(source.get("url") or "").strip()
-    host = _host(url)
+    parsed = _parsed_url(url)
+    host = (parsed.hostname or "").lower().removeprefix("www.") if parsed else ""
     reasons = []
     if not host:
         reasons.append("A valid public HTTP(S) source URL is required.")
@@ -101,8 +102,11 @@ def qualify_source(source):
     else:
         status = "manual_review_required"
 
+    path = parsed.path.strip("/") if parsed else ""
+    identity = host + (("-" + path) if path else "")
+    source_id = re.sub(r"[^a-z0-9]+", "-", identity.lower()).strip("-") or re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
     return {
-        "source_id": re.sub(r"[^a-z0-9]+", "-", host or name.lower()).strip("-"),
+        "source_id": source_id,
         "name": name, "url": url, "domain": host or None,
         "qualification_status": status,
         "discovery_eligible": discovery_ok,
