@@ -103,7 +103,7 @@ def main():
         "errors": errors, "valid": not errors,
         "automation_enabled": False, "downloads_enabled": False, "publishing_enabled": False,
     }
-    args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+    args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report, ensure_ascii=False, indent=2))
     raise SystemExit(0 if not errors else 1)
 
