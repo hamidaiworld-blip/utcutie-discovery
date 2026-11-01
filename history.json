@@ -617,5 +617,23 @@
     "file_size": 13803026,
     "score": 46.0,
     "telegram_message_id": 8112
+  },
+  {
+    "published_at": "2026-11-01T21:31:49.445847+03:30",
+    "sha256": "fa1cf33a3eff19def344d90f66e93b4e0fa663b51723d1176cc107f6214a287c",
+    "media_url": "https://upload.wikimedia.org/wikipedia/commons/4/43/Cute_Colorful_Bird_on_Walking_on_Ledge.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "status_url": "https://commons.wikimedia.org/wiki/File:Cute_Colorful_Bird_on_Walking_on_Ledge.webm",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Cute_Colorful_Bird_on_Walking_on_Ledge.webm",
+    "queue_id": 1,
+    "rights_basis": "CC0",
+    "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "attribution": "Yourusernamewillbepublic2 · Title: Cute Colorful Bird on Walking on Ledge.webm · Source: https://commons.wikimedia.org/wiki/File:Cute_Colorful_Bird_on_Walking_on_Ledge.webm · License: CC0 (http://creativecommons.org/publicdomain/zero/1.0/deed.en)",
+    "permission_reference": "",
+    "caption": "A tiny stroll, a full performance. 🐦\n\n@utcutie",
+    "telegram_channel": "@utcutie",
+    "duration": 21.762,
+    "file_size": 23397260,
+    "score": 58.0,
+    "telegram_message_id": 8113
   }
 ]

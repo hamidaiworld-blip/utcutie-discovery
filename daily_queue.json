@@ -14,7 +14,7 @@
     {
       "queue_id": 1,
       "scheduled_at": "2026-11-01T21:30:00+03:30",
-      "status": "pending",
+      "status": "published",
       "media_url": "https://upload.wikimedia.org/wikipedia/commons/4/43/Cute_Colorful_Bird_on_Walking_on_Ledge.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "caption": "A tiny stroll, a full performance. 🐦\n\n@utcutie",
       "source_url": "https://commons.wikimedia.org/wiki/File:Cute_Colorful_Bird_on_Walking_on_Ledge.webm",
@@ -27,7 +27,16 @@
       "file_size": 13426030,
       "score": 58.0,
       "instance": "Wikimedia Commons",
-      "account": "Yourusernamewillbepublic2"
+      "account": "Yourusernamewillbepublic2",
+      "last_attempt_at": "2026-11-01T21:31:49.445847+03:30",
+      "published_at": "2026-11-01T21:31:49.445847+03:30",
+      "telegram_message_id": 8113,
+      "render_response": {
+        "duration": 21.762,
+        "file_size": 23397260
+      }
     }
-  ]
+  ],
+  "updated_at": "2026-11-01T21:31:49.445847+03:30",
+  "published_count": 1
 }
