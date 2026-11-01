@@ -325,10 +325,12 @@ jobs:
                   # mastodon_test.py already removes hashtags
                   # and cleans the source caption.
                   attribution = str(candidate.get("attribution") or "").strip()
+                  rights_basis = str(candidate.get("rights_basis") or "").strip().casefold()
+                  attribution_required = rights_basis not in {"cc0", "public domain"}
                   caption_lines = []
                   if source_caption:
                       caption_lines.append(source_caption)
-                  if attribution and attribution.casefold() not in source_caption.casefold():
+                  if attribution_required and attribution and attribution.casefold() not in source_caption.casefold():
                       caption_lines.append(f"Credit: {attribution}")
                   caption_body = "\n".join(caption_lines).strip()
                   suffix = "\n\n@utcutie"
