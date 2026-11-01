@@ -1,9 +1,69 @@
 {
-  "created_at": "2026-10-30T15:32:00Z",
+  "created_at": "2026-11-01T21:21:23.771713+03:30",
   "timezone": "Asia/Tehran",
+  "timezone_display": "Tehran",
   "target_channel": "@utcutie",
-  "selected_count": 0,
-  "rights_gate": "No publication without independently verified per-file license and media validation",
-  "status": "quarantined_pending_validation",
-  "queue": []
+  "max_items": 20,
+  "selected_count": 3,
+  "rights_gate": "Only explicitly approved source URLs with a verified license or written permission can enter the queue.",
+  "publishing_window": {
+    "start": "11:00",
+    "end": "23:00"
+  },
+  "queue": [
+    {
+      "queue_id": 1,
+      "scheduled_at": "2026-11-01T21:26:23.771713+03:30",
+      "status": "pending",
+      "media_url": "https://upload.wikimedia.org/wikipedia/commons/d/dd/Lateralized_sleeping_positions_in_domestic_cats.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "caption": "Both vertebrates and invertebrates show a multitude of left–right asymmetries of brains and behaviors1. For example, cats, dogs, and many other species have a preferred paw when handling food. But why should humans and other animals have lateralized brains? Ba\nCredit: Sevim Isparta, Sebastian Ocklenburg, Marcello Siniscalchi, Charlotte Goursot, Catherine L. Ryan, Tra · Title: Lateralized sleeping positions in domestic cats.webm · Source: https://commons.wikimedia.org/wiki/File:Lateralized_sleeping_positions_in_domestic_cats.webm · License: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0)\n\n@utcutie",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Lateralized_sleeping_positions_in_domestic_cats.webm",
+      "rights_verified": true,
+      "rights_basis": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0",
+      "attribution": "Sevim Isparta, Sebastian Ocklenburg, Marcello Siniscalchi, Charlotte Goursot, Catherine L. Ryan, Tra · Title: Lateralized sleeping positions in domestic cats.webm · Source: https://commons.wikimedia.org/wiki/File:Lateralized_sleeping_positions_in_domestic_cats.webm · License: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0)",
+      "permission_reference": "",
+      "duration": 72.767,
+      "file_size": 4183419,
+      "score": 77.0,
+      "instance": "Wikimedia Commons",
+      "account": "Sevim Isparta, Sebastian Ocklenburg, Marcello Siniscalchi, Charlotte Goursot, Catherine L. Ryan, Tracy A. Doucette, Patrick R. Reinhardt, Reghan Gosse, Özge Şebnem Çıldır, Serenella d’Ingeo, Nadja Freund, Onur Güntürkün, Yasemin Salgirli Demirbas"
+    },
+    {
+      "queue_id": 2,
+      "scheduled_at": "2026-11-01T22:13:11.885856+03:30",
+      "status": "pending",
+      "media_url": "https://upload.wikimedia.org/wikipedia/commons/4/43/Cute_Colorful_Bird_on_Walking_on_Ledge.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "caption": "A tiny stroll, a full performance. 🐦\nCredit: Yourusernamewillbepublic2 · Title: Cute Colorful Bird on Walking on Ledge.webm · Source: https://commons.wikimedia.org/wiki/File:Cute_Colorful_Bird_on_Walking_on_Ledge.webm · License: CC0 (http://creativecommons.org/publicdomain/zero/1.0/deed.en)\n\n@utcutie",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Cute_Colorful_Bird_on_Walking_on_Ledge.webm",
+      "rights_verified": true,
+      "rights_basis": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "attribution": "Yourusernamewillbepublic2 · Title: Cute Colorful Bird on Walking on Ledge.webm · Source: https://commons.wikimedia.org/wiki/File:Cute_Colorful_Bird_on_Walking_on_Ledge.webm · License: CC0 (http://creativecommons.org/publicdomain/zero/1.0/deed.en)",
+      "permission_reference": "",
+      "duration": 21.767,
+      "file_size": 13426030,
+      "score": 58.0,
+      "instance": "Wikimedia Commons",
+      "account": "Yourusernamewillbepublic2"
+    },
+    {
+      "queue_id": 3,
+      "scheduled_at": "2026-11-01T23:00:00+03:30",
+      "status": "pending",
+      "media_url": "https://upload.wikimedia.org/wikipedia/commons/a/af/Fractal_and_DogPlayingTetris_rolling_during_CTWC_2023.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "caption": "Fractal and DogPlayingTetris rolling during one of the semifinal matches in CTWC 2023\nCredit: Aptiz712 · Title: Fractal and DogPlayingTetris rolling during CTWC 2023.webm · Source: https://commons.wikimedia.org/wiki/File:Fractal_and_DogPlayingTetris_rolling_during_CTWC_2023.webm · License: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0)\n\n@utcutie",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Fractal_and_DogPlayingTetris_rolling_during_CTWC_2023.webm",
+      "rights_verified": true,
+      "rights_basis": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0",
+      "attribution": "Aptiz712 · Title: Fractal and DogPlayingTetris rolling during CTWC 2023.webm · Source: https://commons.wikimedia.org/wiki/File:Fractal_and_DogPlayingTetris_rolling_during_CTWC_2023.webm · License: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0)",
+      "permission_reference": "",
+      "duration": 24.458,
+      "file_size": 17916285,
+      "score": 55.0,
+      "instance": "Wikimedia Commons",
+      "account": "Aptiz712"
+    }
+  ]
 }
