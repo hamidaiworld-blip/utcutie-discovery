@@ -13,7 +13,7 @@
   "queue": [
     {
       "queue_id": 1,
-      "scheduled_at": "2026-11-01T21:35:00+03:30",
+      "scheduled_at": "2026-11-01T21:30:00+03:30",
       "status": "pending",
       "media_url": "https://upload.wikimedia.org/wikipedia/commons/4/43/Cute_Colorful_Bird_on_Walking_on_Ledge.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "caption": "A tiny stroll, a full performance. 🐦\n\n@utcutie",
