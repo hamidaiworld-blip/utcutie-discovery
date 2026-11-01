@@ -24,18 +24,22 @@ MAX_METADATA_BATCH = 15
 MAX_DOWNLOAD_ATTEMPTS = 30
 MAX_SELECTED = 20
 MAX_BYTES = 48 * 1024 * 1024
+# A strong signal must appear in the title or description. Generic terms such
+# as "sleeping" or "animal" alone are not enough to qualify a clip as cute/funny.
 ENGAGEMENT_TERMS = (
-    "cute", "adorable", "funny", "hilarious", "play", "playing", "groom",
-    "grooming", "kitten", "puppy", "baby", "sleep", "sleeping", "cuddle",
-    "snuggle", "hug", "trick", "chase", "zoomies", "silly", "quirky",
-    "friend", "friendship", "gentle", "curious", "bathing", "drinking",
-    "feeding", "dancing", "rolling", "jumping", "happy", "lapping water",
-    "slow motion", "playing together", "kissing", "napping", "yawning",
+    "cute", "adorable", "funny", "hilarious", "playful", "playing", "silly",
+    "quirky", "zoomies", "snuggle", "cuddle", "hug", "trick", "chase",
+    "friendship", "dancing", "rolling", "jumping", "happy", "kissing",
+    "playing together", "puppy playing", "kitten playing",
 )
 NEGATIVE_CONTEXT_TERMS = (
     "yen", "price", "prices", "cost", "for sale", "selling", "buy now",
     "purchase", "breeder", "puppy mill", "pet shop", "advertisement", "sponsored",
     "animal meat trade", "dog meat trade", "animal cruelty", "animal testing",
+    "research", "scientific study", "academic", "journal article", "research paper",
+    "experiment", "neuroscience", "lateralized", "brain asymmetry", "survey",
+    "tetris", "esports", "e-sports", "tournament", "semifinal", "championship",
+    "ctwc", "gaming competition", "video game tournament",
 )
 OUT_CANDIDATES = Path("commons_selected_candidates.json")
 OUT_APPROVALS = Path("commons_rights_approvals.json")
@@ -177,8 +181,13 @@ def main():
             continue
         if not any(term in lowered_content for term in validation.ANIMAL_TERMS):
             continue
-        if not any(term in lowered_content for term in ENGAGEMENT_TERMS):
-            print("  Rejected: no clear cute/funny/wholesome engagement signal in title or description")
+        title_lower = item["title"].casefold()
+        description_lower = item["description"].casefold()
+        if not (
+            any(term in title_lower for term in ENGAGEMENT_TERMS)
+            or any(term in description_lower for term in ENGAGEMENT_TERMS)
+        ):
+            print("  Rejected: no strong cute/funny/playful signal in title or description")
             continue
         gate_candidate = {"content": content, "media_url": item["media_url"], "tags": []}
         content_ok, content_score, content_reason = validation.content_gate(gate_candidate)
